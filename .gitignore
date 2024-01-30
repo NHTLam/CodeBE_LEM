@@ -1,3 +1,12 @@
-bin
-obj
-Properties
+PMS/.vs/
+PMS/PMS/bin/
+PMS/PMS/obj/
+.vs/
+/CodeBE_LEM/bin/Debug/net7.0
+/CodeBE_LEM/obj
+/CodeBE_LEM.Tests/obj
+/CodeBE_LEM.Tests/bin/Debug/net7.0
+/CodeBE_LEM/CodeBE_LEM.csproj.user
+bin/
+obj/
+obj/Debug/net7.0
