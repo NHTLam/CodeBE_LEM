@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace CodeBE_LEM.Models;
 
-public partial class Job
+public partial class JobDAO
 {
     public long Id { get; set; }
 

@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 namespace CodeBE_LEM.Models;
 
-public partial class Board
+public partial class BoardDAO
 {
     public long Id { get; set; }
 

@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CodeBE_LEM.Models;
 
-public partial class LemContext : DbContext
+public partial class DataContext : DbContext
 {
-    public LemContext()
+    public DataContext()
     {
     }
 
-    public LemContext(DbContextOptions<LemContext> options)
+    public DataContext(DbContextOptions<DataContext> options)
         : base(options)
     {
     }
