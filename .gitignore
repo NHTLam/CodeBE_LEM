@@ -10,3 +10,9 @@ PMS/PMS/obj/
 bin/
 obj/
 obj/Debug/net7.0
+obj/CodeBE_LEM.csproj.nuget.dgspec.json
+obj/project.nuget.cache
+obj/project.assets.json
+obj/Debug/net7.0/CodeBE_LEM.csproj.AssemblyReference.cache
+obj/Debug/net7.0/CodeBE_LEM.assets.cache
+obj/CodeBE_LEM.csproj.nuget.g.props
