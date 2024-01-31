@@ -15,20 +15,20 @@ public partial class DataContext : DbContext
     {
     }
 
-    public virtual DbSet<Board> Boards { get; set; }
+    public virtual DbSet<BoardDAO> Boards { get; set; }
 
-    public virtual DbSet<Card> Cards { get; set; }
+    public virtual DbSet<CardDAO> Cards { get; set; }
 
-    public virtual DbSet<Job> Jobs { get; set; }
+    public virtual DbSet<JobDAO> Jobs { get; set; }
 
-    public virtual DbSet<Todo> Todos { get; set; }
+    public virtual DbSet<TodoDAO> Todos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:dbconn");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Board>(entity =>
+        modelBuilder.Entity<BoardDAO>(entity =>
         {
             entity.ToTable("Board");
 
@@ -40,7 +40,7 @@ public partial class DataContext : DbContext
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
-        modelBuilder.Entity<Card>(entity =>
+        modelBuilder.Entity<CardDAO>(entity =>
         {
             entity.ToTable("Card");
 
@@ -55,7 +55,7 @@ public partial class DataContext : DbContext
                 .HasConstraintName("FK_Card_Board");
         });
 
-        modelBuilder.Entity<Job>(entity =>
+        modelBuilder.Entity<JobDAO>(entity =>
         {
             entity.ToTable("Job");
 
@@ -70,7 +70,7 @@ public partial class DataContext : DbContext
                 .HasConstraintName("FK_Job_Card");
         });
 
-        modelBuilder.Entity<Todo>(entity =>
+        modelBuilder.Entity<TodoDAO>(entity =>
         {
             entity.ToTable("Todo");
 
