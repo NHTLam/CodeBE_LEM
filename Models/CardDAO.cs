@@ -19,7 +19,7 @@ public partial class CardDAO
 
     public DateTime? DeletedAt { get; set; }
 
-    public virtual Board Board { get; set; } = null!;
+    public virtual BoardDAO Board { get; set; } = null!;
 
-    public virtual ICollection<Job> Jobs { get; set; } = new List<Job>();
+    public virtual ICollection<JobDAO> Jobs { get; set; } = new List<JobDAO>();
 }

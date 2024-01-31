@@ -21,5 +21,5 @@ public partial class BoardDAO
 
     public DateTime? DeletedAt { get; set; }
 
-    public virtual ICollection<Card> Cards { get; set; } = new List<Card>();
+    public virtual ICollection<CardDAO> Cards { get; set; } = new List<CardDAO>();
 }

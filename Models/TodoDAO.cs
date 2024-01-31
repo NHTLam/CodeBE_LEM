@@ -13,5 +13,5 @@ public partial class TodoDAO
 
     public long? JobId { get; set; }
 
-    public virtual Job? Job { get; set; }
+    public virtual JobDAO? Job { get; set; }
 }
