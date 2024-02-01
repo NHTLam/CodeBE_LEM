@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 
-namespace CodeBE_LEM.Models;
+namespace CodeBE_LEM.Entities;
 
-public partial class JobDAO
+public partial class Job
 {
     public long Id { get; set; }
 
@@ -21,7 +21,7 @@ public partial class JobDAO
 
     public int? NoTodoDone { get; set; }
 
-    public virtual CardDAO Card { get; set; } = null!;
+    public virtual Card Card { get; set; } = null!;
 
-    public virtual ICollection<Todo> Todos { get; set; } = new List<Todo>();
+    public virtual List<Todo> Todos { get; set; } = new List<Todo>();
 }

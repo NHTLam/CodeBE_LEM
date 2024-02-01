@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace CodeBE_LEM.Models;
+namespace CodeBE_LEM.Entities;
 
 public partial class Todo
 {
@@ -13,5 +13,5 @@ public partial class Todo
 
     public long? JobId { get; set; }
 
-    public virtual JobDAO? Job { get; set; }
+    public Job? Job { get; set; }
 }
