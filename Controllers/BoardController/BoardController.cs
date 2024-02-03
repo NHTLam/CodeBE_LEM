@@ -22,7 +22,7 @@ namespace CodeBE_LEM.Controllers.BoardController
             this.BoardService = BoardService;
         }
 
-        [Route(BoardRoute.List), HttpPost, Authorize]
+        [Route(BoardRoute.List), HttpPost]
         public async Task<ActionResult<List<Board_BoardDTO>>> List()
         {
             if (!ModelState.IsValid)
@@ -35,18 +35,20 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTOs;
         }
 
-        [Route(BoardRoute.Get), HttpPost, Authorize]
-        public async Task<ActionResult<Board_BoardDTO>> Get([FromBody] Board_BoardDTO Board_BoardDTO)
+        [Route(BoardRoute.Get), HttpPost]
+        public async Task<ActionResult<Board_BoardDTO>?> Get([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             Board Board = await BoardService.Get(Board_BoardDTO.Id);
+            if (Board == null)
+                return null;
             Board_BoardDTO = new Board_BoardDTO(Board);
             return Board_BoardDTO;
         }
 
-        [Route(BoardRoute.Create), HttpPost, Authorize]
+        [Route(BoardRoute.Create), HttpPost]
         public async Task<ActionResult<Board_BoardDTO>> Create([FromBody] Board_BoardDTO Board_BoardDTO)
         {
            if (!ModelState.IsValid)
@@ -62,7 +64,7 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(Board_BoardDTO);
         }
 
-        [Route(BoardRoute.Update), HttpPost, Authorize]
+        [Route(BoardRoute.Update), HttpPost]
         public async Task<ActionResult<Board_BoardDTO>> Update([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
@@ -77,7 +79,7 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(Board_BoardDTO);
         }
 
-        [Route(BoardRoute.Delete), HttpPost, Authorize]
+        [Route(BoardRoute.Delete), HttpPost]
         public async Task<ActionResult<Board_BoardDTO>> Delete([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)

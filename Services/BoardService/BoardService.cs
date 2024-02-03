@@ -15,7 +15,6 @@ namespace CodeBE_LEM.Services.BoardService
     public class BoardService : IBoardService
     {
         private IUOW UOW;
-
         private IBoardValidator BoardValidator;
         public BoardService(
             IUOW UOW,
@@ -32,7 +31,9 @@ namespace CodeBE_LEM.Services.BoardService
 
             try
             {
+                Board.Code = string.Empty;
                 await UOW.BoardRepository.Create(Board);
+                await BuildCode(Board);
                 Board = await UOW.BoardRepository.Get(Board.Id);
                 return Board;
             }
@@ -90,9 +91,8 @@ namespace CodeBE_LEM.Services.BoardService
             try
             {
                 var oldData = await UOW.BoardRepository.Get(Board.Id);
-
                 await UOW.BoardRepository.Update(Board);
-
+                await BuildCode(Board);
                 Board = await UOW.BoardRepository.Get(Board.Id);
                 return Board;
             }
@@ -100,6 +100,12 @@ namespace CodeBE_LEM.Services.BoardService
             {
             }
             return null;
+        }
+
+        private async Task BuildCode(Board Board)
+        {
+            Board.Code = "B" + Board.Id;
+            await UOW.BoardRepository.UpdateCode(Board);
         }
     }
 }
