@@ -16,8 +16,8 @@ namespace CodeBE_LEM.Repositories
         public UOW(DataContext DataContext)
         {
             this.DataContext = DataContext;
-            BoardRepository = new BoardRepository(DataContext);
-            JobRepository = new JobRepository(DataContext);
+            this.BoardRepository = new BoardRepository(DataContext);
+            this.JobRepository = new JobRepository(DataContext);
         }
     }
 }

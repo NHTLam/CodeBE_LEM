@@ -14,6 +14,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Create(Board Board);
         Task<bool> Update(Board Board);
         Task<bool> Delete(Board Board);
+        Task<bool> UpdateCode(Board Board);
     }
 
     public class BoardRepository : IBoardRepository
@@ -145,6 +146,19 @@ namespace CodeBE_LEM.Repositories
             BoardDAO.DeletedAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
             await SaveReference(Board);
+            return true;
+        }
+
+        public async Task<bool> UpdateCode(Board Board)
+        {
+            BoardDAO? BoardDAO = DataContext.Boards
+                .Where(x => x.Id == Board.Id)
+                .FirstOrDefault();
+            if (BoardDAO == null)
+                return false;
+            BoardDAO.Id = Board.Id;
+            BoardDAO.Code = Board.Code;
+            await DataContext.SaveChangesAsync();
             return true;
         }
 
