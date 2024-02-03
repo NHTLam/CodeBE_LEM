@@ -21,5 +21,5 @@ public partial class Board
 
     public DateTime? DeletedAt { get; set; }
 
-    public List<Card> Cards { get; set; } = new List<Card>();
+    public List<Card>? Cards { get; set; }
 }

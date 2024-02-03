@@ -21,7 +21,7 @@ public partial class Job
 
     public int? NoTodoDone { get; set; }
 
-    public virtual Card Card { get; set; } = null!;
+    public Card Card { get; set; } = null!;
 
-    public virtual List<Todo> Todos { get; set; } = new List<Todo>();
+    public List<Todo>? Todos { get; set; }
 }

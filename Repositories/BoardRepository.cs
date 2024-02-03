@@ -150,6 +150,33 @@ namespace CodeBE_LEM.Repositories
 
         private async Task SaveReference(Board Board)
         {
+            if (Board.Cards == null || Board.Cards.Count == 0)
+                await DataContext.Cards
+                    .Where(x => x.BoardId == Board.Id)
+                    .DeleteFromQueryAsync();
+            else
+            {
+                var CardIds = Board.Cards.Select(x => x.Id).Distinct().ToList();
+                await DataContext.Cards
+                .Where(x => x.BoardId == Board.Id)
+                .Where(x => !CardIds.Contains(x.Id))
+                .DeleteFromQueryAsync();
+
+                List<CardDAO> CardDAOs = new List<CardDAO>();
+                foreach (Card Card in Board.Cards)
+                {
+                    CardDAO CardDAO = new CardDAO();
+                    CardDAO.Id = Card.Id;
+                    CardDAO.BoardId = Board.Id;
+                    CardDAO.Name = Card.Name;
+                    CardDAO.Order = Card.Order;
+                    CardDAO.CreatedAt = Card.CreatedAt;
+                    CardDAO.UpdatedAt = Card.UpdatedAt;
+                    CardDAOs.Add(CardDAO);
+                }
+                await DataContext.BulkMergeAsync(CardDAOs);
+
+            }
         }
 
     }

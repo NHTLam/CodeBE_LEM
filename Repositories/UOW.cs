@@ -1,29 +1,23 @@
-﻿using HikeBE.Models;
+﻿using CodeBE_LEM.Models;
 
-namespace HikeBE.Repositories
+namespace CodeBE_LEM.Repositories
 {
     public interface IUOW
     {
-        IHikeRepository HikeRepository { get; }
-        IImgRepository ImgRepository { get; }
-        IObservationRepository ObservationRepository { get; }
-        IAppUserRepository AppUserRepository { get; }
+        IBoardRepository BoardRepository { get; }
+        IJobRepository JobRepository { get; }
     }
     public class UOW : IUOW
     {
         private DataContext DataContext;
-        public IHikeRepository HikeRepository { get; private set; }
-        public IImgRepository ImgRepository { get; private set; }
-        public IObservationRepository ObservationRepository { get; private set; }
-        public IAppUserRepository AppUserRepository { get; private set; }
+        public IBoardRepository BoardRepository { get; private set; }
+        public IJobRepository JobRepository { get; private set; }
 
         public UOW(DataContext DataContext)
         {
             this.DataContext = DataContext;
-            HikeRepository = new HikeRepository(DataContext);
-            ImgRepository = new ImgRepository(DataContext);
-            ObservationRepository = new ObservationRepository(DataContext);
-            AppUserRepository = new AppUserRepository(DataContext);
+            BoardRepository = new BoardRepository(DataContext);
+            JobRepository = new JobRepository(DataContext);
         }
     }
 }

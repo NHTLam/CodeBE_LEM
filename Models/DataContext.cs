@@ -21,7 +21,7 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<JobDAO> Jobs { get; set; }
 
-    public virtual DbSet<Todo> Todos { get; set; }
+    public virtual DbSet<TodoDAO> Todos { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("Name=ConnectionStrings:dbconn");
@@ -70,7 +70,7 @@ public partial class DataContext : DbContext
                 .HasConstraintName("FK_Job_Card");
         });
 
-        modelBuilder.Entity<Todo>(entity =>
+        modelBuilder.Entity<TodoDAO>(entity =>
         {
             entity.ToTable("Todo");
 

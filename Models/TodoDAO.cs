@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace CodeBE_LEM.Models;
 
-public partial class Todo
+public partial class TodoDAO
 {
     public long Id { get; set; }
 

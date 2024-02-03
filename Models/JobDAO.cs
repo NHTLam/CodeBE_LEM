@@ -23,5 +23,5 @@ public partial class JobDAO
 
     public virtual CardDAO Card { get; set; } = null!;
 
-    public virtual ICollection<Todo> Todos { get; set; } = new List<Todo>();
+    public virtual ICollection<TodoDAO> Todos { get; set; } = new List<TodoDAO>();
 }
