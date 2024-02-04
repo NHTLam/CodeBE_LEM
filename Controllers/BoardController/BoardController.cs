@@ -102,6 +102,7 @@ namespace CodeBE_LEM.Controllers.BoardController
             Board.Name = Board_BoardDTO.Name;
             Board.Description = Board_BoardDTO.Description;
             Board.IsFavourite = Board_BoardDTO.IsFavourite;
+            Board.ImageUrl = Board_BoardDTO.ImageUrl;
             Board.CreatedAt = Board_BoardDTO.CreatedAt;
             Board.UpdatedAt = Board_BoardDTO.UpdatedAt;
             Board.Cards = Board_BoardDTO.Cards?.Select(x => new Card

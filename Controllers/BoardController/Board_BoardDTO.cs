@@ -14,6 +14,8 @@ public class Board_BoardDTO
 
     public string? Description { get; set; }
 
+    public string? ImageUrl { get; set; }
+
     public bool IsFavourite { get; set; }
 
     public DateTime CreatedAt { get; set; }
@@ -33,6 +35,7 @@ public class Board_BoardDTO
         Name = Board.Name;
         Description = Board.Description;
         IsFavourite = Board.IsFavourite;
+        ImageUrl = Board.ImageUrl;
         CreatedAt = Board.CreatedAt;
         UpdatedAt = Board.UpdatedAt;
         DeletedAt = Board.DeletedAt;

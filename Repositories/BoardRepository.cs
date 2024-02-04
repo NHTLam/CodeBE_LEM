@@ -38,6 +38,7 @@ namespace CodeBE_LEM.Repositories
                 Code = x.Code,
                 Description = x.Description,
                 IsFavourite = x.IsFavourite,
+                ImageUrl = x.ImageUrl,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
@@ -79,6 +80,7 @@ namespace CodeBE_LEM.Repositories
                 Code = x.Code,
                 Description = x.Description,
                 IsFavourite = x.IsFavourite,
+                ImageUrl = x.ImageUrl,
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
@@ -109,6 +111,7 @@ namespace CodeBE_LEM.Repositories
             BoardDAO.Code = Board.Code;
             BoardDAO.Description = Board.Description;
             BoardDAO.IsFavourite = Board.IsFavourite;
+            BoardDAO.ImageUrl = Board.ImageUrl;
             BoardDAO.CreatedAt = DateTime.Now;
             BoardDAO.UpdatedAt = DateTime.Now;
             DataContext.Boards.Add(BoardDAO);
@@ -129,6 +132,7 @@ namespace CodeBE_LEM.Repositories
             BoardDAO.Name = Board.Name;
             BoardDAO.Code = Board.Code;
             BoardDAO.Description = Board.Description;
+            BoardDAO.ImageUrl = Board.ImageUrl;
             BoardDAO.IsFavourite = Board.IsFavourite;
             BoardDAO.UpdatedAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
