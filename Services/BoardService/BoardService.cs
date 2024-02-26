@@ -76,6 +76,7 @@ namespace CodeBE_LEM.Services.BoardService
             try
             {
                 List<Board> Boards = await UOW.BoardRepository.List();
+                List<long> CardIds = Boards.SelectMany(x => x.Cards.Select(c => c.Id)).Distinct().ToList();
                 return Boards;
             }
             catch (Exception ex)

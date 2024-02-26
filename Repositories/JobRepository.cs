@@ -11,6 +11,7 @@ namespace CodeBE_LEM.Repositories
     public interface IJobRepository
     {
         Task<List<Job>> List();
+        Task<List<Job>> List(List<long> Ids);
         Task<Job> Get(long Id);
         Task<bool> Create(Job Job);
         Task<bool> Update(Job Job);
@@ -31,6 +32,52 @@ namespace CodeBE_LEM.Repositories
         {
             IQueryable<JobDAO> query = DataContext.Jobs.AsNoTracking();
             List<Job> Jobs = await query.AsNoTracking()
+            .Select(x => new Job
+            {
+                Id = x.Id,
+                CardId = x.CardId,
+                Name = x.Name,
+                Description = x.Description,
+                Order = x.Order,
+                PlanTime = x.PlanTime,
+                Color = x.Color,
+                NoTodoDone = x.NoTodoDone,
+                Card = new Card
+                {
+                    Id = x.Card.Id,
+                    Name = x.Card.Name,
+                    BoardId = x.Card.BoardId,
+                    Order = x.Card.Order,
+                    CreatedAt = x.Card.CreatedAt,
+                    UpdatedAt = x.Card.UpdatedAt
+                },
+            }).ToListAsync();
+
+            var TodoQuery = DataContext.Todos.AsNoTracking();
+            List<Todo> Todos = await TodoQuery
+                .Select(x => new Todo
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    JobId = x.JobId,
+                    CompletePercent = x.CompletePercent,
+                }).ToListAsync();
+
+            foreach (Job Job in Jobs)
+            {
+                Job.Todos = Todos
+                    .Where(x => x.JobId == Job.Id)
+                    .ToList();
+            }
+
+            return Jobs;
+        }
+
+        public async Task<List<Job>> List(List<long> Ids)
+        {
+            IQueryable<JobDAO> query = DataContext.Jobs.AsNoTracking();
+            List<Job> Jobs = await query.AsNoTracking()
+            .Where(q => Ids.Contains(q.Id))
             .Select(x => new Job
             {
                 Id = x.Id,
