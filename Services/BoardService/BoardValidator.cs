@@ -11,11 +11,11 @@ namespace CodeBE_LEM.Services.BoardService
         Task<bool> Update(Board Board);
         Task<bool> Delete(Board Board);
     }
-    public class BoardValidator : IBoardValidator
+    public class JobValidator : IBoardValidator
     {
         private IUOW UOW;
 
-        public BoardValidator(IUOW UOW)
+        public JobValidator(IUOW UOW)
         {
             this.UOW = UOW;
         }
