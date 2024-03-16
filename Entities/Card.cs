@@ -21,5 +21,5 @@ public partial class Card
 
     public Board Board { get; set; } = null!;
 
-    public List<Job>? Jobs { get; set; }
+    public List<Job> Jobs { get; set; } = new List<Job>();
 }

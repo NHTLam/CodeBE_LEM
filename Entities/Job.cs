@@ -23,5 +23,5 @@ public partial class Job
 
     public Card Card { get; set; } = null!;
 
-    public List<Todo>? Todos { get; set; }
+    public List<Todo> Todos { get; set; } = new List<Todo>();
 }
