@@ -13,9 +13,9 @@ public partial class Board
 
     public string? Description { get; set; }
 
-    public string? ImageUrl { get; set; }
-
     public bool IsFavourite { get; set; }
+
+    public string ImageUrl { get; set; } = null!;
 
     public DateTime CreatedAt { get; set; }
 
@@ -23,5 +23,7 @@ public partial class Board
 
     public DateTime? DeletedAt { get; set; }
 
-    public List<Card>? Cards { get; set; }
+    public List<AppUserBoardMapping> AppUserBoardMappings { get; set; } = new List<AppUserBoardMapping>();
+
+    public List<Card> Cards { get; set; } = new List<Card>();
 }

@@ -1,5 +1,5 @@
 ﻿# Lấy thư mục chứa các model
-$outputDirectory = "CodeBE_LEM/Models"
+$outputDirectory = "CodeBE_LEM/ModelsGen"
 
 # Tìm kiếm tất cả file .cs trong thư mục
 $files = Get-ChildItem -Path $outputDirectory -Filter *.cs
