@@ -22,6 +22,8 @@ public class Job_JobDTO
 
     public int? NoTodoDone { get; set; }
 
+    public bool? IsAllDay { get; set; }
+
     public List<Job_TodoDTO> Todos { get; set; } = new List<Job_TodoDTO>();
 
     public Job_JobDTO() { }
@@ -36,6 +38,7 @@ public class Job_JobDTO
         PlanTime = Job.PlanTime;
         Color = Job.Color;
         NoTodoDone = Job.NoTodoDone;
+        IsAllDay = Job.IsAllDay;
         Todos = Job.Todos?.Select(x => new Job_TodoDTO(x)).ToList();
     }
 }

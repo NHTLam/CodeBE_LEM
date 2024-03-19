@@ -21,6 +21,8 @@ public partial class Job
 
     public int? NoTodoDone { get; set; }
 
+    public bool? IsAllDay { get; set; }
+
     public Card Card { get; set; } = null!;
 
     public List<Todo> Todos { get; set; } = new List<Todo>();

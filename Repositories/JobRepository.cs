@@ -42,6 +42,7 @@ namespace CodeBE_LEM.Repositories
                 PlanTime = x.PlanTime,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
+                IsAllDay = x.IsAllDay,
                 Card = new Card
                 {
                     Id = x.Card.Id,
@@ -88,6 +89,7 @@ namespace CodeBE_LEM.Repositories
                 PlanTime = x.PlanTime,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
+                IsAllDay = x.IsAllDay,
                 Card = new Card
                 {
                     Id = x.Card.Id,
@@ -133,6 +135,7 @@ namespace CodeBE_LEM.Repositories
                 PlanTime = x.PlanTime,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
+                IsAllDay = x.IsAllDay,
                 Card = new Card
                 {
                     Id = x.Card.Id,
@@ -169,6 +172,7 @@ namespace CodeBE_LEM.Repositories
             JobDAO.PlanTime = Job.PlanTime;
             JobDAO.Color = Job.Color;
             JobDAO.NoTodoDone = Job.NoTodoDone;
+            JobDAO.IsAllDay = Job.IsAllDay;
             DataContext.Jobs.Add(JobDAO);
             await DataContext.SaveChangesAsync();
             Job.Id = JobDAO.Id;
@@ -191,6 +195,7 @@ namespace CodeBE_LEM.Repositories
             JobDAO.PlanTime = Job.PlanTime;
             JobDAO.Color = Job.Color;
             JobDAO.NoTodoDone = Job.NoTodoDone;
+            JobDAO.IsAllDay = Job.IsAllDay;
             await DataContext.SaveChangesAsync();
             await SaveReference(Job);
             return true;
@@ -251,6 +256,7 @@ namespace CodeBE_LEM.Repositories
                 JobDAO.PlanTime = Job.PlanTime;
                 JobDAO.Color = Job.Color;
                 JobDAO.NoTodoDone = Job.NoTodoDone;
+                JobDAO.IsAllDay = Job.IsAllDay;
                 JobDAOs.Add(JobDAO);
             }
             await DataContext.BulkMergeAsync(JobDAOs);
