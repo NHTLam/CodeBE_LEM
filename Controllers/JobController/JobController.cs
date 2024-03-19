@@ -105,6 +105,7 @@ namespace CodeBE_LEM.Controllers.JobController
             Job.PlanTime = Job_JobDTO.PlanTime;
             Job.Color = Job_JobDTO.Color;
             Job.NoTodoDone = Job_JobDTO.NoTodoDone;
+            Job.IsAllDay = Job_JobDTO.IsAllDay;
             Job.Todos = Job_JobDTO.Todos?.Select(x => new Todo
             {
                 Id = x.Id,

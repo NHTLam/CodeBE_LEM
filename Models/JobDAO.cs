@@ -21,6 +21,8 @@ public partial class JobDAO
 
     public int? NoTodoDone { get; set; }
 
+    public bool? IsAllDay { get; set; }
+
     public virtual CardDAO Card { get; set; } = null!;
 
     public virtual ICollection<TodoDAO> Todos { get; set; } = new List<TodoDAO>();
