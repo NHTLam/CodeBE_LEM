@@ -2,6 +2,7 @@
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Models;
 using CodeBE_LEM.Services.AppUserService;
+using CodeBE_LEM.Services.PermissionService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Data;
@@ -13,12 +14,15 @@ namespace CodeBE_LEM.Controllers.AppUserController
     public class AppUserController : ControllerBase
     {
         private IAppUserService AppUserService;
+        private IPermissionService PermissionService;
 
         public AppUserController(
-            IAppUserService AppUserService
+            IAppUserService AppUserService,
+            IPermissionService PermissionService
         )
         {
             this.AppUserService = AppUserService;
+            this.PermissionService = PermissionService;
         }
 
         [Route(AppUserRoute.List), HttpPost, Authorize]
@@ -30,6 +34,16 @@ namespace CodeBE_LEM.Controllers.AppUserController
             List<AppUser> AppUsers = await AppUserService.List();
             List<AppUser_AppUserDTO> AppUser_AppUserDTOs = AppUsers.Select(x => new AppUser_AppUserDTO(x)).ToList();
             return AppUser_AppUserDTOs;
+        }
+
+        [Route(AppUserRoute.GetUserId), HttpPost, Authorize]
+        public async Task<ActionResult<long>> GetUserId()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            long id = PermissionService.GetAppUserId();
+            return id;
         }
 
         [Route(AppUserRoute.Get), HttpPost, Authorize]
@@ -44,7 +58,7 @@ namespace CodeBE_LEM.Controllers.AppUserController
             return AppUser_AppUserDTO;
         }
 
-        [Route(AppUserRoute.Register), HttpPost, Authorize]
+        [Route(AppUserRoute.Register), HttpPost]
         public async Task<ActionResult<bool>> Register([FromBody] AppUser_AppUserDTO AppUser_AppUserDTO)
         {
             if (!ModelState.IsValid)
@@ -117,6 +131,7 @@ namespace CodeBE_LEM.Controllers.AppUserController
             AppUser.Email = AppUser_AppUserDTO.Email;
             AppUser.Gender = AppUser_AppUserDTO.Gender;
             AppUser.Phone = AppUser_AppUserDTO.Phone;
+            AppUser.Password = AppUser_AppUserDTO.Password;
             AppUser.StatusId = AppUser_AppUserDTO.StatusId ?? 0;
             AppUser.AppUserRoleMappings = AppUser_AppUserDTO.AppUserRoleMappings?.Select(x => new AppUserRoleMapping
             {

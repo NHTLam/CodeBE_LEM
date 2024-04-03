@@ -14,6 +14,7 @@ namespace CodeBE_LEM.Controllers.AppUserController
         public const string Update = Module + "/update";
         public const string Delete = Module + "/delete";
         public const string Login = Module + "/login";
+        public const string GetUserId = Module + "/get-user-id";
 
         public static Dictionary<string, List<string>> DictionaryPath = new Dictionary<string, List<string>> 
         {

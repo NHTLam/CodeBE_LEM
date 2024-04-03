@@ -50,8 +50,14 @@ namespace CodeBE_LEM.Repositories
 
         public async Task Init(List<Permission> Permissions)
         {
+            var PermissonRoleMappings = await DataContext.PermissionRoleMappings.AsNoTracking().ToListAsync();
+            await DataContext.PermissionRoleMappings.Where(x => !Permissions.Select(p => p.Id).Contains(x.PermissionId)).DeleteFromQueryAsync();
             await DataContext.Permissions.Where(x => !Permissions.Select(p => p.Id).Contains(x.Id)).DeleteFromQueryAsync();
             await DataContext.BulkMergeAsync(Permissions);
+
+            var PermissonIds = (await ListPermission()).Select(x => x.Id).ToList();
+            PermissonRoleMappings = PermissonRoleMappings.Where(x => PermissonIds.Contains(x.PermissionId)).ToList();
+            await DataContext.BulkMergeAsync(PermissonRoleMappings);
         }
 
         public async Task<List<Role>> ListRole()
