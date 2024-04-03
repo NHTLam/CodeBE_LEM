@@ -44,6 +44,39 @@ namespace CodeBE_LEM.Controllers.PermissionController
             await PermissionService.Init();
         }
 
+        [Route(PermissionRoute.ListPermission), HttpPost, Authorize]
+        public async Task<ActionResult<List<Permission_PermissionDTO>>> ListPermission()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(PermissionRoute.ListPermission, PermissionService.GetAppUserId()))
+            {
+                return Forbid();
+            }
+
+            List<Permission> Permissions = await PermissionService.ListPermission();
+            List<Permission_PermissionDTO> PermissionDTOs = Permissions.Select(x => new Permission_PermissionDTO(x)).ToList();
+            return PermissionDTOs;
+        }
+
+        [Route(PermissionRoute.ListPermissionByRole), HttpPost, Authorize]
+        public async Task<ActionResult<List<Permission_PermissionDTO>>> ListPermissionByRole([FromBody] Permission_RoleDTO Permission_RoleDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(PermissionRoute.ListPermissionByRole, PermissionService.GetAppUserId()))
+            {
+                return Forbid();
+            }
+
+            List<Permission> Permissions = await PermissionService.ListPermissionByRole(Permission_RoleDTO.Id);
+            List<Permission_PermissionDTO> PermissionDTOs = Permissions.Select(x => new Permission_PermissionDTO(x)).ToList();
+            return PermissionDTOs;
+        }
+
+
         [Route(PermissionRoute.ListRole), HttpPost, Authorize]
         public async Task<ActionResult<List<Permission_RoleDTO>>> ListRole()
         {
