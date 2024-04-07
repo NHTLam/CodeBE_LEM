@@ -89,7 +89,9 @@ namespace CodeBE_LEM.Controllers.AppUserController
 
             var token = await AppUserService.CreateToken(AppUser);
 
-            return Ok(token);
+            AppUser_TokenDTO AppUser_TokenDTO = new AppUser_TokenDTO(token);
+
+            return Ok(AppUser_TokenDTO);
         }
 
         [Route(AppUserRoute.Update), HttpPost, Authorize]
