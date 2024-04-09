@@ -18,6 +18,8 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
         public DateTime? DeletedAt { get; set; }
 
+        public string? HomeImg { get; set; }
+
         public List<Classroom_ClassEventDTO>? ClassEvents { get; set; }
         public List<Classroom_AppUserClassroomMappingDTO>? AppUserClassroomMappings { get; set; }
 
@@ -31,6 +33,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             CreatedAt = Classroom.CreatedAt;
             UpdatedAt = Classroom.UpdatedAt;
             DeletedAt = Classroom.DeletedAt;
+            HomeImg = Classroom.HomeImg;
             ClassEvents = Classroom.ClassEvents?.Select(x => new Classroom_ClassEventDTO(x)).ToList();
             AppUserClassroomMappings = Classroom.AppUserClassroomMappings?.Select(x => new Classroom_AppUserClassroomMappingDTO(x)).ToList();
         }

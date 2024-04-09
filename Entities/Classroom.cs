@@ -20,6 +20,8 @@ public partial class Classroom : IFilterable
 
     public DateTime? DeletedAt { get; set; }
 
+    public string? HomeImg { get; set; }
+
     public List<AppUserClassroomMapping>? AppUserClassroomMappings { get; set; } = new List<AppUserClassroomMapping>();
 
     public List<ClassEvent>? ClassEvents { get; set; } = new List<ClassEvent>();

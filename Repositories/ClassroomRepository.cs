@@ -12,6 +12,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Update(Classroom Classroom);
         Task<bool> Delete(Classroom Classroom);
         Task<bool> UpdateCode(Classroom Classroom);
+        Task<List<long>> ListClassroomIdByUserId(long UserId);
     }
 
     public class ClassroomRepository : IClassroomRepository
@@ -31,6 +32,7 @@ namespace CodeBE_LEM.Repositories
             ClassroomDAO.CreatedAt = Classroom.CreatedAt;
             ClassroomDAO.UpdatedAt = Classroom.UpdatedAt;
             ClassroomDAO.DeletedAt = Classroom.DeletedAt;
+            ClassroomDAO.HomeImg = Classroom.HomeImg;
             DataContext.Classrooms.Add(ClassroomDAO);
             await DataContext.SaveChangesAsync();
             Classroom.Id = ClassroomDAO.Id;
@@ -61,6 +63,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     Name = x.Name,
                     Code = x.Code,
+                    HomeImg = x.HomeImg,
                     Description = x.Description,
                     CreatedAt = x.CreatedAt,
                     UpdatedAt = x.UpdatedAt,
@@ -106,6 +109,7 @@ namespace CodeBE_LEM.Repositories
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
+                HomeImg = x.HomeImg,
             }).ToListAsync();
 
             List<ClassEvent> ClassEvents = await DataContext.ClassEvents.AsNoTracking()
@@ -153,6 +157,20 @@ namespace CodeBE_LEM.Repositories
             return Classrooms;
         }
 
+        public async Task<List<long>> ListClassroomIdByUserId(long UserId)
+        {
+            List<AppUserClassroomMapping> AppUserClassroomMappings = await DataContext.AppUserClassroomMappings.AsNoTracking()
+            .Where(x => x.AppUserId == UserId)
+            .Select(x => new AppUserClassroomMapping
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                ClassroomId = x.ClassroomId,
+            }).ToListAsync();
+
+            return AppUserClassroomMappings.Select(x => x.ClassroomId).ToList();
+        }
+
         public async Task<bool> Update(Classroom Classroom)
         {
             ClassroomDAO? ClassroomDAO = DataContext.Classrooms
@@ -162,6 +180,7 @@ namespace CodeBE_LEM.Repositories
                 return false;
             ClassroomDAO.Code = Classroom.Code;
             ClassroomDAO.Name = Classroom.Name;
+            ClassroomDAO.HomeImg = Classroom.HomeImg;
             ClassroomDAO.Description = Classroom.Description;
             ClassroomDAO.CreatedAt = Classroom.CreatedAt;
             ClassroomDAO.UpdatedAt = Classroom.UpdatedAt;
@@ -218,7 +237,7 @@ namespace CodeBE_LEM.Repositories
                     ClassEventDAO.DeletedAt = ClassEvent.DeletedAt;
                     ClassEventDAOs.Add(ClassEventDAO);
                 }
-                await DataContext.BulkMergeAsync(ClassEventDAOs);
+                await DataContext.ClassEvents.AddRangeAsync(ClassEventDAOs);
             }
 
             if (Classroom.AppUserClassroomMappings == null || Classroom.AppUserClassroomMappings.Count == 0)
@@ -240,12 +259,13 @@ namespace CodeBE_LEM.Repositories
                 {
                     AppUserClassroomMappingDAO AppUserClassroomMappingDAO = new AppUserClassroomMappingDAO();
                     AppUserClassroomMappingDAO.Id = AppUserClassroomMapping.Id;
-                    AppUserClassroomMappingDAO.ClassroomId = AppUserClassroomMapping.ClassroomId;
+                    AppUserClassroomMappingDAO.ClassroomId = Classroom.Id;
                     AppUserClassroomMappingDAO.AppUserId = AppUserClassroomMapping.AppUserId;
                     AppUserClassroomMappingDAOs.Add(AppUserClassroomMappingDAO);
                 }
-                await DataContext.BulkMergeAsync(AppUserClassroomMappingDAOs);
+                await DataContext.AppUserClassroomMappings.AddRangeAsync(AppUserClassroomMappingDAOs);
             }
+            await DataContext.SaveChangesAsync();
         }
     }
 }

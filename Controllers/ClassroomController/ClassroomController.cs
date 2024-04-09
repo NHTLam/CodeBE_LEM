@@ -22,12 +22,25 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         }
 
         [Route(ClassroomRoute.List), HttpPost]
-        public async Task<ActionResult<List<Classroom_ClassroomDTO>>> List(FilterDTO FilterDTO)
+        public async Task<ActionResult<List<Classroom_ClassroomDTO>>> List([FromBody] FilterDTO FilterDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             List<Classroom> Classrooms = await ClassroomService.List(FilterDTO);
+            List<Classroom_ClassroomDTO> Classroom_ClassroomDTOs = Classrooms
+                .Select(c => new Classroom_ClassroomDTO(c)).ToList();
+
+            return Classroom_ClassroomDTOs;
+        }
+
+        [Route(ClassroomRoute.ListOwn), HttpPost]
+        public async Task<ActionResult<List<Classroom_ClassroomDTO>>> ListOwn([FromBody] Classroom_AppUserClassroomMappingDTO Classroom_AppUserClassroomMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            List<Classroom> Classrooms = await ClassroomService.ListOwn(Classroom_AppUserClassroomMappingDTO.AppUserId);
             List<Classroom_ClassroomDTO> Classroom_ClassroomDTOs = Classrooms
                 .Select(c => new Classroom_ClassroomDTO(c)).ToList();
 
@@ -92,6 +105,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Classroom.Description = Classroom_ClassroomDTO.Description;
             Classroom.CreatedAt = Classroom_ClassroomDTO.CreatedAt;
             Classroom.Name = Classroom_ClassroomDTO.Name;
+            Classroom.HomeImg = Classroom_ClassroomDTO.HomeImg;
             Classroom.UpdatedAt = Classroom_ClassroomDTO.UpdatedAt;
             Classroom.DeletedAt = Classroom_ClassroomDTO.DeletedAt;
             Classroom.ClassEvents = Classroom_ClassroomDTO.ClassEvents?
