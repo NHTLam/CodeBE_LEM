@@ -80,6 +80,16 @@ namespace CodeBE_LEM.Repositories
 
                 }).ToListAsync();
 
+            Classroom.AppUserClassroomMappings = await DataContext.AppUserClassroomMappings.AsNoTracking()
+                .Where(x => x.ClassroomId == Classroom.Id)
+                .Select(x => new AppUserClassroomMapping
+                {
+                    Id = x.Id,
+                    ClassroomId = x.ClassroomId,
+                    AppUserId = x.AppUserId,
+
+                }).ToListAsync();
+
             return Classroom;
         }
 
@@ -123,6 +133,14 @@ namespace CodeBE_LEM.Repositories
                         UpdatedAt = x.Classroom.UpdatedAt,
                         DeletedAt = x.Classroom.DeletedAt,
                     },
+                }).ToListAsync();
+
+            List<AppUserClassroomMapping> AppUserClassroomMappings = await DataContext.AppUserClassroomMappings.AsNoTracking()
+                .Select(x => new AppUserClassroomMapping
+                {
+                    Id = x.Id,
+                    ClassroomId = x.ClassroomId,
+                    AppUserId = x.AppUserId,
                 }).ToListAsync();
 
             foreach (Classroom Classroom in Classrooms)
@@ -201,6 +219,32 @@ namespace CodeBE_LEM.Repositories
                     ClassEventDAOs.Add(ClassEventDAO);
                 }
                 await DataContext.BulkMergeAsync(ClassEventDAOs);
+            }
+
+            if (Classroom.AppUserClassroomMappings == null || Classroom.AppUserClassroomMappings.Count == 0)
+            {
+                await DataContext.AppUserClassroomMappings
+                    .Where(x => x.ClassroomId == Classroom.Id)
+                    .DeleteFromQueryAsync();
+            }
+            else
+            {
+                var AppUserClassroomMappingIds = Classroom.AppUserClassroomMappings.Select(x => x.Id).Distinct().ToList();
+                await DataContext.AppUserClassroomMappings
+                    .Where(x => x.ClassroomId == Classroom.Id)
+                    .Where(x => !AppUserClassroomMappingIds.Contains(x.Id))
+                    .DeleteFromQueryAsync();
+
+                List<AppUserClassroomMappingDAO> AppUserClassroomMappingDAOs = new List<AppUserClassroomMappingDAO>();
+                foreach (AppUserClassroomMapping AppUserClassroomMapping in Classroom.AppUserClassroomMappings)
+                {
+                    AppUserClassroomMappingDAO AppUserClassroomMappingDAO = new AppUserClassroomMappingDAO();
+                    AppUserClassroomMappingDAO.Id = AppUserClassroomMapping.Id;
+                    AppUserClassroomMappingDAO.ClassroomId = AppUserClassroomMapping.ClassroomId;
+                    AppUserClassroomMappingDAO.AppUserId = AppUserClassroomMapping.AppUserId;
+                    AppUserClassroomMappingDAOs.Add(AppUserClassroomMappingDAO);
+                }
+                await DataContext.BulkMergeAsync(AppUserClassroomMappingDAOs);
             }
         }
     }

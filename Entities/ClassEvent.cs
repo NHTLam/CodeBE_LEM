@@ -32,7 +32,7 @@ public partial class ClassEvent : IFilterable
 
     public Classroom Classroom { get; set; } = null!;
 
-    public List<Comment> Comments { get; set; } = new List<Comment>();
+    public List<Comment>? Comments { get; set; } = new List<Comment>();
 
-    public List<Question> Questions { get; set; } = new List<Question>();
+    public List<Question>? Questions { get; set; } = new List<Question>();
 }

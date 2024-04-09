@@ -124,6 +124,13 @@ namespace CodeBE_LEM.Controllers.ClassroomController
                         StudentAnswer = y.StudentAnswer,
                     }).ToList(),
                 }).ToList();
+            Classroom.AppUserClassroomMappings = Classroom_ClassroomDTO.AppUserClassroomMappings?
+                .Select(x => new AppUserClassroomMapping
+                {
+                    Id = x.Id,
+                    ClassroomId = x.ClassroomId,
+                    AppUserId = x.AppUserId,
+                }).ToList();
 
             return Classroom;
         }

@@ -1,7 +1,9 @@
 ﻿using CodeBE_LEM.Entities;
 using CodeBE_LEM.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
+using System.IO;
 using System.Security;
 
 namespace CodeBE_LEM.Repositories
@@ -50,14 +52,43 @@ namespace CodeBE_LEM.Repositories
 
         public async Task Init(List<Permission> Permissions)
         {
+            List<PermissionDAO> permissionDAOs = Permissions.Select(ConvertEntityToDAO).ToList();
             var PermissonRoleMappings = await DataContext.PermissionRoleMappings.AsNoTracking().ToListAsync();
             await DataContext.PermissionRoleMappings.Where(x => !Permissions.Select(p => p.Id).Contains(x.PermissionId)).DeleteFromQueryAsync();
             await DataContext.Permissions.Where(x => !Permissions.Select(p => p.Id).Contains(x.Id)).DeleteFromQueryAsync();
-            await DataContext.BulkMergeAsync(Permissions);
+            var AddPermissions = permissionDAOs.Where(x => x.Id == 0).ToList();
+            var UpdatePermissions = permissionDAOs.Where(x => x.Id != 0).DistinctBy(x => x.Id).ToList();
+            foreach (var permission in AddPermissions)
+            {
+                if (permission.Id == 0)
+                {
+                    DataContext.Permissions.Add(permission);
+                }
+            }
+
+            foreach (var permission in UpdatePermissions)
+            {
+                if (permission.Id != 0)
+                {
+                    DataContext.Permissions.Update(permission);
+                }
+            }
 
             var PermissonIds = (await ListPermission()).Select(x => x.Id).ToList();
             PermissonRoleMappings = PermissonRoleMappings.Where(x => PermissonIds.Contains(x.PermissionId)).ToList();
-            await DataContext.BulkMergeAsync(PermissonRoleMappings);
+            PermissonRoleMappings = PermissonRoleMappings.DistinctBy(x => x.Id).ToList();
+            foreach (var PermissonRoleMapping in PermissonRoleMappings)
+            {
+                if (PermissonRoleMapping.Id == 0)
+                {
+                    DataContext.PermissionRoleMappings.Add(PermissonRoleMapping);
+                }
+                else
+                {
+                    DataContext.PermissionRoleMappings.Update(PermissonRoleMapping);
+                }
+            }
+            await DataContext.SaveChangesAsync();
         }
 
         public async Task<List<Role>> ListRole()
@@ -178,6 +209,17 @@ namespace CodeBE_LEM.Repositories
                 }
                 await DataContext.BulkMergeAsync(PermissionRoleMappingDAOs);
             }
+        }
+
+        private PermissionDAO ConvertEntityToDAO(Permission Permission)
+        {
+            PermissionDAO PermissionDAO = new PermissionDAO();
+            PermissionDAO.Id = Permission.Id;
+            PermissionDAO.Name = Permission.Name;
+            PermissionDAO.Path = Permission.Path;
+            PermissionDAO.Description = Permission.Description;
+            PermissionDAO.MenuName = Permission.MenuName;
+            return PermissionDAO;
         }
     }
 }
