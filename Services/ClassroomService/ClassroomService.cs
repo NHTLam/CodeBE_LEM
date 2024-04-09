@@ -7,6 +7,7 @@ namespace CodeBE_LEM.Services.ClassroomService
     public interface IClassroomService
     {
         Task<List<Classroom>> List(FilterDTO FilterDTO);
+        Task<List<Classroom>> ListOwn(long AppUserId);
         Task<Classroom> Get(long Id);
         Task<Classroom> Create(Classroom Classroom);
         Task<Classroom> Update(Classroom Classroom);
@@ -80,6 +81,26 @@ namespace CodeBE_LEM.Services.ClassroomService
             {
                 List<Classroom> Classrooms = await UOW.ClassroomRepository.List();
 
+                Classrooms = FilterData(Classrooms, FilterDTO);
+
+                return Classrooms;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
+
+        public async Task<List<Classroom>> ListOwn(long AppUserId)
+        {
+            try
+            {
+                List<long> ValidClassIds = await UOW.ClassroomRepository.ListClassroomIdByUserId(AppUserId);
+                List<Classroom> Classrooms = await UOW.ClassroomRepository.List();
+
+                FilterDTO FilterDTO = new FilterDTO();
+                FilterDTO.Id = ValidClassIds;
                 Classrooms = FilterData(Classrooms, FilterDTO);
 
                 return Classrooms;

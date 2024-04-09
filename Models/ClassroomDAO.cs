@@ -19,6 +19,8 @@ public partial class ClassroomDAO
 
     public DateTime? DeletedAt { get; set; }
 
+    public string? HomeImg { get; set; }
+
     public virtual ICollection<AppUserClassroomMappingDAO> AppUserClassroomMappings { get; set; } = new List<AppUserClassroomMappingDAO>();
 
     public virtual ICollection<ClassEventDAO> ClassEvents { get; set; } = new List<ClassEventDAO>();
