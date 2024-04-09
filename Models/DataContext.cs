@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CodeBE_LEM.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeBE_LEM.Models;
@@ -143,9 +144,10 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Code).HasMaxLength(500);
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.Instruction).HasMaxLength(1000);
             entity.Property(e => e.Name).HasMaxLength(500);
-            entity.Property(e => e.Order).HasMaxLength(1000);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Classroom).WithMany(p => p.ClassEvents)

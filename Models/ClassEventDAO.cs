@@ -13,19 +13,21 @@ public partial class ClassEventDAO
 
     public string Name { get; set; } = null!;
 
-    public bool? IsNotification { get; set; }
+    public bool Pinned { get; set; }
 
     public string? Instruction { get; set; }
 
-    public string Order { get; set; } = null!;
+    public DateTime? EndAt { get; set; }
 
-    public bool? IsClassWork { get; set; }
+    public bool IsClassWork { get; set; }
 
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 
     public DateTime? DeletedAt { get; set; }
+
+    public string? Description { get; set; }
 
     public virtual ClassroomDAO Classroom { get; set; } = null!;
 

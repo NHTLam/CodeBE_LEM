@@ -1,9 +1,10 @@
+using CodeBE_LEM.Common;
 using System;
 using System.Collections.Generic;
 
 namespace CodeBE_LEM.Entities;
 
-public partial class Classroom
+public partial class Classroom : IFilterable
 {
     public long Id { get; set; }
 
