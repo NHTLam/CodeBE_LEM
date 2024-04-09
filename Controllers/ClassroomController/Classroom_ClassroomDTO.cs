@@ -6,7 +6,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
     {
         public long Id { get; set; }
 
-        public string Code { get; set; }
+        public string? Code { get; set; }
 
         public string Name { get; set; }
 
@@ -19,6 +19,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public DateTime? DeletedAt { get; set; }
 
         public List<Classroom_ClassEventDTO>? ClassEvents { get; set; }
+        public List<Classroom_AppUserClassroomMappingDTO>? AppUserClassroomMappings { get; set; }
 
         public Classroom_ClassroomDTO() { }
         public Classroom_ClassroomDTO(Classroom Classroom)
@@ -31,6 +32,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             UpdatedAt = Classroom.UpdatedAt;
             DeletedAt = Classroom.DeletedAt;
             ClassEvents = Classroom.ClassEvents?.Select(x => new Classroom_ClassEventDTO(x)).ToList();
+            AppUserClassroomMappings = Classroom.AppUserClassroomMappings?.Select(x => new Classroom_AppUserClassroomMappingDTO(x)).ToList();
         }
     }
 }
