@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using CodeBE_LEM.Models;
 using CodeBE_LEM.Repositories;
 using CodeBE_LEM.Entities;
+using CodeBE_LEM.Services.BoardService;
+using CodeBE_LEM.Enums;
 
 namespace CodeBE_LEM.Services.AppUserService
 {
@@ -24,14 +26,17 @@ namespace CodeBE_LEM.Services.AppUserService
     {
         private IUOW UOW;
         private readonly IConfiguration Configuration;
+        private readonly IBoardService BoardService;
 
         public AppUserService(
             IUOW UOW,
-            IConfiguration Configuration
+            IConfiguration Configuration,
+            IBoardService BoardService
         )
         {
             this.UOW = UOW;
             this.Configuration = Configuration;
+            this.BoardService = BoardService;
         }
         public async Task<bool> Create(AppUser AppUser)
         {
@@ -46,6 +51,7 @@ namespace CodeBE_LEM.Services.AppUserService
                 AppUser.Password = BCrypt.Net.BCrypt.HashPassword(AppUser.Password);
                 await UOW.AppUserRepository.Create(AppUser);
                 AppUser = await UOW.AppUserRepository.Get(AppUser.Id);
+                await CreateDefaultUserBoard(AppUser);
                 return true;
             }
             catch (Exception)
@@ -148,6 +154,18 @@ namespace CodeBE_LEM.Services.AppUserService
                 return jwt;
             }
             return string.Empty;
+        }
+
+        private async Task CreateDefaultUserBoard(AppUser AppUser)
+        {
+            AppUserBoardMapping AppUserBoardMapping = new AppUserBoardMapping();
+            AppUserBoardMapping.AppUserTypeId = AppUser.Id;
+            AppUserBoardMapping.AppUserTypeId = AppUserTypeEnum.OWN.Id;
+
+            Board board = new Board();
+            board.Name = $"Default Table of user {AppUser.Id}";
+            board.AppUserBoardMappings = new List<AppUserBoardMapping> { AppUserBoardMapping };
+            await BoardService.Create(board);
         }
     }
 }

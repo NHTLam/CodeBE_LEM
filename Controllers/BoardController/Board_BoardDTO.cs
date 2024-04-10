@@ -24,7 +24,8 @@ public class Board_BoardDTO
 
     public DateTime? DeletedAt { get; set; }
 
-    public List<Board_CardDTO> Cards { get; set; } = new List<Board_CardDTO>();
+    public List<Board_CardDTO>? Cards { get; set; } = new List<Board_CardDTO>();
+    public List<Board_AppUserBoardMappingDTO>? AppUserBoardMappings { get; set; } = new List<Board_AppUserBoardMappingDTO>();
 
     public Board_BoardDTO() { }
 
@@ -40,5 +41,6 @@ public class Board_BoardDTO
         UpdatedAt = Board.UpdatedAt;
         DeletedAt = Board.DeletedAt;
         Cards = Board.Cards?.Select(x => new Board_CardDTO(x)).ToList();
+        AppUserBoardMappings = Board.AppUserBoardMappings?.Select(x => new Board_AppUserBoardMappingDTO(x)).ToList();
     }
 }

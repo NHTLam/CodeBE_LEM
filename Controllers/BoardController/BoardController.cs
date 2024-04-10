@@ -48,6 +48,19 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTO;
         }
 
+        [Route(BoardRoute.GetOwn), HttpPost]
+        public async Task<ActionResult<Board_BoardDTO>?> GetOwn([FromBody] Board_AppUserBoardMappingDTO Board_AppUserBoardMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Board Board = await BoardService.GetOwn(Board_AppUserBoardMappingDTO.AppUserId);
+            if (Board == null)
+                return null;
+            Board_BoardDTO Board_BoardDTO = new Board_BoardDTO(Board);
+            return Board_BoardDTO;
+        }
+
         [Route(BoardRoute.Create), HttpPost]
         public async Task<ActionResult<Board_BoardDTO>> Create([FromBody] Board_BoardDTO Board_BoardDTO)
         {
@@ -131,6 +144,13 @@ namespace CodeBE_LEM.Controllers.BoardController
                         Description = z.Description,
                     }).ToList(),
                 }).ToList(),
+            }).ToList();
+            Board.AppUserBoardMappings = Board_BoardDTO.AppUserBoardMappings?.Select(x => new AppUserBoardMapping
+            {
+                Id = x.Id,
+                BoardId = x.BoardId,
+                AppUserId = x.AppUserId,
+                AppUserTypeId = x.AppUserTypeId,
             }).ToList();
 
             return Board;
