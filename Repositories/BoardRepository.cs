@@ -15,6 +15,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Update(Board Board);
         Task<bool> Delete(Board Board);
         Task<bool> UpdateCode(Board Board);
+        Task<List<AppUserBoardMapping>> ListAppUserBoardMappingByAppUser(long AppUserId);
     }
 
     public class BoardRepository : IBoardRepository
@@ -58,14 +59,43 @@ namespace CodeBE_LEM.Repositories
                     DeletedAt = x.DeletedAt,
                 }).ToListAsync();
 
+            var AppUserBoardMappingQuery = DataContext.AppUserBoardMappings.AsNoTracking();
+            List<AppUserBoardMapping> AppUserBoardMappings = await AppUserBoardMappingQuery
+                .Select(x => new AppUserBoardMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    BoardId = x.BoardId,
+                    AppUserTypeId = x.AppUserTypeId,
+                }).ToListAsync();
+
             foreach (Board Board in Boards)
             {
                 Board.Cards = Cards
                     .Where(x => x.BoardId == Board.Id)
                     .ToList();
+                Board.AppUserBoardMappings = AppUserBoardMappings
+                    .Where(x => x.BoardId == Board.Id)
+                    .ToList();
             }
 
             return Boards;
+        }
+
+        public async Task<List<AppUserBoardMapping>> ListAppUserBoardMappingByAppUser(long AppUserId)
+        {
+            IQueryable<AppUserBoardMappingDAO> query = DataContext.AppUserBoardMappings.AsNoTracking();
+            List<AppUserBoardMapping> AppUserBoardMappings = await query.AsNoTracking()
+            .Where(x => x.AppUserId == AppUserId)
+            .Select(x => new AppUserBoardMapping
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                BoardId = x.BoardId,
+                AppUserTypeId = x.AppUserTypeId,
+            }).ToListAsync();
+
+            return AppUserBoardMappings;
         }
 
         public async Task<Board> Get(long Id)
@@ -99,6 +129,16 @@ namespace CodeBE_LEM.Repositories
                     CreatedAt = x.CreatedAt,
                     UpdatedAt = x.UpdatedAt,
                     DeletedAt = x.DeletedAt,
+                }).ToListAsync();
+
+            Board.AppUserBoardMappings = await DataContext.AppUserBoardMappings.AsNoTracking()
+                .Where(x => x.BoardId == Board.Id)
+                .Select(x => new AppUserBoardMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    BoardId = x.BoardId,
+                    AppUserTypeId = x.AppUserTypeId,
                 }).ToListAsync();
 
             return Board;
@@ -192,9 +232,37 @@ namespace CodeBE_LEM.Repositories
                     CardDAO.UpdatedAt = Card.UpdatedAt;
                     CardDAOs.Add(CardDAO);
                 }
-                await DataContext.BulkMergeAsync(CardDAOs);
+                await DataContext.Cards.AddRangeAsync(CardDAOs);
 
             }
+
+            if (Board.AppUserBoardMappings == null || Board.AppUserBoardMappings.Count == 0)
+                await DataContext.AppUserBoardMappings
+                    .Where(x => x.BoardId == Board.Id)
+                    .DeleteFromQueryAsync();
+            else
+            {
+                var AppUserBoardMappingIds = Board.AppUserBoardMappings.Select(x => x.Id).Distinct().ToList();
+                await DataContext.AppUserBoardMappings
+                .Where(x => x.BoardId == Board.Id)
+                .Where(x => !AppUserBoardMappingIds.Contains(x.Id))
+                .DeleteFromQueryAsync();
+
+                List<AppUserBoardMappingDAO> AppUserBoardMappingDAOs = new List<AppUserBoardMappingDAO>();
+                foreach (AppUserBoardMapping AppUserBoardMapping in Board.AppUserBoardMappings)
+                {
+                    AppUserBoardMappingDAO AppUserBoardMappingDAO = new AppUserBoardMappingDAO();
+                    AppUserBoardMappingDAO.Id = AppUserBoardMapping.Id;
+                    AppUserBoardMappingDAO.BoardId = Board.Id;
+                    AppUserBoardMappingDAO.AppUserId = AppUserBoardMapping.AppUserId;
+                    AppUserBoardMappingDAO.AppUserTypeId = AppUserBoardMapping.AppUserTypeId;
+                    AppUserBoardMappingDAOs.Add(AppUserBoardMappingDAO);
+                }
+                await DataContext.AppUserBoardMappings.AddRangeAsync(AppUserBoardMappingDAOs);
+
+            }
+
+            await DataContext.SaveChangesAsync();
         }
 
     }
