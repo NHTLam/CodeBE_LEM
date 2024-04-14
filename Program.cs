@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
+using CodeBE_LEM.Services.JobService;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -56,13 +57,15 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 });
 
 builder.Services.AddScoped<IBoardService, BoardService>();
-builder.Services.AddScoped<IBoardValidator, JobValidator>();
+builder.Services.AddScoped<IBoardValidator, BoardValidator>();
 builder.Services.AddScoped<IAppUserService, AppUserService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IClassroomService, ClassroomService>();
 builder.Services.AddScoped<IClassroomValidator, ClassroomValidator>();
 builder.Services.AddScoped<IClassEventService, ClassEventService>();
 builder.Services.AddScoped<IClassEventValidator, ClassEventValidator>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IJobValidator, JobValidator>();
 builder.Services.AddScoped<IUOW, UOW>();
 
 var app = builder.Build();

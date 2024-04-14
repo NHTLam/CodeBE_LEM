@@ -17,6 +17,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Update(Job Job);
         Task<bool> Delete(Job Job);
         Task<bool> BulkMerge(List<Job> Jobs);
+        Task<List<Job>> ListByCardIds(List<long> CardIds);
     }
 
     public class JobRepository : IJobRepository
@@ -52,6 +53,44 @@ namespace CodeBE_LEM.Repositories
                     CreatedAt = x.Card.CreatedAt,
                     UpdatedAt = x.Card.UpdatedAt
                 },
+            }).ToListAsync();
+
+            var TodoQuery = DataContext.Todos.AsNoTracking();
+            List<Todo> Todos = await TodoQuery
+                .Select(x => new Todo
+                {
+                    Id = x.Id,
+                    Description = x.Description,
+                    JobId = x.JobId,
+                    CompletePercent = x.CompletePercent,
+                }).ToListAsync();
+
+            foreach (Job Job in Jobs)
+            {
+                Job.Todos = Todos
+                    .Where(x => x.JobId == Job.Id)
+                    .ToList();
+            }
+
+            return Jobs;
+        }
+
+        public async Task<List<Job>> ListByCardIds(List<long> CardIds)
+        {
+            IQueryable<JobDAO> query = DataContext.Jobs.AsNoTracking();
+            List<Job> Jobs = await query.AsNoTracking()
+            .Where(x => CardIds.Contains(x.CardId))
+            .Select(x => new Job
+            {
+                Id = x.Id,
+                CardId = x.CardId,
+                Name = x.Name,
+                Description = x.Description,
+                Order = x.Order,
+                PlanTime = x.PlanTime,
+                Color = x.Color,
+                NoTodoDone = x.NoTodoDone,
+                IsAllDay = x.IsAllDay,
             }).ToListAsync();
 
             var TodoQuery = DataContext.Todos.AsNoTracking();
@@ -232,13 +271,13 @@ namespace CodeBE_LEM.Repositories
                 foreach (Todo Todo in Job.Todos)
                 {
                     TodoDAO TodoDAO = new TodoDAO();
-                    TodoDAO.Id = Todo.Id;
                     TodoDAO.Description = Todo.Description;
                     TodoDAO.JobId = Todo.JobId;
                     TodoDAO.CompletePercent = Todo.CompletePercent;
                     TodoDAOs.Add(TodoDAO);
                 }
-                await DataContext.BulkMergeAsync(TodoDAOs);
+                await DataContext.Todos.AddRangeAsync(TodoDAOs);
+                await DataContext.SaveChangesAsync();
             }
         }
 

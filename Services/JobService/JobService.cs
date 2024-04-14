@@ -69,6 +69,14 @@ namespace CodeBE_LEM.Services.JobService
             return Job;
         }
 
+        public async Task<List<Job>> ListByCardIds(List<long> CardIds)
+        {
+            List<Job> Jobs = await UOW.JobRepository.ListByCardIds(CardIds);
+            if (Jobs == null)
+                return null;
+            return Jobs;
+        }
+
         public async Task<List<Job>> List()
         {
             try

@@ -220,7 +220,8 @@ namespace CodeBE_LEM.Repositories
                 .Where(x => !CardIds.Contains(x.Id))
                 .DeleteFromQueryAsync();
 
-                List<CardDAO> CardDAOs = new List<CardDAO>();
+                List<CardDAO> CardDAOUpdates = new List<CardDAO>();
+                List<CardDAO> CardDAOCreates = new List<CardDAO>();
                 foreach (Card Card in Board.Cards)
                 {
                     CardDAO CardDAO = new CardDAO();
@@ -228,12 +229,23 @@ namespace CodeBE_LEM.Repositories
                     CardDAO.BoardId = Board.Id;
                     CardDAO.Name = Card.Name;
                     CardDAO.Order = Card.Order;
-                    CardDAO.CreatedAt = Card.CreatedAt;
-                    CardDAO.UpdatedAt = Card.UpdatedAt;
-                    CardDAOs.Add(CardDAO);
+                    CardDAO.CreatedAt = DateTime.Now;
+                    CardDAO.UpdatedAt = DateTime.Now;
+                    if (CardDAO.Id == 0)
+                        CardDAOCreates.Add(CardDAO);
+                    else
+                        CardDAOUpdates.Add(CardDAO);
                 }
-                await DataContext.Cards.AddRangeAsync(CardDAOs);
 
+                foreach (var CardDAOUpdate in CardDAOUpdates)
+                {
+                    DataContext.Cards.Update(CardDAOUpdate);
+                }
+
+                foreach (var CardDAOCreate in CardDAOCreates)
+                {
+                    DataContext.Cards.Add(CardDAOCreate);
+                }
             }
 
             if (Board.AppUserBoardMappings == null || Board.AppUserBoardMappings.Count == 0)
@@ -248,7 +260,8 @@ namespace CodeBE_LEM.Repositories
                 .Where(x => !AppUserBoardMappingIds.Contains(x.Id))
                 .DeleteFromQueryAsync();
 
-                List<AppUserBoardMappingDAO> AppUserBoardMappingDAOs = new List<AppUserBoardMappingDAO>();
+                List<AppUserBoardMappingDAO> AppUserBoardMappingDAOCreates = new List<AppUserBoardMappingDAO>();
+                List<AppUserBoardMappingDAO> AppUserBoardMappingDAOUpdates = new List<AppUserBoardMappingDAO>();
                 foreach (AppUserBoardMapping AppUserBoardMapping in Board.AppUserBoardMappings)
                 {
                     AppUserBoardMappingDAO AppUserBoardMappingDAO = new AppUserBoardMappingDAO();
@@ -256,10 +269,21 @@ namespace CodeBE_LEM.Repositories
                     AppUserBoardMappingDAO.BoardId = Board.Id;
                     AppUserBoardMappingDAO.AppUserId = AppUserBoardMapping.AppUserId;
                     AppUserBoardMappingDAO.AppUserTypeId = AppUserBoardMapping.AppUserTypeId;
-                    AppUserBoardMappingDAOs.Add(AppUserBoardMappingDAO);
+                    if (AppUserBoardMappingDAO.Id == 0)
+                        AppUserBoardMappingDAOCreates.Add(AppUserBoardMappingDAO);
+                    else
+                        AppUserBoardMappingDAOUpdates.Add(AppUserBoardMappingDAO);
                 }
-                await DataContext.AppUserBoardMappings.AddRangeAsync(AppUserBoardMappingDAOs);
 
+                foreach (var AppUserBoardMappingDAOCreate in AppUserBoardMappingDAOCreates)
+                {
+                    DataContext.AppUserBoardMappings.Add(AppUserBoardMappingDAOCreate);
+                }
+
+                foreach (var AppUserBoardMappingDAOUpdate in AppUserBoardMappingDAOUpdates)
+                {
+                    DataContext.AppUserBoardMappings.Update(AppUserBoardMappingDAOUpdate);
+                }
             }
 
             await DataContext.SaveChangesAsync();

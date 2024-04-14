@@ -68,6 +68,7 @@ namespace CodeBE_LEM.Services.BoardService
         public async Task<Board> Get(long Id)
         {
             Board Board = await UOW.BoardRepository.Get(Id);
+            await AddJobDataForCards(Board);
             if (Board == null)
                 return null;
             await BoardValidator.Get(Board);
@@ -80,10 +81,24 @@ namespace CodeBE_LEM.Services.BoardService
                 Where(x => x.AppUserTypeId == AppUserTypeEnum.OWN.Id).
                 Select(x => x.BoardId).ToList();
             Board Board = await UOW.BoardRepository.Get(BoardIds.FirstOrDefault());
+            await AddJobDataForCards(Board);
             if (Board == null)
                 return null;
             await BoardValidator.Get(Board);
             return Board;
+        }
+
+        private async Task AddJobDataForCards(Board Board)
+        {
+            if (Board.Cards != null || Board.Cards.Count > 0)
+            {
+                List<long> CardIds = Board.Cards.Select(x => x.Id).ToList();
+                List<Job> Jobs = await UOW.JobRepository.ListByCardIds(CardIds);
+                foreach (var Card in Board.Cards)
+                {
+                    Card.Jobs = Jobs.Where(x => x.CardId == Card.Id).ToList();
+                }
+            }
         }
 
         public async Task<List<Board>> List()
@@ -91,7 +106,6 @@ namespace CodeBE_LEM.Services.BoardService
             try
             {
                 List<Board> Boards = await UOW.BoardRepository.List();
-                List<long> CardIds = Boards.SelectMany(x => x.Cards.Select(c => c.Id)).Distinct().ToList();
                 return Boards;
             }
             catch (Exception ex)
