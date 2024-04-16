@@ -55,6 +55,22 @@ namespace CodeBE_LEM.Repositories
                     .ToList();
             }
 
+            var AppUserClassroomMappingQuery = DataContext.AppUserClassroomMappings.AsNoTracking();
+            List<AppUserClassroomMapping> AppUserClassroomMappings = await AppUserClassroomMappingQuery
+                .Select(x => new AppUserClassroomMapping
+                {
+                    Id = x.Id,
+                    ClassroomId = x.ClassroomId,
+                    AppUserId = x.AppUserId,
+                }).ToListAsync();
+
+            foreach (AppUser AppUser in AppUsers)
+            {
+                AppUser.AppUserClassroomMappings = AppUserClassroomMappings
+                    .Where(x => x.AppUserId == AppUser.Id)
+                    .ToList();
+            }
+
             return AppUsers;
         }
 

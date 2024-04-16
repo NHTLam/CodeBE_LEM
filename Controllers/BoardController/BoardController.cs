@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using CodeBE_LEM.Services.BoardService;
 using CodeBE_LEM.Entities;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace CodeBE_LEM.Controllers.BoardController
 {
@@ -29,6 +30,19 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(ModelState);
 
             List<Board> Boards = await BoardService.List();
+            List<Board_BoardDTO> Board_BoardDTOs = Boards
+                .Select(c => new Board_BoardDTO(c)).ToList();
+
+            return Board_BoardDTOs;
+        }
+
+        [Route(BoardRoute.ListByClassroom), HttpPost]
+        public async Task<ActionResult<List<Board_BoardDTO>>> ListByClassroom([FromBody] Board_BoardDTO Board_BoardDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            List<Board> Boards = await BoardService.ListByClassroom(Board_BoardDTO.ClassroomId.Value);
             List<Board_BoardDTO> Board_BoardDTOs = Boards
                 .Select(c => new Board_BoardDTO(c)).ToList();
 
@@ -64,7 +78,7 @@ namespace CodeBE_LEM.Controllers.BoardController
         [Route(BoardRoute.Create), HttpPost]
         public async Task<ActionResult<Board_BoardDTO>> Create([FromBody] Board_BoardDTO Board_BoardDTO)
         {
-           if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
@@ -118,6 +132,18 @@ namespace CodeBE_LEM.Controllers.BoardController
             Board.ImageUrl = Board_BoardDTO.ImageUrl;
             Board.CreatedAt = Board_BoardDTO.CreatedAt;
             Board.UpdatedAt = Board_BoardDTO.UpdatedAt;
+            Board.ClassroomId = Board_BoardDTO.ClassroomId;
+            Board.Classroom = Board_BoardDTO.Classroom == null ? null : new Classroom
+            {
+                Id = Board_BoardDTO.Classroom.Id,
+                Code = Board_BoardDTO.Classroom.Code,
+                Name = Board_BoardDTO.Classroom.Name,
+                Description = Board_BoardDTO.Classroom.Description,
+                CreatedAt = Board_BoardDTO.Classroom.CreatedAt,
+                UpdatedAt = Board_BoardDTO.Classroom.UpdatedAt,
+                DeletedAt = Board_BoardDTO.Classroom.DeletedAt,
+                HomeImg = Board_BoardDTO.Classroom.HomeImg,
+            };
             Board.Cards = Board_BoardDTO.Cards?.Select(x => new Card
             {
                 Id = x.Id,
@@ -133,7 +159,8 @@ namespace CodeBE_LEM.Controllers.BoardController
                     Name = y.Name,
                     Description = y.Description,
                     Order = y.Order,
-                    PlanTime = y.PlanTime,
+                    StartAt = y.StartAt,
+                    EndAt = y.EndAt,
                     Color = y.Color,
                     NoTodoDone = y.NoTodoDone,
                     Todos = y.Todos?.Select(z => new Todo

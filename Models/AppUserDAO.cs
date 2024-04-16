@@ -26,4 +26,6 @@ public partial class AppUserDAO
     public virtual ICollection<AppUserClassroomMappingDAO> AppUserClassroomMappings { get; set; } = new List<AppUserClassroomMappingDAO>();
 
     public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; } = new List<AppUserRoleMappingDAO>();
+
+    public virtual ICollection<AppUserJobMappingDAO> AppUserJobMappings { get; set; } = new List<AppUserJobMappingDAO>();
 }

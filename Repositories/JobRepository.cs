@@ -33,6 +33,7 @@ namespace CodeBE_LEM.Repositories
         {
             IQueryable<JobDAO> query = DataContext.Jobs.AsNoTracking();
             List<Job> Jobs = await query.AsNoTracking()
+            .Where(x => x.DeleteAt == null)
             .Select(x => new Job
             {
                 Id = x.Id,
@@ -40,7 +41,8 @@ namespace CodeBE_LEM.Repositories
                 Name = x.Name,
                 Description = x.Description,
                 Order = x.Order,
-                PlanTime = x.PlanTime,
+                StartAt = x.StartAt,
+                EndAt = x.EndAt,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
@@ -79,6 +81,7 @@ namespace CodeBE_LEM.Repositories
         {
             IQueryable<JobDAO> query = DataContext.Jobs.AsNoTracking();
             List<Job> Jobs = await query.AsNoTracking()
+            .Where(x => x.DeleteAt == null)
             .Where(x => CardIds.Contains(x.CardId))
             .Select(x => new Job
             {
@@ -87,7 +90,8 @@ namespace CodeBE_LEM.Repositories
                 Name = x.Name,
                 Description = x.Description,
                 Order = x.Order,
-                PlanTime = x.PlanTime,
+                StartAt = x.StartAt,
+                EndAt = x.EndAt,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
@@ -117,6 +121,7 @@ namespace CodeBE_LEM.Repositories
         {
             IQueryable<JobDAO> query = DataContext.Jobs.AsNoTracking();
             List<Job> Jobs = await query.AsNoTracking()
+            .Where(x => x.DeleteAt == null)
             .Where(q => Ids.Contains(q.Id))
             .Select(x => new Job
             {
@@ -125,7 +130,8 @@ namespace CodeBE_LEM.Repositories
                 Name = x.Name,
                 Description = x.Description,
                 Order = x.Order,
-                PlanTime = x.PlanTime,
+                StartAt = x.StartAt,
+                EndAt = x.EndAt,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
@@ -163,6 +169,7 @@ namespace CodeBE_LEM.Repositories
         public async Task<Job> Get(long Id)
         {
             Job? Job = await DataContext.Jobs.AsNoTracking()
+            .Where(x => x.DeleteAt == null)
             .Where(x => x.Id == Id)
             .Select(x => new Job()
             {
@@ -171,7 +178,8 @@ namespace CodeBE_LEM.Repositories
                 Name = x.Name,
                 Description = x.Description,
                 Order = x.Order,
-                PlanTime = x.PlanTime,
+                StartAt = x.StartAt,
+                EndAt = x.EndAt,
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
@@ -208,10 +216,13 @@ namespace CodeBE_LEM.Repositories
             JobDAO.Name = Job.Name;
             JobDAO.Description = Job.Description;
             JobDAO.Order = Job.Order;
-            JobDAO.PlanTime = Job.PlanTime;
+            JobDAO.StartAt = Job.StartAt;
+            JobDAO.EndAt = Job.EndAt;
             JobDAO.Color = Job.Color;
             JobDAO.NoTodoDone = Job.NoTodoDone;
             JobDAO.IsAllDay = Job.IsAllDay;
+            JobDAO.CreatedAt = DateTime.Now;
+            JobDAO.UpdateAt = DateTime.Now;
             DataContext.Jobs.Add(JobDAO);
             await DataContext.SaveChangesAsync();
             Job.Id = JobDAO.Id;
@@ -231,10 +242,12 @@ namespace CodeBE_LEM.Repositories
             JobDAO.Name = Job.Name;
             JobDAO.Description = Job.Description;
             JobDAO.Order = Job.Order;
-            JobDAO.PlanTime = Job.PlanTime;
+            JobDAO.StartAt = Job.StartAt;
+            JobDAO.EndAt = Job.EndAt;
             JobDAO.Color = Job.Color;
             JobDAO.NoTodoDone = Job.NoTodoDone;
             JobDAO.IsAllDay = Job.IsAllDay;
+            JobDAO.UpdateAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
             await SaveReference(Job);
             return true;
@@ -247,7 +260,7 @@ namespace CodeBE_LEM.Repositories
                 .FirstOrDefault();
             if (JobDAO == null)
                 return false;
-            DataContext.Jobs.Remove(JobDAO);
+            JobDAO.DeleteAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
             await SaveReference(Job);
             return true;
@@ -292,7 +305,8 @@ namespace CodeBE_LEM.Repositories
                 JobDAO.CardId = Job.CardId;
                 JobDAO.Description = Job.Description;
                 JobDAO.Order = Job.Order;
-                JobDAO.PlanTime = Job.PlanTime;
+                JobDAO.StartAt = Job.StartAt;
+                JobDAO.EndAt = Job.EndAt;
                 JobDAO.Color = Job.Color;
                 JobDAO.NoTodoDone = Job.NoTodoDone;
                 JobDAO.IsAllDay = Job.IsAllDay;

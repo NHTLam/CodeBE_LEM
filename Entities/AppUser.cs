@@ -26,4 +26,6 @@ public partial class AppUser
     public List<AppUserClassroomMapping>? AppUserClassroomMappings { get; set; }
 
     public List<AppUserRoleMapping>? AppUserRoleMappings { get; set; }
+
+    public List<AppUserJobMapping>? AppUserJobMappings { get; set; }
 }

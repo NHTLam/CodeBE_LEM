@@ -1,3 +1,4 @@
+using CodeBE_LEM.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -17,11 +18,15 @@ public partial class BoardDAO
 
     public string ImageUrl { get; set; } = null!;
 
+    public long? ClassroomId { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 
     public DateTime? DeletedAt { get; set; }
+
+    public virtual ClassroomDAO? Classroom { get; set; }
 
     public virtual ICollection<AppUserBoardMappingDAO> AppUserBoardMappings { get; set; } = new List<AppUserBoardMappingDAO>();
 

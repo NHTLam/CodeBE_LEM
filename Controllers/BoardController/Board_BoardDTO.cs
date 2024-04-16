@@ -18,11 +18,15 @@ public class Board_BoardDTO
 
     public bool IsFavourite { get; set; }
 
+    public long? ClassroomId { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
 
     public DateTime? DeletedAt { get; set; }
+
+    public Board_ClassroomDTO? Classroom { get; set; }
 
     public List<Board_CardDTO>? Cards { get; set; } = new List<Board_CardDTO>();
     public List<Board_AppUserBoardMappingDTO>? AppUserBoardMappings { get; set; } = new List<Board_AppUserBoardMappingDTO>();
@@ -40,6 +44,8 @@ public class Board_BoardDTO
         CreatedAt = Board.CreatedAt;
         UpdatedAt = Board.UpdatedAt;
         DeletedAt = Board.DeletedAt;
+        ClassroomId = Board.ClassroomId;
+        Classroom = Board.Classroom == null ? null : new Board_ClassroomDTO(Board.Classroom);
         Cards = Board.Cards?.Select(x => new Board_CardDTO(x)).ToList();
         AppUserBoardMappings = Board.AppUserBoardMappings?.Select(x => new Board_AppUserBoardMappingDTO(x)).ToList();
     }

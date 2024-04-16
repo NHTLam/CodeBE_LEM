@@ -10,6 +10,7 @@ namespace CodeBE_LEM.Repositories
     public interface IBoardRepository
     {
         Task<List<Board>> List();
+        Task<List<Board>> ListByClassroom(long ClassroomId);
         Task<Board> Get(long Id);
         Task<bool> Create(Board Board);
         Task<bool> Update(Board Board);
@@ -43,6 +44,64 @@ namespace CodeBE_LEM.Repositories
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
+                ClassroomId = x.ClassroomId,
+            }).ToListAsync();
+
+            var CardQuery = DataContext.Cards.AsNoTracking();
+            List<Card> Cards = await CardQuery
+                .Where(x => x.DeletedAt == null)
+                .Select(x => new Card
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    BoardId = x.BoardId,
+                    Order = x.Order,
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    DeletedAt = x.DeletedAt,
+                }).ToListAsync();
+
+            var AppUserBoardMappingQuery = DataContext.AppUserBoardMappings.AsNoTracking();
+            List<AppUserBoardMapping> AppUserBoardMappings = await AppUserBoardMappingQuery
+                .Select(x => new AppUserBoardMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    BoardId = x.BoardId,
+                    AppUserTypeId = x.AppUserTypeId,
+                }).ToListAsync();
+
+            foreach (Board Board in Boards)
+            {
+                Board.Cards = Cards
+                    .Where(x => x.BoardId == Board.Id)
+                    .ToList();
+                Board.AppUserBoardMappings = AppUserBoardMappings
+                    .Where(x => x.BoardId == Board.Id)
+                    .ToList();
+            }
+
+            return Boards;
+        }
+
+        public async Task<List<Board>> ListByClassroom(long ClassroomId)
+        {
+            IQueryable<BoardDAO> query = DataContext.Boards.AsNoTracking();
+            List<Board> Boards = await query.AsNoTracking()
+            .Where(x => x.DeletedAt == null)
+            .Where(x => x.ClassroomId == ClassroomId)
+            .Select(x => new Board
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Code = x.Code,
+                Description = x.Description,
+                IsFavourite = x.IsFavourite,
+                ImageUrl = x.ImageUrl,
+                CreatedAt = x.CreatedAt,
+                UpdatedAt = x.UpdatedAt,
+                DeletedAt = x.DeletedAt,
+                ClassroomId = x.ClassroomId,
             }).ToListAsync();
 
             var CardQuery = DataContext.Cards.AsNoTracking();
@@ -114,6 +173,7 @@ namespace CodeBE_LEM.Repositories
                 CreatedAt = x.CreatedAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
+                ClassroomId = x.ClassroomId,
             }).FirstOrDefaultAsync();
 
             if (Board == null)
@@ -154,6 +214,7 @@ namespace CodeBE_LEM.Repositories
             BoardDAO.ImageUrl = Board.ImageUrl;
             BoardDAO.CreatedAt = DateTime.Now;
             BoardDAO.UpdatedAt = DateTime.Now;
+            BoardDAO.ClassroomId = Board.ClassroomId;
             DataContext.Boards.Add(BoardDAO);
             await DataContext.SaveChangesAsync();
             Board.Id = BoardDAO.Id;
@@ -174,6 +235,7 @@ namespace CodeBE_LEM.Repositories
             BoardDAO.Description = Board.Description;
             BoardDAO.ImageUrl = Board.ImageUrl;
             BoardDAO.IsFavourite = Board.IsFavourite;
+            BoardDAO.ClassroomId = Board.ClassroomId;
             BoardDAO.UpdatedAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
             await SaveReference(Board);

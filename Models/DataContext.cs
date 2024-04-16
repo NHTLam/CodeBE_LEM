@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using CodeBE_LEM.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeBE_LEM.Models;
@@ -110,6 +109,21 @@ public partial class DataContext : DbContext
                 .HasConstraintName("FK_AppUserRoleMapping_Role");
         });
 
+        modelBuilder.Entity<AppUserJobMappingDAO>(entity =>
+        {
+            entity.ToTable("AppUserJobMapping");
+
+            entity.HasOne(d => d.AppUser).WithMany(p => p.AppUserJobMappings)
+                .HasForeignKey(d => d.AppUserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppUserJobMapping_AppUser");
+
+            entity.HasOne(d => d.Job).WithMany(p => p.AppUserJobMappings)
+                .HasForeignKey(d => d.JobId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_AppUserJobMapping_Job");
+        });
+
         modelBuilder.Entity<BoardDAO>(entity =>
         {
             entity.ToTable("Board");
@@ -120,6 +134,10 @@ public partial class DataContext : DbContext
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.Name).HasMaxLength(500);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+
+            entity.HasOne(d => d.Classroom).WithMany(p => p.Boards)
+                .HasForeignKey(d => d.ClassroomId)
+                .HasConstraintName("FK_Board_Classroom");
         });
 
         modelBuilder.Entity<CardDAO>(entity =>
@@ -164,8 +182,8 @@ public partial class DataContext : DbContext
             entity.Property(e => e.CreatedAt).HasColumnType("datetime");
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(500);
-            entity.Property(e => e.Name).HasMaxLength(500);
             entity.Property(e => e.HomeImg).HasMaxLength(500);
+            entity.Property(e => e.Name).HasMaxLength(500);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
         });
 
@@ -186,9 +204,13 @@ public partial class DataContext : DbContext
             entity.ToTable("Job");
 
             entity.Property(e => e.Color).HasMaxLength(50);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime");
+            entity.Property(e => e.DeleteAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.EndAt).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(100);
-            entity.Property(e => e.PlanTime).HasMaxLength(50);
+            entity.Property(e => e.StartAt).HasColumnType("datetime");
+            entity.Property(e => e.UpdateAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Card).WithMany(p => p.Jobs)
                 .HasForeignKey(d => d.CardId)

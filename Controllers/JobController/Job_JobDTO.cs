@@ -16,7 +16,9 @@ public class Job_JobDTO
 
     public int? Order { get; set; }
 
-    public string? PlanTime { get; set; }
+    public DateTime? StartAt { get; set; }
+
+    public DateTime? EndAt { get; set; }
 
     public string? Color { get; set; }
 
@@ -35,7 +37,8 @@ public class Job_JobDTO
         Name = Job.Name;
         Order = Job.Order;
         Description = Job.Description;
-        PlanTime = Job.PlanTime;
+        StartAt = Job.StartAt;
+        EndAt = Job.EndAt;
         Color = Job.Color;
         NoTodoDone = Job.NoTodoDone;
         IsAllDay = Job.IsAllDay;

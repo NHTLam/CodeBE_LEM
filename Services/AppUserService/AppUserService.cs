@@ -21,6 +21,7 @@ namespace CodeBE_LEM.Services.AppUserService
         Task<AppUser> Delete(AppUser AppUser);
         Task<AppUser> GetPasswordHash(AppUser AppUser);
         Task<string> CreateToken(AppUser AppUser);
+        Task<List<AppUser>> ListByClassroom(long ClassroomId);
     }
     public class AppUserService : IAppUserService
     {
@@ -111,6 +112,20 @@ namespace CodeBE_LEM.Services.AppUserService
             try
             {
                 List<AppUser> AppUsers = await UOW.AppUserRepository.List();
+                return AppUsers;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
+        public async Task<List<AppUser>> ListByClassroom(long ClassroomId)
+        {
+            try
+            {
+                List<AppUser> AppUsers = await UOW.AppUserRepository.List();
+                AppUsers = AppUsers.Where(x => x.AppUserClassroomMappings?.Select(y => y.ClassroomId)?.Contains(ClassroomId) ?? false).ToList();
                 return AppUsers;
             }
             catch (Exception)
