@@ -58,6 +58,17 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassroomDTO(Classroom);
         }
 
+        [Route(ClassroomRoute.Join), HttpPost]
+        public async Task<ActionResult<bool>?> Join([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            bool isSuccess = await ClassroomService.Join(Classroom_ClassroomDTO.Code);
+
+            return Ok(isSuccess);
+        }
+
         [Route(ClassroomRoute.Create), HttpPost]
         public async Task<ActionResult<Classroom_ClassroomDTO>?> Create([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
         {

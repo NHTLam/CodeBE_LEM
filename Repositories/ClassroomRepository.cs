@@ -13,6 +13,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Delete(Classroom Classroom);
         Task<bool> UpdateCode(Classroom Classroom);
         Task<List<long>> ListClassroomIdByUserId(long UserId);
+        Task<bool> BulkMerge(List<AppUserClassroomMapping> AppUserClassroomMappings);
     }
 
     public class ClassroomRepository : IClassroomRepository
@@ -266,6 +267,27 @@ namespace CodeBE_LEM.Repositories
                 await DataContext.AppUserClassroomMappings.AddRangeAsync(AppUserClassroomMappingDAOs);
             }
             await DataContext.SaveChangesAsync();
+        }
+
+        public async Task<bool> BulkMerge(List<AppUserClassroomMapping> AppUserClassroomMappings)
+        {
+            foreach (AppUserClassroomMapping AppUserClassroomMapping in AppUserClassroomMappings)
+            {
+                AppUserClassroomMappingDAO AppUserClassroomMappingDAO = new AppUserClassroomMappingDAO();
+                AppUserClassroomMappingDAO.Id = AppUserClassroomMapping.Id;
+                AppUserClassroomMappingDAO.AppUserId = AppUserClassroomMapping.AppUserId;
+                AppUserClassroomMappingDAO.ClassroomId = AppUserClassroomMapping.ClassroomId;
+                if (AppUserClassroomMapping.Id == 0)
+                {
+                    DataContext.AppUserClassroomMappings.Add(AppUserClassroomMappingDAO);
+                }
+                else
+                {
+                    DataContext.AppUserClassroomMappings.Update(AppUserClassroomMappingDAO);
+                }
+            }
+            await DataContext.SaveChangesAsync();
+            return true;
         }
     }
 }
