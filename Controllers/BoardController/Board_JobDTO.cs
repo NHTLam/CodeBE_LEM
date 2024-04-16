@@ -16,7 +16,9 @@ public class Board_JobDTO
 
     public int? Order { get; set; }
 
-    public string? PlanTime { get; set; }
+    public DateTime? StartAt { get; set; }
+
+    public DateTime? EndAt { get; set; }
 
     public string? Color { get; set; }
 
@@ -33,7 +35,8 @@ public class Board_JobDTO
         Name = Job.Name;
         Order = Job.Order;
         Description = Job.Description;
-        PlanTime = Job.PlanTime;
+        StartAt = Job.StartAt;
+        EndAt = Job.EndAt;
         Color = Job.Color;
         NoTodoDone = Job.NoTodoDone;
         Todos = Job.Todos?.Select(x => new Board_TodoDTO(x)).ToList();

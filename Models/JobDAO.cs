@@ -15,13 +15,23 @@ public partial class JobDAO
 
     public int? Order { get; set; }
 
-    public string? PlanTime { get; set; }
-
     public string? Color { get; set; }
 
     public int? NoTodoDone { get; set; }
 
     public bool? IsAllDay { get; set; }
+
+    public DateTime? StartAt { get; set; }
+
+    public DateTime? EndAt { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdateAt { get; set; }
+
+    public DateTime? DeleteAt { get; set; }
+
+    public virtual ICollection<AppUserJobMappingDAO> AppUserJobMappings { get; set; } = new List<AppUserJobMappingDAO>();
 
     public virtual CardDAO Card { get; set; } = null!;
 

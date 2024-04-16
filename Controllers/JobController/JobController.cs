@@ -102,7 +102,8 @@ namespace CodeBE_LEM.Controllers.JobController
             Job.Name = Job_JobDTO.Name;
             Job.Description = Job_JobDTO.Description;
             Job.Order = Job_JobDTO.Order;
-            Job.PlanTime = Job_JobDTO.PlanTime;
+            Job.StartAt = Job_JobDTO.StartAt;
+            Job.EndAt = Job_JobDTO.EndAt;
             Job.Color = Job_JobDTO.Color;
             Job.NoTodoDone = Job_JobDTO.NoTodoDone;
             Job.IsAllDay = Job_JobDTO.IsAllDay;

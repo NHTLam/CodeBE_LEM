@@ -36,6 +36,17 @@ namespace CodeBE_LEM.Controllers.AppUserController
             return AppUser_AppUserDTOs;
         }
 
+        [Route(AppUserRoute.ListByClassroom), HttpPost]
+        public async Task<ActionResult<List<AppUser_AppUserDTO>>> ListByClassroom([FromBody] AppUser_AppUserClassroomMappingDTO AppUser_AppUserClassroomMappingDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            List<AppUser> AppUsers = await AppUserService.ListByClassroom(AppUser_AppUserClassroomMappingDTO.ClassroomId);
+            List<AppUser_AppUserDTO> AppUser_AppUserDTOs = AppUsers.Select(x => new AppUser_AppUserDTO(x)).ToList();
+            return AppUser_AppUserDTOs;
+        }
+
         [Route(AppUserRoute.GetUserId), HttpPost, Authorize]
         public async Task<ActionResult<long>> GetUserId()
         {

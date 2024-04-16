@@ -8,6 +8,7 @@ namespace CodeBE_LEM.Services.BoardService
     public interface IBoardService
     {
         Task<List<Board>> List();
+        Task<List<Board>> ListByClassroom(long ClassroomId);
         Task<Board> Get(long Id);
         Task<Board> GetOwn(long UserId);
         Task<Board> Create(Board Board);
@@ -68,7 +69,7 @@ namespace CodeBE_LEM.Services.BoardService
         public async Task<Board> Get(long Id)
         {
             Board Board = await UOW.BoardRepository.Get(Id);
-            await AddJobDataForCards(Board);
+            await AddJobDataForCardsForBoard(Board);
             if (Board == null)
                 return null;
             await BoardValidator.Get(Board);
@@ -81,16 +82,16 @@ namespace CodeBE_LEM.Services.BoardService
                 Where(x => x.AppUserTypeId == AppUserTypeEnum.OWN.Id).
                 Select(x => x.BoardId).ToList();
             Board Board = await UOW.BoardRepository.Get(BoardIds.FirstOrDefault());
-            await AddJobDataForCards(Board);
+            await AddJobDataForCardsForBoard(Board);
             if (Board == null)
                 return null;
             await BoardValidator.Get(Board);
             return Board;
         }
 
-        private async Task AddJobDataForCards(Board Board)
+        private async Task AddJobDataForCardsForBoard(Board Board)
         {
-            if (Board.Cards != null || Board.Cards.Count > 0)
+            if (Board.Cards != null && Board.Cards.Count > 0)
             {
                 List<long> CardIds = Board.Cards.Select(x => x.Id).ToList();
                 List<Job> Jobs = await UOW.JobRepository.ListByCardIds(CardIds);
@@ -101,11 +102,45 @@ namespace CodeBE_LEM.Services.BoardService
             }
         }
 
+        private async Task AddJobDataForCardsForBoards(List<Board> Boards)
+        {
+            var ValidCardIds = Boards.Where(x => x.Cards != null || x.Cards.Count > 0).SelectMany(x => x.Cards.Select(x => x.Id)).Distinct().ToList();
+            List<Job> Jobs = await UOW.JobRepository.ListByCardIds(ValidCardIds);
+            foreach (var Board in Boards)
+            {
+                if (Board.Cards != null && Board.Cards.Count > 0)
+                {
+                    foreach (var Card in Board.Cards)
+                    {
+                        Card.Jobs = Jobs.Where(x => x.CardId == Card.Id).ToList();
+                    }
+                }
+            }
+        }
+
         public async Task<List<Board>> List()
         {
             try
             {
                 List<Board> Boards = await UOW.BoardRepository.List();
+                return Boards;
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public async Task<List<Board>> ListByClassroom(long ClassroomId)
+        {
+            try
+            {
+                List<Board> Boards = await UOW.BoardRepository.ListByClassroom(ClassroomId);
+                if (Boards == null || Boards.Count == 0)
+                {
+                    return new List<Board>();
+                }
+                await AddJobDataForCardsForBoards(Boards);
                 return Boards;
             }
             catch (Exception ex)

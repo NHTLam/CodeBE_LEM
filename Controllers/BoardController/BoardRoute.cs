@@ -11,6 +11,7 @@ namespace CodeBE_LEM.Controllers.BoardController
         public const string Get = Module + "/get";
         public const string GetOwn = Module + "/get-own";
         public const string List = Module + "/list";
+        public const string ListByClassroom = Module + "/list-by-classroom";
         public const string Update = Module + "/update";
         public const string Delete = Module + "/delete";
     }

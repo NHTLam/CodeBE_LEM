@@ -1,3 +1,4 @@
+using CodeBE_LEM.Models;
 using System;
 using System.Collections.Generic;
 
@@ -15,13 +16,23 @@ public partial class Job
 
     public int? Order { get; set; }
 
-    public string? PlanTime { get; set; }
-
     public string? Color { get; set; }
 
     public int? NoTodoDone { get; set; }
 
     public bool? IsAllDay { get; set; }
+
+    public DateTime? StartAt { get; set; }
+
+    public DateTime? EndAt { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdateAt { get; set; }
+
+    public DateTime? DeleteAt { get; set; }
+
+    public List<AppUserJobMapping> AppUserJobMappings { get; set; } = new List<AppUserJobMapping>();
 
     public Card Card { get; set; } = null!;
 
