@@ -46,6 +46,12 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     RoleId = x.RoleId,
                     AppUserId = x.AppUserId,
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Id = x.Role.Id,
+                        Name = x.Role.Name,
+                        Description = x.Role.Description
+                    }
                 }).ToListAsync();
 
             foreach (AppUser AppUser in AppUsers)

@@ -10,6 +10,8 @@ namespace CodeBE_LEM.Controllers.AppUserController
 
         public long Id { get; set; }
 
+        public AppUser_RoleDTO? Role { get; set; }
+
         public AppUser_AppUserRoleMappingDTO() { }
 
         public AppUser_AppUserRoleMappingDTO(AppUserRoleMapping AppUserRoleMapping)
@@ -17,6 +19,7 @@ namespace CodeBE_LEM.Controllers.AppUserController
             this.Id = AppUserRoleMapping.Id;
             this.RoleId = AppUserRoleMapping.RoleId;
             this.AppUserId = AppUserRoleMapping.AppUserId;
+            this.Role = AppUserRoleMapping.Role == null ? null : new AppUser_RoleDTO(AppUserRoleMapping.Role);
         }
     }
 }

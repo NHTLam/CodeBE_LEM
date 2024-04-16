@@ -1,6 +1,7 @@
 ﻿using CodeBE_LEM.Common;
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Repositories;
+using CodeBE_LEM.Services.PermissionService;
 
 namespace CodeBE_LEM.Services.ClassroomService
 {
@@ -12,18 +13,22 @@ namespace CodeBE_LEM.Services.ClassroomService
         Task<Classroom> Create(Classroom Classroom);
         Task<Classroom> Update(Classroom Classroom);
         Task<Classroom> Delete(Classroom Classroom);
+        Task<bool> Join(string code);
     }
     public class ClassroomService : BaseService<Classroom>, IClassroomService
     {
         private IUOW UOW;
         private IClassroomValidator ClassroomValidator;
+        private IPermissionService PermissionService;
         public ClassroomService(
             IUOW UOW,
-            IClassroomValidator ClassroomValidator
+            IClassroomValidator ClassroomValidator,
+            IPermissionService PermissionService
         )
         {
             this.UOW = UOW;
             this.ClassroomValidator = ClassroomValidator;
+            this.PermissionService = PermissionService;
         }
         public async Task<Classroom> Create(Classroom Classroom)
         {
@@ -132,6 +137,33 @@ namespace CodeBE_LEM.Services.ClassroomService
 
             }
             return null;
+        }
+
+        public async Task<bool> Join(string code)
+        {
+            try
+            {
+                List<Classroom> Classrooms = await UOW.ClassroomRepository.List();
+                List<string> ClassrooCodes = Classrooms.Select(x => x.Code).ToList();
+                if (ClassrooCodes.Contains(code))
+                {
+                    Classroom CurrentClassrom = Classrooms.FirstOrDefault(x => x.Code == code);
+                    AppUserClassroomMapping AppUserClassroomMapping = new AppUserClassroomMapping();
+                    AppUserClassroomMapping.AppUserId = PermissionService.GetAppUserId();
+                    AppUserClassroomMapping.ClassroomId = CurrentClassrom.Id;
+
+                    var NewAppUserClassroomMappings = CurrentClassrom.AppUserClassroomMappings.ToList();
+                    NewAppUserClassroomMappings.Add(AppUserClassroomMapping);
+                    await UOW.ClassroomRepository.BulkMerge(NewAppUserClassroomMappings);
+                    return true;
+                }
+                return false;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return false;
         }
 
         private async Task BuildCode(Classroom Classroom)

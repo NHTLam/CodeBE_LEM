@@ -12,6 +12,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public const string ListOwn = Module + "/list-own";
         public const string Update = Module + "/update";
         public const string Delete = Module + "/delete";
+        public const string Join = Module + "/join";
 
         public const string CreateClassEvent = Module + "/create-class-event";
         public const string GetClassEvent = Module + "/get-class-event";
