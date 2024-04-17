@@ -26,11 +26,14 @@ namespace CodeBE_LEM.Repositories
             QuestionDAO QuestionDAO = new QuestionDAO();
             QuestionDAO.ClassEventId = Question.ClassEventId;
             QuestionDAO.Description = Question.Description;
+            QuestionDAO.Instruction = Question.Instruction;
             QuestionDAO.Name = Question.Name;
-            QuestionDAO.QuestionAnswer = Question.QuestionAnswer;
+            QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
             QuestionDAO.StudentAnswer = Question.StudentAnswer;
             DataContext.Questions.Add(QuestionDAO);
             await DataContext.SaveChangesAsync();
+            Question.Id = QuestionDAO.Id;
+            await SaveReference(Question);
             return true;
         }
 
@@ -56,7 +59,7 @@ namespace CodeBE_LEM.Repositories
                     ClassEventId = x.ClassEventId,
                     Description = x.Description,
                     Name = x.Name,
-                    QuestionAnswer = x.QuestionAnswer,
+                    CorrectAnswer = x.CorrectAnswer,
                     StudentAnswer = x.StudentAnswer,
                     ClassEvent = new ClassEvent
                     {
@@ -65,7 +68,6 @@ namespace CodeBE_LEM.Repositories
                         Code = x.ClassEvent.Code,
                         ClassroomId = x.ClassEvent.ClassroomId,
                         Description = x.ClassEvent.Description,
-                        Instruction = x.ClassEvent.Instruction,
                         IsClassWork = x.ClassEvent.IsClassWork,
                         Pinned = x.ClassEvent.Pinned,
                         CreatedAt = x.ClassEvent.CreatedAt,
@@ -97,7 +99,7 @@ namespace CodeBE_LEM.Repositories
                 ClassEventId = x.ClassEventId,
                 Description = x.Description,
                 Name = x.Name,
-                QuestionAnswer = x.QuestionAnswer,
+                CorrectAnswer = x.CorrectAnswer,
                 StudentAnswer = x.StudentAnswer,
                 ClassEvent = new ClassEvent
                 {
@@ -106,7 +108,6 @@ namespace CodeBE_LEM.Repositories
                     Code = x.ClassEvent.Code,
                     ClassroomId = x.ClassEvent.ClassroomId,
                     Description = x.ClassEvent.Description,
-                    Instruction = x.ClassEvent.Instruction,
                     IsClassWork = x.ClassEvent.IsClassWork,
                     Pinned = x.ClassEvent.Pinned,
                     CreatedAt = x.ClassEvent.CreatedAt,
@@ -137,12 +138,46 @@ namespace CodeBE_LEM.Repositories
             if (QuestionDAO == null)
                 return false;
             QuestionDAO.ClassEventId = Question.ClassEventId;
+            QuestionDAO.Instruction = Question.Instruction;
             QuestionDAO.Description = Question.Description;
             QuestionDAO.Name = Question.Name;
-            QuestionDAO.QuestionAnswer = Question.QuestionAnswer;
+            QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
             QuestionDAO.StudentAnswer = Question.StudentAnswer;
             await DataContext.SaveChangesAsync();
+            await SaveReference(Question);
             return true;
+        }
+
+        private async Task SaveReference(Question Question)
+        {
+
+            if (Question.Answers == null || Question.Answers.Count == 0)
+            {
+                await DataContext.Answers
+                    .Where(x => x.QuestionId == Question.Id)
+                    .DeleteFromQueryAsync();
+            }
+            else
+            {
+                var AnswerIds = Question.Answers.Select(x => x.Id).Distinct().ToList();
+                await DataContext.Answers
+                    .Where(x => x.QuestionId == Question.Id)
+                    .Where(x => !AnswerIds.Contains(x.Id))
+                    .DeleteFromQueryAsync();
+
+                List<AnswerDAO> AnswerDAOs = new List<AnswerDAO>();
+                foreach (Answer Answer in Question.Answers)
+                {
+                    AnswerDAO AnswerDAO = new AnswerDAO();
+                    AnswerDAO.Id = Answer.Id;
+                    AnswerDAO.Code = Answer.Code;
+                    AnswerDAO.Name = Answer.Name;
+                    AnswerDAO.QuestionId = Question.Id;
+
+                    AnswerDAOs.Add(AnswerDAO);
+                }
+                await DataContext.BulkMergeAsync(AnswerDAOs);
+            }
         }
     }
 }

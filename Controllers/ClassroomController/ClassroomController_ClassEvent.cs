@@ -78,7 +78,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             ClassEvent.Code = Classroom_ClassEventDTO.Code;
             ClassEvent.Name = Classroom_ClassEventDTO.Name;
             ClassEvent.IsClassWork = Classroom_ClassEventDTO.IsClassWork;
-            ClassEvent.Instruction = Classroom_ClassEventDTO.Instruction;
+            ClassEvent.StartAt = Classroom_ClassEventDTO.StartAt;
             ClassEvent.Description = Classroom_ClassEventDTO.Description;
             ClassEvent.Pinned = Classroom_ClassEventDTO.Pinned;
             ClassEvent.CreatedAt = Classroom_ClassEventDTO.CreatedAt;
@@ -101,7 +101,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
                     ClassEventId = x.ClassEventId,
                     Description = x.Description,
                     Name = x.Name,
-                    QuestionAnswer = x.QuestionAnswer,
+                    CorrectAnswer = x.CorrectAnswer,
                     StudentAnswer = x.StudentAnswer,
                 }).ToList();
 

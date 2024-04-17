@@ -15,6 +15,8 @@ public partial class DataContext : DbContext
     {
     }
 
+    public virtual DbSet<AnswerDAO> Answers { get; set; }
+
     public virtual DbSet<AppUserDAO> AppUsers { get; set; }
 
     public virtual DbSet<AppUserBoardMappingDAO> AppUserBoardMappings { get; set; }
@@ -50,6 +52,19 @@ public partial class DataContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AnswerDAO>(entity =>
+        {
+            entity.ToTable("Answer");
+
+            entity.Property(e => e.Code).HasMaxLength(5);
+            entity.Property(e => e.Name).HasMaxLength(500);
+
+            entity.HasOne(d => d.Question).WithMany(p => p.Answers)
+                .HasForeignKey(d => d.QuestionId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Answer_Question");
+        });
+
         modelBuilder.Entity<AppUserDAO>(entity =>
         {
             entity.ToTable("AppUser");
@@ -164,7 +179,7 @@ public partial class DataContext : DbContext
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.EndAt).HasColumnType("datetime");
-            entity.Property(e => e.Instruction).HasMaxLength(1000);
+            entity.Property(e => e.StartAt).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(500);
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
@@ -248,8 +263,9 @@ public partial class DataContext : DbContext
             entity.ToTable("Question");
 
             entity.Property(e => e.Description).HasMaxLength(1000);
+            entity.Property(e => e.Instruction).HasMaxLength(1000);
             entity.Property(e => e.Name).HasMaxLength(500);
-            entity.Property(e => e.QuestionAnswer).HasMaxLength(1000);
+            entity.Property(e => e.CorrectAnswer).HasMaxLength(1000);
             entity.Property(e => e.StudentAnswer).HasMaxLength(1000);
 
             entity.HasOne(d => d.ClassEvent).WithMany(p => p.Questions)

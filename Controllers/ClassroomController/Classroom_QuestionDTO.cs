@@ -10,11 +10,15 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
         public string Name { get; set; } = null!;
 
-        public string QuestionAnswer { get; set; } = null!;
+        public string CorrectAnswer { get; set; } = null!;
 
         public string? StudentAnswer { get; set; }
 
         public string? Description { get; set; }
+
+        public string? Instruction { get; set; }
+
+        public List<Classroom_AnswerDTO>? Answers { get; set; }
 
         public Classroom_QuestionDTO() { }
         public Classroom_QuestionDTO(Question Question)
@@ -22,9 +26,11 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Id = Question.Id;
             ClassEventId = Question.ClassEventId;
             Name = Question.Name;
-            QuestionAnswer = Question.QuestionAnswer;
+            CorrectAnswer = Question.CorrectAnswer;
             StudentAnswer = Question.StudentAnswer;
             Description = Question.Description;
+            Instruction = Question.Instruction;
+            Answers = Question.Answers?.Select(x => new Classroom_AnswerDTO(x)).ToList();
         }
     }
 }

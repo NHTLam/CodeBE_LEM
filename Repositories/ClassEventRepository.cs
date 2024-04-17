@@ -32,7 +32,7 @@ namespace CodeBE_LEM.Repositories
             ClassEventDAO.IsClassWork = ClassEvent.IsClassWork;
             ClassEventDAO.Description = ClassEvent.Description;
             ClassEventDAO.Pinned = ClassEvent.Pinned;
-            ClassEventDAO.Instruction = ClassEvent.Instruction;
+            ClassEventDAO.StartAt = ClassEvent.StartAt;
             ClassEventDAO.CreatedAt = ClassEvent.CreatedAt;
             ClassEventDAO.EndAt = ClassEvent.EndAt;
             ClassEventDAO.UpdatedAt = ClassEvent.UpdatedAt;
@@ -69,7 +69,7 @@ namespace CodeBE_LEM.Repositories
                     Code = x.Code,
                     ClassroomId = x.ClassroomId,
                     Description = x.Description,
-                    Instruction = x.Instruction,
+                    StartAt = x.StartAt,
                     IsClassWork = x.IsClassWork,
                     Pinned = x.Pinned,
                     CreatedAt = x.CreatedAt,
@@ -108,8 +108,9 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     ClassEventId = x.ClassEventId,
                     Description = x.Description,
+                    Instruction = x.Instruction,
                     Name = x.Name,
-                    QuestionAnswer = x.QuestionAnswer,
+                    CorrectAnswer = x.CorrectAnswer,
                     StudentAnswer = x.StudentAnswer,
 
                 }).ToListAsync();
@@ -129,8 +130,8 @@ namespace CodeBE_LEM.Repositories
                 Code = x.Code,
                 ClassroomId = x.ClassroomId,
                 Description = x.Description,
-                Instruction = x.Instruction,
                 IsClassWork = x.IsClassWork,
+                StartAt = x.StartAt,
                 Pinned = x.Pinned,
                 CreatedAt = x.CreatedAt,
                 EndAt = x.EndAt,
@@ -162,9 +163,10 @@ namespace CodeBE_LEM.Repositories
                 {
                     Id = x.Id,
                     ClassEventId = x.ClassEventId,
+                    Instruction = x.Instruction,
                     Description = x.Description,
                     Name = x.Name,
-                    QuestionAnswer = x.QuestionAnswer,
+                    CorrectAnswer = x.CorrectAnswer,
                     StudentAnswer = x.StudentAnswer,
 
                 }).ToListAsync();
@@ -196,7 +198,7 @@ namespace CodeBE_LEM.Repositories
             ClassEventDAO.IsClassWork = ClassEvent.IsClassWork;
             ClassEventDAO.Description = ClassEvent.Description;
             ClassEventDAO.Pinned = ClassEvent.Pinned;
-            ClassEventDAO.Instruction = ClassEvent.Instruction;
+            ClassEventDAO.StartAt = ClassEvent.StartAt;
             ClassEventDAO.CreatedAt = ClassEvent.CreatedAt;
             ClassEventDAO.EndAt = ClassEvent.EndAt;
             ClassEventDAO.UpdatedAt = ClassEvent.UpdatedAt;
@@ -268,7 +270,7 @@ namespace CodeBE_LEM.Repositories
                     QuestionDAO.Id = Question.Id;
                     QuestionDAO.ClassEventId = ClassEvent.Id;
                     QuestionDAO.Name = Question.Name;
-                    QuestionDAO.QuestionAnswer = Question.QuestionAnswer;
+                    QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
                     QuestionDAO.StudentAnswer = Question.StudentAnswer;
                     QuestionDAO.Description = Question.Description;
                     QuestionDAOs.Add(QuestionDAO);

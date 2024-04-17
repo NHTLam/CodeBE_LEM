@@ -2,6 +2,7 @@
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Repositories;
 using CodeBE_LEM.Services.ClassEventService;
+using CodeBE_LEM.Entities;
 
 namespace CodeBE_LEM.Services.ClassroomService
 {
@@ -12,6 +13,12 @@ namespace CodeBE_LEM.Services.ClassroomService
         Task<ClassEvent> Create(ClassEvent ClassEvent);
         Task<ClassEvent> Update(ClassEvent ClassEvent);
         Task<ClassEvent> Delete(ClassEvent ClassEvent);
+        Task<Comment> CreateComment(Comment Comment);
+        Task<Comment> UpdateComment(Comment Comment);
+        Task<Comment> DeleteComment(Comment Comment);
+        Task<Question> CreateQuestion(Question Question);
+        Task<Question> UpdateQuestion(Question Question);
+        Task<Question> DeleteQuestion(Question Question);
     }
     public class ClassEventService : BaseService<ClassEvent>, IClassEventService
     {
@@ -24,6 +31,117 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             this.UOW = UOW;
             this.ClassEventValidator = ClassEventValidator;
+        }
+
+        public async Task<Comment> CreateComment(Comment Comment)
+        {
+            try
+            {
+                var ClassEventId = await UOW.ClassEventRepository.Get(Comment.ClassEventId);
+
+                if (ClassEventId != null)
+                {
+                    await UOW.CommentRepository.Create(Comment);
+                    Comment = await UOW.CommentRepository.Get(Comment.Id);
+                    return Comment;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+        public async Task<Comment> DeleteComment(Comment Comment)
+        {
+            try
+            {
+                Comment = await UOW.CommentRepository.Get(Comment.Id);
+
+                await UOW.CommentRepository.Delete(Comment);
+                Comment = await UOW.CommentRepository.Get(Comment.Id);
+                return Comment;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+        public async Task<Comment> UpdateComment(Comment Comment)
+        {
+            try
+            {
+                var oldData = await UOW.CommentRepository.Get(Comment.Id);
+
+                Comment.ClassEventId = oldData.ClassEventId;
+                await UOW.CommentRepository.Update(Comment);
+
+                Comment = await UOW.CommentRepository.Get(Comment.Id);
+                return Comment;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
+        public async Task<Question> CreateQuestion(Question Question)
+        {
+            try
+            {
+                var ClassEventId = await UOW.ClassEventRepository.Get(Question.ClassEventId);
+
+                if (ClassEventId != null)
+                {
+                    await UOW.QuestionRepository.Create(Question);
+                    Question = await UOW.QuestionRepository.Get(Question.Id);
+                    return Question;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+        public async Task<Question> DeleteQuestion(Question Question)
+        {
+            try
+            {
+                Question = await UOW.QuestionRepository.Get(Question.Id);
+
+                await UOW.QuestionRepository.Delete(Question);
+                Question = await UOW.QuestionRepository.Get(Question.Id);
+                return Question;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+        public async Task<Question> UpdateQuestion(Question Question)
+        {
+            try
+            {
+                var oldData = await UOW.QuestionRepository.Get(Question.Id);
+
+                Question.ClassEventId = oldData.ClassEventId;
+                await UOW.QuestionRepository.Update(Question);
+
+                Question = await UOW.QuestionRepository.Get(Question.Id);
+                return Question;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
         }
         public async Task<ClassEvent> Create(ClassEvent ClassEvent)
         {
@@ -45,7 +163,7 @@ namespace CodeBE_LEM.Services.ClassroomService
                     ClassEvent = await UOW.ClassEventRepository.Get(ClassEvent.Id);
                     return ClassEvent;
                 }
-                    
+
             }
             catch (Exception ex)
             {
@@ -92,9 +210,9 @@ namespace CodeBE_LEM.Services.ClassroomService
                 {
                     ClassEvents = ClassEvents.Where(x => x.Pinned == FilterDTO.Pinned).ToList();
                 }
-                if (FilterDTO.IsNotification != null)
+                if (FilterDTO.IsClassWork != null)
                 {
-                    ClassEvents = ClassEvents.Where(x => x.IsClassWork == FilterDTO.IsNotification).ToList();
+                    ClassEvents = ClassEvents.Where(x => x.IsClassWork == FilterDTO.IsClassWork).ToList();
                 }
 
                 return ClassEvents;

@@ -20,5 +20,13 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public const string UpdateClassEvent = Module + "/update-class-event";
         public const string DeleteClassEvent = Module + "/delete-class-event";
 
+        public const string CreateComment = Module + "/create-comment";
+        public const string UpdateComment = Module + "/update-comment";
+        public const string DeleteComment = Module + "/delete-comment";
+
+        public const string CreateQuestion = Module + "/create-question";
+        public const string UpdateQuestion = Module + "/update-question";
+        public const string DeleteQuestion = Module + "/delete-question";
+
     }
 }
