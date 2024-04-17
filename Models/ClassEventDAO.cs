@@ -15,7 +15,7 @@ public partial class ClassEventDAO
 
     public bool Pinned { get; set; }
 
-    public string? Instruction { get; set; }
+    public DateTime? StartAt { get; set; }
 
     public DateTime? EndAt { get; set; }
 

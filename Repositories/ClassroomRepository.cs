@@ -121,10 +121,10 @@ namespace CodeBE_LEM.Repositories
                     Code = x.Code,
                     ClassroomId = x.ClassroomId,
                     Description = x.Description,
-                    Instruction = x.Instruction,
                     IsClassWork = x.IsClassWork,
                     Pinned = x.Pinned,
                     CreatedAt = x.CreatedAt,
+                    StartAt = x.StartAt,
                     EndAt = x.EndAt,
                     UpdatedAt = x.UpdatedAt,
                     DeletedAt = x.DeletedAt,
@@ -231,7 +231,6 @@ namespace CodeBE_LEM.Repositories
                     ClassEventDAO.IsClassWork = ClassEvent.IsClassWork;
                     ClassEventDAO.Description = ClassEvent.Description;
                     ClassEventDAO.Pinned = ClassEvent.Pinned;
-                    ClassEventDAO.Instruction = ClassEvent.Instruction;
                     ClassEventDAO.CreatedAt = ClassEvent.CreatedAt;
                     ClassEventDAO.EndAt = ClassEvent.EndAt;
                     ClassEventDAO.UpdatedAt = ClassEvent.UpdatedAt;
