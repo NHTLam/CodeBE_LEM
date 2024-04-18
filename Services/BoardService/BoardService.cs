@@ -1,6 +1,7 @@
 ﻿using CodeBE_LEM.Entities;
 using CodeBE_LEM.Enums;
 using CodeBE_LEM.Repositories;
+using CodeBE_LEM.Services.PermissionService;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CodeBE_LEM.Services.BoardService
@@ -14,18 +15,22 @@ namespace CodeBE_LEM.Services.BoardService
         Task<Board> Create(Board Board);
         Task<Board> Update(Board Board);
         Task<Board> Delete(Board Board);
+        Task<List<Card>> ListCardByUserId();
     }
     public class BoardService : IBoardService
     {
         private IUOW UOW;
         private IBoardValidator BoardValidator;
+        private IPermissionService PermissionService;
         public BoardService(
             IUOW UOW,
-            IBoardValidator BoardValidator
+            IBoardValidator BoardValidator,
+            IPermissionService PermissionService
         )
         {
             this.UOW = UOW;
             this.BoardValidator = BoardValidator;
+            this.PermissionService = PermissionService;
         }
         public async Task<Board> Create(Board Board)
         {
@@ -91,6 +96,7 @@ namespace CodeBE_LEM.Services.BoardService
 
         private async Task AddJobDataForCardsForBoard(Board Board)
         {
+            if (Board == null) return;
             if (Board.Cards != null && Board.Cards.Count > 0)
             {
                 List<long> CardIds = Board.Cards.Select(x => x.Id).ToList();
@@ -124,6 +130,20 @@ namespace CodeBE_LEM.Services.BoardService
             {
                 List<Board> Boards = await UOW.BoardRepository.List();
                 return Boards;
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public async Task<List<Card>> ListCardByUserId()
+        {
+            try
+            {
+                var Board = await GetOwn(PermissionService.GetAppUserId());
+                List<Card> Cards = Board.Cards;
+                return Cards;
             }
             catch (Exception ex)
             {

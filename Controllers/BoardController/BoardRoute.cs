@@ -14,5 +14,6 @@ namespace CodeBE_LEM.Controllers.BoardController
         public const string ListByClassroom = Module + "/list-by-classroom";
         public const string Update = Module + "/update";
         public const string Delete = Module + "/delete";
+        public const string ListCardByUserId = Module + "/list-card-by-userId";
     }
 }

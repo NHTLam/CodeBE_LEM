@@ -18,6 +18,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Delete(Job Job);
         Task<bool> BulkMerge(List<Job> Jobs);
         Task<List<Job>> ListByCardIds(List<long> CardIds);
+        Task<List<long>> ListJobIdByUserId(long CurrentUserId);
     }
 
     public class JobRepository : IJobRepository
@@ -74,6 +75,22 @@ namespace CodeBE_LEM.Repositories
                     .ToList();
             }
 
+            var AppUserJobMappingQuery = DataContext.AppUserJobMappings.AsNoTracking();
+            List<AppUserJobMapping> AppUserJobMappings = await AppUserJobMappingQuery
+                .Select(x => new AppUserJobMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    JobId = x.JobId,
+                }).ToListAsync();
+
+            foreach (Job Job in Jobs)
+            {
+                Job.AppUserJobMappings = AppUserJobMappings
+                    .Where(x => x.JobId == Job.Id)
+                    .ToList();
+            }
+
             return Jobs;
         }
 
@@ -114,7 +131,39 @@ namespace CodeBE_LEM.Repositories
                     .ToList();
             }
 
+            var AppUserJobMappingQuery = DataContext.AppUserJobMappings.AsNoTracking();
+            List<AppUserJobMapping> AppUserJobMappings = await AppUserJobMappingQuery
+                .Select(x => new AppUserJobMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    JobId = x.JobId,
+                }).ToListAsync();
+
+            foreach (Job Job in Jobs)
+            {
+                Job.AppUserJobMappings = AppUserJobMappings
+                    .Where(x => x.JobId == Job.Id)
+                    .ToList();
+            }
+
             return Jobs;
+        }
+
+        public async Task<List<long>> ListJobIdByUserId(long CurrentUserId)
+        {
+
+            IQueryable<AppUserJobMappingDAO> query = DataContext.AppUserJobMappings.AsNoTracking();
+            List<AppUserJobMapping> AppUserJobMappings = await query.AsNoTracking()
+            .Where(x => x.AppUserId == CurrentUserId)
+            .Select(x => new AppUserJobMapping
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                JobId = x.JobId,
+            }).ToListAsync();
+
+            return AppUserJobMappings.Select(x => x.JobId).ToList();
         }
 
         public async Task<List<Job>> List(List<long> Ids)
@@ -163,6 +212,22 @@ namespace CodeBE_LEM.Repositories
                     .ToList();
             }
 
+            var AppUserJobMappingQuery = DataContext.AppUserJobMappings.AsNoTracking();
+            List<AppUserJobMapping> AppUserJobMappings = await AppUserJobMappingQuery
+                .Select(x => new AppUserJobMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    JobId = x.JobId,
+                }).ToListAsync();
+
+            foreach (Job Job in Jobs)
+            {
+                Job.AppUserJobMappings = AppUserJobMappings
+                    .Where(x => x.JobId == Job.Id)
+                    .ToList();
+            }
+
             return Jobs;
         }
 
@@ -204,6 +269,14 @@ namespace CodeBE_LEM.Repositories
                     Description = x.Description,
                     JobId = x.JobId,
                     CompletePercent = x.CompletePercent,
+                }).ToListAsync();
+            Job.AppUserJobMappings = await DataContext.AppUserJobMappings.AsNoTracking()
+                .Where(x => x.JobId == Job.Id)
+                .Select(x => new AppUserJobMapping
+                {
+                    Id = x.Id,
+                    AppUserId = x.AppUserId,
+                    JobId = x.JobId,
                 }).ToListAsync();
 
             return Job;
@@ -290,6 +363,30 @@ namespace CodeBE_LEM.Repositories
                     TodoDAOs.Add(TodoDAO);
                 }
                 await DataContext.Todos.AddRangeAsync(TodoDAOs);
+                await DataContext.SaveChangesAsync();
+            }
+
+            if (Job.AppUserJobMappings == null || Job.AppUserJobMappings.Count == 0)
+                await DataContext.AppUserJobMappings
+                    .Where(x => x.JobId == Job.Id)
+                    .DeleteFromQueryAsync();
+            else
+            {
+                var AppUserJobMappingIds = Job.AppUserJobMappings.Select(x => x.Id).Distinct().ToList();
+                await DataContext.AppUserJobMappings
+                .Where(x => x.JobId == Job.Id)
+                .Where(x => !AppUserJobMappingIds.Contains(x.Id))
+                .DeleteFromQueryAsync();
+
+                List<AppUserJobMappingDAO> AppUserJobMappingDAOs = new List<AppUserJobMappingDAO>();
+                foreach (AppUserJobMapping AppUserJobMapping in Job.AppUserJobMappings)
+                {
+                    AppUserJobMappingDAO AppUserJobMappingDAO = new AppUserJobMappingDAO();
+                    AppUserJobMappingDAO.AppUserId = AppUserJobMapping.AppUserId;
+                    AppUserJobMappingDAO.JobId = AppUserJobMapping.JobId;
+                    AppUserJobMappingDAOs.Add(AppUserJobMappingDAO);
+                }
+                await DataContext.AppUserJobMappings.AddRangeAsync(AppUserJobMappingDAOs);
                 await DataContext.SaveChangesAsync();
             }
         }
