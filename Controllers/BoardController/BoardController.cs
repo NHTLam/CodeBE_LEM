@@ -36,6 +36,19 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTOs;
         }
 
+        [Route(BoardRoute.ListCardByUserId), HttpPost]
+        public async Task<ActionResult<List<Board_CardDTO>>> ListCardByUserId()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            List<Card> Cards = await BoardService.ListCardByUserId();
+            List<Board_CardDTO> Board_CardDTOs = Cards
+                .Select(c => new Board_CardDTO(c)).ToList();
+
+            return Board_CardDTOs;
+        }
+
         [Route(BoardRoute.ListByClassroom), HttpPost]
         public async Task<ActionResult<List<Board_BoardDTO>>> ListByClassroom([FromBody] Board_BoardDTO Board_BoardDTO)
         {

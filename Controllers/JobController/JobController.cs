@@ -35,6 +35,19 @@ namespace CodeBE_LEM.Controllers.JobController
             return Job_JobDTOs;
         }
 
+        [Route(JobRoute.ListOwn), HttpPost]
+        public async Task<ActionResult<List<Job_JobDTO>>> ListOwn()
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            List<Job> Jobs = await JobService.ListOwn();
+            List<Job_JobDTO> Job_JobDTOs = Jobs
+                .Select(c => new Job_JobDTO(c)).ToList();
+
+            return Job_JobDTOs;
+        }
+
         [Route(JobRoute.Get), HttpPost]
         public async Task<ActionResult<Job_JobDTO>?> Get([FromBody] Job_JobDTO Job_JobDTO)
         {

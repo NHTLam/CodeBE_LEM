@@ -1,5 +1,6 @@
 ﻿using CodeBE_LEM.Entities;
 using CodeBE_LEM.Repositories;
+using CodeBE_LEM.Services.PermissionService;
 
 namespace CodeBE_LEM.Services.ClassroomService
 {
@@ -13,15 +14,17 @@ namespace CodeBE_LEM.Services.ClassroomService
         Task<bool> CreateClassEvent(ClassEvent ClassEvent);
         Task<bool> UpdateClassEvent(ClassEvent ClassEvent);
         Task<bool> DeleteClassEvent(ClassEvent ClassEvent);
-
+        Task<bool> Join(string code);
     }
     public class ClassroomValidator : IClassroomValidator
     {
         private IUOW UOW;
+        private IPermissionService PermissionService;
 
-        public ClassroomValidator(IUOW UOW)
+        public ClassroomValidator(IUOW UOW, IPermissionService PermissionService)
         {
             this.UOW = UOW;
+            this.PermissionService = PermissionService;
         }
         public async Task<bool> Create(Classroom Classroom)
         {
@@ -37,6 +40,23 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             
         }
+
+        public async Task<bool> Join(string code)
+        {
+            var CurrentUserClassIds = await UOW.ClassroomRepository.ListClassroomIdByUserId(PermissionService.GetAppUserId());
+            List<Classroom> Classrooms = await UOW.ClassroomRepository.List();
+            List<string> ClassrooCodes = Classrooms.Select(x => x.Code).ToList();
+            if (ClassrooCodes.Contains(code))
+            {
+                var ClassWantJoin = Classrooms.FirstOrDefault(x => x.Code == code);
+                if (CurrentUserClassIds.Contains(ClassWantJoin.Id)) //Nếu đã join class
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+                
 
         public async Task<bool> Update(Classroom Classroom)
         {

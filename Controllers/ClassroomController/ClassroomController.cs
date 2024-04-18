@@ -2,6 +2,7 @@
 using CodeBE_LEM.Common;
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Services.ClassroomService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CodeBE_LEM.Controllers.ClassroomController
@@ -58,15 +59,18 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassroomDTO(Classroom);
         }
 
-        [Route(ClassroomRoute.Join), HttpPost]
+        [Route(ClassroomRoute.Join), HttpPost, Authorize]
         public async Task<ActionResult<bool>?> Join([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             bool isSuccess = await ClassroomService.Join(Classroom_ClassroomDTO.Code);
-
-            return Ok(isSuccess);
+            
+            if (isSuccess)
+                return Ok(isSuccess);
+            else
+                return BadRequest("You have join class");
         }
 
         [Route(ClassroomRoute.Create), HttpPost]

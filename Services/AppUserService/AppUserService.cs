@@ -173,14 +173,21 @@ namespace CodeBE_LEM.Services.AppUserService
 
         private async Task CreateDefaultUserBoard(AppUser AppUser)
         {
-            AppUserBoardMapping AppUserBoardMapping = new AppUserBoardMapping();
-            AppUserBoardMapping.AppUserTypeId = AppUser.Id;
-            AppUserBoardMapping.AppUserTypeId = AppUserTypeEnum.OWN.Id;
+            try
+            {
+                AppUserBoardMapping AppUserBoardMapping = new AppUserBoardMapping();
+                AppUserBoardMapping.AppUserId = AppUser.Id;
+                AppUserBoardMapping.AppUserTypeId = AppUserTypeEnum.OWN.Id;
 
-            Board board = new Board();
-            board.Name = $"Default Table of user {AppUser.Id}";
-            board.AppUserBoardMappings = new List<AppUserBoardMapping> { AppUserBoardMapping };
-            await BoardService.Create(board);
+                Board board = new Board();
+                board.Name = $"Default Table of user {AppUser.Id}";
+                board.AppUserBoardMappings = new List<AppUserBoardMapping> { AppUserBoardMapping };
+                await BoardService.Create(board);
+            }
+            catch(Exception ex)
+            { 
+            
+            }
         }
     }
 }

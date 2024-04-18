@@ -141,11 +141,14 @@ namespace CodeBE_LEM.Services.ClassroomService
 
         public async Task<bool> Join(string code)
         {
+            if (!await ClassroomValidator.Join(code))
+                return false;
             try
             {
+                code = code.Substring(0, code.Length - 1).Trim();
                 List<Classroom> Classrooms = await UOW.ClassroomRepository.List();
-                List<string> ClassrooCodes = Classrooms.Select(x => x.Code).ToList();
-                if (ClassrooCodes.Contains(code))
+                List<string> ClassroomCodes = Classrooms.Select(x => x.Code.Trim()).ToList();
+                if (ClassroomCodes.Contains(code))
                 {
                     Classroom CurrentClassrom = Classrooms.FirstOrDefault(x => x.Code == code);
                     AppUserClassroomMapping AppUserClassroomMapping = new AppUserClassroomMapping();

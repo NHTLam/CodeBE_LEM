@@ -1,5 +1,6 @@
 ﻿using CodeBE_LEM.Entities;
 using CodeBE_LEM.Repositories;
+using CodeBE_LEM.Services.PermissionService;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace CodeBE_LEM.Services.JobService
@@ -7,6 +8,7 @@ namespace CodeBE_LEM.Services.JobService
     public interface IJobService
     {
         Task<List<Job>> List();
+        Task<List<Job>> ListOwn();
         Task<Job> Get(long Id);
         Task<Job> Create(Job Job);
         Task<Job> Update(Job Job);
@@ -16,13 +18,16 @@ namespace CodeBE_LEM.Services.JobService
     {
         private IUOW UOW;
         private IJobValidator JobValidator;
+        private IPermissionService PermissionService;
         public JobService(
             IUOW UOW,
-            IJobValidator JobValidator
+            IJobValidator JobValidator,
+            IPermissionService PermissionService
         )
         {
             this.UOW = UOW;
             this.JobValidator = JobValidator;
+            this.PermissionService = PermissionService;
         }
         public async Task<Job> Create(Job Job)
         {
@@ -82,6 +87,20 @@ namespace CodeBE_LEM.Services.JobService
             try
             {
                 List<Job> Jobs = await UOW.JobRepository.List();
+                return Jobs;
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        public async Task<List<Job>> ListOwn()
+        {
+            try
+            {
+                List<long> JobIds = await UOW.JobRepository.ListJobIdByUserId(PermissionService.GetAppUserId());
+                List<Job> Jobs = await UOW.JobRepository.List(JobIds);
                 return Jobs;
             }
             catch (Exception ex)

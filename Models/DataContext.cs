@@ -25,6 +25,8 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
 
+    public virtual DbSet<AppUserJobMappingDAO> AppUserJobMappings { get; set; }
+
     public virtual DbSet<BoardDAO> Boards { get; set; }
 
     public virtual DbSet<CardDAO> Cards { get; set; }
