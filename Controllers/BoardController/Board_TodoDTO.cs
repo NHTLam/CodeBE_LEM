@@ -1,6 +1,7 @@
 using CodeBE_LEM.Entities;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace CodeBE_LEM.Controllers.BoardController;
 
@@ -10,7 +11,7 @@ public class Board_TodoDTO
 
     public string Description { get; set; } = null!;
 
-    public double CompletePercent { get; set; }
+    public bool IsDone { get; set; }
 
     public long? JobId { get; set; }
 
@@ -20,7 +21,7 @@ public class Board_TodoDTO
     {
         Id = Todo.Id;
         Description = Todo.Description;
-        CompletePercent = Todo.CompletePercent;
+        IsDone = Todo.IsDone;
         JobId = Todo.JobId;
     }
 }

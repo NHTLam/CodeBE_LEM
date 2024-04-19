@@ -10,7 +10,7 @@ public class Job_TodoDTO
 
     public string Description { get; set; } = null!;
 
-    public double CompletePercent { get; set; }
+    public bool IsDone { get; set; }
 
     public long? JobId { get; set; }
 
@@ -20,7 +20,7 @@ public class Job_TodoDTO
     {
         Id = Todo.Id;
         Description = Todo.Description;
-        CompletePercent = Todo.CompletePercent;
+        IsDone = Todo.IsDone;
         JobId = Todo.JobId;
     }
 }

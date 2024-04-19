@@ -17,6 +17,8 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Update(Job Job);
         Task<bool> Delete(Job Job);
         Task<bool> BulkMerge(List<Job> Jobs);
+        Task<bool> BulkDelete(List<Job> Jobs);
+
         Task<List<Job>> ListByCardIds(List<long> CardIds);
         Task<List<long>> ListJobIdByUserId(long CurrentUserId);
     }
@@ -65,7 +67,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     Description = x.Description,
                     JobId = x.JobId,
-                    CompletePercent = x.CompletePercent,
+                    IsDone = x.IsDone,
                 }).ToListAsync();
 
             foreach (Job Job in Jobs)
@@ -121,7 +123,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     Description = x.Description,
                     JobId = x.JobId,
-                    CompletePercent = x.CompletePercent,
+                    IsDone = x.IsDone,
                 }).ToListAsync();
 
             foreach (Job Job in Jobs)
@@ -202,7 +204,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     Description = x.Description,
                     JobId = x.JobId,
-                    CompletePercent = x.CompletePercent,
+                    IsDone = x.IsDone,
                 }).ToListAsync();
 
             foreach (Job Job in Jobs)
@@ -268,7 +270,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     Description = x.Description,
                     JobId = x.JobId,
-                    CompletePercent = x.CompletePercent,
+                    IsDone = x.IsDone,
                 }).ToListAsync();
             Job.AppUserJobMappings = await DataContext.AppUserJobMappings.AsNoTracking()
                 .Where(x => x.JobId == Job.Id)
@@ -339,6 +341,24 @@ namespace CodeBE_LEM.Repositories
             return true;
         }
 
+        public async Task<bool> BulkDelete(List<Job> Jobs)
+        {
+            List<long> Ids = Jobs.Select(x => x.Id).ToList();
+            await DataContext.Jobs.Where(x => Ids.Contains(x.Id))
+                .UpdateFromQueryAsync(x => new JobDAO
+                {
+                    DeleteAt = DateTime.Now,
+                });
+
+            List<long> TodoIds = Jobs.SelectMany(x => x.Todos.Select(y => y.Id)).ToList();
+            List<long> AppUserJobMappingIds = Jobs.SelectMany(x => x.AppUserJobMappings.Select(y => y.Id)).ToList();
+
+            await DataContext.Todos.Where(x => TodoIds.Contains(x.Id)).DeleteFromQueryAsync();
+            await DataContext.AppUserJobMappings.Where(x => AppUserJobMappingIds.Contains(x.Id)).DeleteFromQueryAsync();
+            await DataContext.Jobs.Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
+            return true;
+        }
+
         private async Task SaveReference(Job Job)
         {
             if (Job.Todos == null || Job.Todos.Count == 0)
@@ -350,7 +370,6 @@ namespace CodeBE_LEM.Repositories
                 var TodoIds = Job.Todos.Select(x => x.Id).Distinct().ToList();
                 await DataContext.Todos
                 .Where(x => x.JobId == Job.Id)
-                .Where(x => !TodoIds.Contains(x.Id))
                 .DeleteFromQueryAsync();
 
                 List<TodoDAO> TodoDAOs = new List<TodoDAO>();
@@ -359,7 +378,7 @@ namespace CodeBE_LEM.Repositories
                     TodoDAO TodoDAO = new TodoDAO();
                     TodoDAO.Description = Todo.Description;
                     TodoDAO.JobId = Todo.JobId;
-                    TodoDAO.CompletePercent = Todo.CompletePercent;
+                    TodoDAO.IsDone = Todo.IsDone;
                     TodoDAOs.Add(TodoDAO);
                 }
                 await DataContext.Todos.AddRangeAsync(TodoDAOs);
@@ -375,7 +394,6 @@ namespace CodeBE_LEM.Repositories
                 var AppUserJobMappingIds = Job.AppUserJobMappings.Select(x => x.Id).Distinct().ToList();
                 await DataContext.AppUserJobMappings
                 .Where(x => x.JobId == Job.Id)
-                .Where(x => !AppUserJobMappingIds.Contains(x.Id))
                 .DeleteFromQueryAsync();
 
                 List<AppUserJobMappingDAO> AppUserJobMappingDAOs = new List<AppUserJobMappingDAO>();
@@ -393,13 +411,13 @@ namespace CodeBE_LEM.Repositories
 
         public async Task<bool> BulkMerge(List<Job> Jobs)
         {
-            List<JobDAO> JobDAOs = new List<JobDAO>();
+            await DataContext.Todos.Where(x => Jobs.Select(x => x.Id).ToList().Contains(x.JobId.Value)).DeleteFromQueryAsync();
             foreach (Job Job in Jobs)
             {
                 JobDAO JobDAO = new JobDAO();
                 JobDAO.Id = Job.Id;
-                JobDAO.Name = Job.Name;
                 JobDAO.CardId = Job.CardId;
+                JobDAO.Name = Job.Name;
                 JobDAO.Description = Job.Description;
                 JobDAO.Order = Job.Order;
                 JobDAO.StartAt = Job.StartAt;
@@ -407,9 +425,14 @@ namespace CodeBE_LEM.Repositories
                 JobDAO.Color = Job.Color;
                 JobDAO.NoTodoDone = Job.NoTodoDone;
                 JobDAO.IsAllDay = Job.IsAllDay;
-                JobDAOs.Add(JobDAO);
+                JobDAO.CreatedAt = DateTime.Now;
+                JobDAO.UpdateAt = DateTime.Now;
+                if (JobDAO.Id == 0)
+                    DataContext.Jobs.Add(JobDAO);
+                else 
+                    DataContext.Jobs.Update(JobDAO);
             }
-            await DataContext.BulkMergeAsync(JobDAOs);
+            await DataContext.SaveChangesAsync();
             return true;
         }
     }
