@@ -15,6 +15,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Create(Board Board);
         Task<bool> Update(Board Board);
         Task<bool> Delete(Board Board);
+        Task<bool> DeleteCard(Card Card);
         Task<bool> UpdateCode(Board Board);
         Task<List<AppUserBoardMapping>> ListAppUserBoardMappingByAppUser(long AppUserId);
     }
@@ -252,6 +253,18 @@ namespace CodeBE_LEM.Repositories
             BoardDAO.DeletedAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
             await SaveReference(Board);
+            return true;
+        }
+
+        public async Task<bool> DeleteCard(Card Card)
+        {
+            CardDAO? CardDAO = DataContext.Cards
+                .Where(x => x.Id == Card.Id)
+                .FirstOrDefault();
+            if (CardDAO == null)
+                return false;
+            DataContext.Cards.Remove(CardDAO);
+            await DataContext.SaveChangesAsync();
             return true;
         }
 

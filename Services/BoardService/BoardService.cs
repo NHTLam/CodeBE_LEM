@@ -16,6 +16,9 @@ namespace CodeBE_LEM.Services.BoardService
         Task<Board> Update(Board Board);
         Task<Board> Delete(Board Board);
         Task<List<Card>> ListCardByUserId();
+        Task<bool> DuplicateCard(Card Card);
+        Task<bool> DeleteCard(Card Card);
+
     }
     public class BoardService : IBoardService
     {
@@ -51,6 +54,47 @@ namespace CodeBE_LEM.Services.BoardService
 
             }
             return null;
+        }
+
+        public async Task<bool> DuplicateCard(Card Card)
+        {
+            try
+            {
+                Board Board = await UOW.BoardRepository.Get(Card.BoardId);
+                var oldData = Board;
+                Card.Id = 0;
+                Board.Cards.Add(Card);
+                Board = await Update(Board);
+                var newCardId = Board.Cards.Where(x => !oldData.Cards.Select(x => x.Id).Contains(x.Id)).FirstOrDefault()!.Id;
+                foreach (var Job in Card.Jobs)
+                {
+                    Job.Id = 0;
+                    Job.CardId = newCardId;
+                }
+                await UOW.JobRepository.BulkMerge(Card.Jobs);
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return false;
+        }
+
+        public async Task<bool> DeleteCard(Card Card)
+        {
+            try
+            {
+                Board Board = await UOW.BoardRepository.Get(Card.BoardId);
+                await UOW.JobRepository.BulkDelete(Card.Jobs);
+                await UOW.BoardRepository.DeleteCard(Card);
+                return true;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return false;
         }
 
         public async Task<Board> Delete(Board Board)

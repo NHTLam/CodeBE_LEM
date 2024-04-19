@@ -9,7 +9,7 @@ public partial class Todo
 
     public string Description { get; set; } = null!;
 
-    public double CompletePercent { get; set; }
+    public bool IsDone { get; set; }
 
     public long? JobId { get; set; }
 

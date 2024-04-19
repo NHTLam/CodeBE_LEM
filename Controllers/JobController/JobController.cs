@@ -111,7 +111,7 @@ namespace CodeBE_LEM.Controllers.JobController
         {
             Job Job = new Job();
             Job.Id = Job_JobDTO.Id;
-            Job.CardId = Job_JobDTO.CardId;
+            Job.CardId = Job_JobDTO.CardId ?? 0;
             Job.Name = Job_JobDTO.Name;
             Job.Description = Job_JobDTO.Description;
             Job.Order = Job_JobDTO.Order;
@@ -125,7 +125,7 @@ namespace CodeBE_LEM.Controllers.JobController
                 Id = x.Id,
                 JobId = x.JobId,
                 Description = x.Description,
-                CompletePercent = x.CompletePercent,
+                IsDone = x.IsDone,
             }).ToList();
 
             return Job;

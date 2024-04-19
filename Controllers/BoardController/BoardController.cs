@@ -49,6 +49,36 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_CardDTOs;
         }
 
+        [Route(BoardRoute.DuplicateCard), HttpPost]
+        public async Task<ActionResult<bool>> DuplicateCard([FromBody] Board_CardDTO Board_CardDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Card Card = ConvertCardDTOToEntity(Board_CardDTO);
+            bool isSuccess = await BoardService.DuplicateCard(Card);
+            
+            if (isSuccess)
+                return Ok(isSuccess);
+            else 
+                return BadRequest(isSuccess);
+        }
+
+        [Route(BoardRoute.DeleteCard), HttpPost]
+        public async Task<ActionResult<bool>> DeleteCard([FromBody] Board_CardDTO Board_CardDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            Card Card = ConvertCardDTOToEntity(Board_CardDTO);
+            bool isSuccess = await BoardService.DeleteCard(Card);
+
+            if (isSuccess)
+                return Ok(isSuccess);
+            else
+                return BadRequest(isSuccess);
+        }
+
         [Route(BoardRoute.ListByClassroom), HttpPost]
         public async Task<ActionResult<List<Board_BoardDTO>>> ListByClassroom([FromBody] Board_BoardDTO Board_BoardDTO)
         {
@@ -179,7 +209,7 @@ namespace CodeBE_LEM.Controllers.BoardController
                     Todos = y.Todos?.Select(z => new Todo
                     {
                         Id = z.Id,
-                        CompletePercent = z.CompletePercent,
+                        IsDone = z.IsDone,
                         JobId = z.JobId,
                         Description = z.Description,
                     }).ToList(),
@@ -195,5 +225,38 @@ namespace CodeBE_LEM.Controllers.BoardController
 
             return Board;
         }
+
+        private Card ConvertCardDTOToEntity(Board_CardDTO Board_CardDTO)
+        {
+            Card Card = new Card();
+            Card.Id = Board_CardDTO.Id;
+            Card.BoardId = Board_CardDTO.BoardId;
+            Card.Name = Board_CardDTO.Name;
+            Card.Order = Board_CardDTO.Order;
+            Card.CreatedAt = Board_CardDTO.CreatedAt;
+            Card.UpdatedAt = Board_CardDTO.UpdatedAt;
+            Card.Jobs = Board_CardDTO.Jobs?.Select(y => new Job
+            {
+                Id = y.Id,
+                CardId = y.CardId,
+                Name = y.Name,
+                Description = y.Description,
+                Order = y.Order,
+                StartAt = y.StartAt,
+                EndAt = y.EndAt,
+                Color = y.Color,
+                NoTodoDone = y.NoTodoDone,
+                Todos = y.Todos?.Select(z => new Todo
+                {
+                    Id = z.Id,
+                    IsDone = z.IsDone,
+                    JobId = z.JobId,
+                    Description = z.Description,
+                }).ToList(),
+            }).ToList();
+
+            return Card;
+        }
+
     }
 }
