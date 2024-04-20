@@ -49,6 +49,14 @@ namespace CodeBE_LEM.Repositories
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
+                CreatorId = x.CreatorId,
+                CreatedAt = x.CreatedAt,
+                UpdateAt = x.UpdateAt,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    UserName = x.Creator.UserName,
+                },
                 Card = new Card
                 {
                     Id = x.Card.Id,
@@ -114,6 +122,14 @@ namespace CodeBE_LEM.Repositories
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
+                CreatorId = x.CreatorId,
+                CreatedAt = x.CreatedAt,
+                UpdateAt = x.UpdateAt,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    UserName = x.Creator.UserName,
+                },
             }).ToListAsync();
 
             var TodoQuery = DataContext.Todos.AsNoTracking();
@@ -186,6 +202,14 @@ namespace CodeBE_LEM.Repositories
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
+                CreatorId = x.CreatorId,
+                CreatedAt = x.CreatedAt,
+                UpdateAt = x.UpdateAt,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    UserName = x.Creator.UserName,
+                },
                 Card = new Card
                 {
                     Id = x.Card.Id,
@@ -250,6 +274,14 @@ namespace CodeBE_LEM.Repositories
                 Color = x.Color,
                 NoTodoDone = x.NoTodoDone,
                 IsAllDay = x.IsAllDay,
+                CreatorId = x.CreatorId,
+                CreatedAt = x.CreatedAt,
+                UpdateAt = x.UpdateAt,
+                Creator = x.Creator == null ? null : new AppUser
+                {
+                    Id = x.Creator.Id,
+                    UserName = x.Creator.UserName,
+                },
                 Card = new Card
                 {
                     Id = x.Card.Id,
@@ -296,6 +328,7 @@ namespace CodeBE_LEM.Repositories
             JobDAO.Color = Job.Color;
             JobDAO.NoTodoDone = Job.NoTodoDone;
             JobDAO.IsAllDay = Job.IsAllDay;
+            JobDAO.CreatorId = Job.CreatorId;
             JobDAO.CreatedAt = DateTime.Now;
             JobDAO.UpdateAt = DateTime.Now;
             DataContext.Jobs.Add(JobDAO);
@@ -321,6 +354,7 @@ namespace CodeBE_LEM.Repositories
             JobDAO.EndAt = Job.EndAt;
             JobDAO.Color = Job.Color;
             JobDAO.NoTodoDone = Job.NoTodoDone;
+            JobDAO.CreatorId = Job.CreatorId;
             JobDAO.IsAllDay = Job.IsAllDay;
             JobDAO.UpdateAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
@@ -425,6 +459,7 @@ namespace CodeBE_LEM.Repositories
                 JobDAO.Color = Job.Color;
                 JobDAO.NoTodoDone = Job.NoTodoDone;
                 JobDAO.IsAllDay = Job.IsAllDay;
+                JobDAO.CreatorId = Job.CreatorId;
                 JobDAO.CreatedAt = DateTime.Now;
                 JobDAO.UpdateAt = DateTime.Now;
                 if (JobDAO.Id == 0)

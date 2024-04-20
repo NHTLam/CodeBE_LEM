@@ -233,6 +233,10 @@ public partial class DataContext : DbContext
                 .HasForeignKey(d => d.CardId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Job_Card");
+
+            entity.HasOne(d => d.Creator).WithMany(p => p.Jobs)
+                .HasForeignKey(d => d.CreatorId)
+                .HasConstraintName("FK_Job_AppUser");
         });
 
         modelBuilder.Entity<PermissionDAO>(entity =>

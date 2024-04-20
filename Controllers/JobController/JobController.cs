@@ -61,7 +61,7 @@ namespace CodeBE_LEM.Controllers.JobController
             return Job_JobDTO;
         }
 
-        [Route(JobRoute.Create), HttpPost]
+        [Route(JobRoute.Create), HttpPost, Authorize]
         public async Task<ActionResult<Job_JobDTO>> Create([FromBody] Job_JobDTO Job_JobDTO)
         {
             if (!ModelState.IsValid)
@@ -77,7 +77,7 @@ namespace CodeBE_LEM.Controllers.JobController
                 return BadRequest(Job_JobDTO);
         }
 
-        [Route(JobRoute.Update), HttpPost]
+        [Route(JobRoute.Update), HttpPost, Authorize]
         public async Task<ActionResult<Job_JobDTO>> Update([FromBody] Job_JobDTO Job_JobDTO)
         {
             if (!ModelState.IsValid)
@@ -92,7 +92,7 @@ namespace CodeBE_LEM.Controllers.JobController
                 return BadRequest(Job_JobDTO);
         }
 
-        [Route(JobRoute.Delete), HttpPost]
+        [Route(JobRoute.Delete), HttpPost, Authorize]
         public async Task<ActionResult<Job_JobDTO>> Delete([FromBody] Job_JobDTO Job_JobDTO)
         {
             if (!ModelState.IsValid)
@@ -120,6 +120,13 @@ namespace CodeBE_LEM.Controllers.JobController
             Job.Color = Job_JobDTO.Color;
             Job.NoTodoDone = Job_JobDTO.NoTodoDone;
             Job.IsAllDay = Job_JobDTO.IsAllDay;
+            Job.CreatorId = Job_JobDTO.CreatorId;
+            Job.Creator = Job_JobDTO.Creator == null ? null : new AppUser
+            {
+                Id = Job_JobDTO.Creator.Id,
+                FullName = Job_JobDTO.Creator.FullName,
+                UserName = Job_JobDTO.Creator.UserName,
+            };
             Job.Todos = Job_JobDTO.Todos?.Select(x => new Todo
             {
                 Id = x.Id,

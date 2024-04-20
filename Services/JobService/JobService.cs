@@ -36,6 +36,8 @@ namespace CodeBE_LEM.Services.JobService
 
             try
             {
+                Job = CalcPercentTodoDone(Job);
+                Job.CreatorId = PermissionService.GetAppUserId();
                 await UOW.JobRepository.Create(Job);
                 Job = await UOW.JobRepository.Get(Job.Id);
                 return Job;
@@ -116,6 +118,8 @@ namespace CodeBE_LEM.Services.JobService
             try
             {
                 var oldData = await UOW.JobRepository.Get(Job.Id);
+                Job = CalcPercentTodoDone(Job);
+                Job.CreatorId = PermissionService.GetAppUserId();
                 await UOW.JobRepository.Update(Job);
                 Job = await UOW.JobRepository.Get(Job.Id);
                 return Job;
@@ -124,6 +128,24 @@ namespace CodeBE_LEM.Services.JobService
             {
             }
             return null;
+        }
+
+        private Job CalcPercentTodoDone(Job Job)
+        {
+            if (Job.Todos != null && Job.Todos.Count > 0)
+            {
+                int countTodoDone = 0;
+                foreach (var todo in Job.Todos)
+                {
+                    if (todo.IsDone == true)
+                    {
+                        countTodoDone++;
+                    }
+                } 
+                decimal PercentTodoDone = (countTodoDone * 1.0M / Job.Todos.Count) * 100;
+                Job.NoTodoDone = (int)PercentTodoDone;
+            }
+            return Job;
         }
     }
 }

@@ -1,3 +1,4 @@
+using CodeBE_LEM.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -30,6 +31,10 @@ public partial class JobDAO
     public DateTime? UpdateAt { get; set; }
 
     public DateTime? DeleteAt { get; set; }
+
+    public long? CreatorId { get; set; }
+
+    public virtual AppUserDAO? Creator { get; set; }
 
     public virtual ICollection<AppUserJobMappingDAO> AppUserJobMappings { get; set; } = new List<AppUserJobMappingDAO>();
 
