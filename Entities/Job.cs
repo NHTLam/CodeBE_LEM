@@ -32,6 +32,10 @@ public partial class Job
 
     public DateTime? DeleteAt { get; set; }
 
+    public long? CreatorId { get; set; }
+
+    public AppUser? Creator { get; set; }
+
     public List<AppUserJobMapping> AppUserJobMappings { get; set; } = new List<AppUserJobMapping>();
 
     public Card Card { get; set; } = null!;

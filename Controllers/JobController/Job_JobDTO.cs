@@ -26,6 +26,10 @@ public class Job_JobDTO
 
     public bool? IsAllDay { get; set; }
 
+    public long? CreatorId { get; set; }
+
+    public Job_AppUserDTO? Creator { get; set; }
+
     public List<Job_TodoDTO> Todos { get; set; } = new List<Job_TodoDTO>();
 
     public Job_JobDTO() { }
@@ -42,6 +46,8 @@ public class Job_JobDTO
         Color = Job.Color;
         NoTodoDone = Job.NoTodoDone;
         IsAllDay = Job.IsAllDay;
+        CreatorId = Job.CreatorId;
+        Creator = Job.Creator == null ? null : new Job_AppUserDTO(Job.Creator);
         Todos = Job.Todos?.Select(x => new Job_TodoDTO(x)).ToList();
     }
 }

@@ -117,12 +117,19 @@ namespace CodeBE_LEM.Services.BoardService
 
         public async Task<Board> Get(long Id)
         {
-            Board Board = await UOW.BoardRepository.Get(Id);
-            await AddJobDataForCardsForBoard(Board);
-            if (Board == null)
-                return null;
-            await BoardValidator.Get(Board);
-            return Board;
+            try
+            {
+                Board Board = await UOW.BoardRepository.Get(Id);
+                await AddJobDataForCardsForBoard(Board);
+                if (Board == null)
+                    return null;
+                await BoardValidator.Get(Board);
+                return Board;
+            }
+            catch(Exception ex) 
+            {
+            }
+            return null;
         }
 
         public async Task<Board> GetOwn(long UserId)

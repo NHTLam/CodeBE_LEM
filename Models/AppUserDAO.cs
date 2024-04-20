@@ -1,3 +1,4 @@
+using CodeBE_LEM.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -28,4 +29,6 @@ public partial class AppUserDAO
     public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; } = new List<AppUserRoleMappingDAO>();
 
     public virtual ICollection<AppUserJobMappingDAO> AppUserJobMappings { get; set; } = new List<AppUserJobMappingDAO>();
+
+    public virtual ICollection<JobDAO> Jobs { get; set; } = new List<JobDAO>();
 }
