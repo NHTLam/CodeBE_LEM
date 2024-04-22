@@ -3,6 +3,7 @@ using CodeBE_LEM.Enums;
 using CodeBE_LEM.Repositories;
 using CodeBE_LEM.Services.PermissionService;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using System.Linq;
 
 namespace CodeBE_LEM.Services.BoardService
 {
@@ -15,6 +16,7 @@ namespace CodeBE_LEM.Services.BoardService
         Task<Board> Create(Board Board);
         Task<Board> Update(Board Board);
         Task<Board> Delete(Board Board);
+        Task<List<Board>> CreateBoardsForClass(CreateBoardsFunction CreateBoardsFunction);
         Task<List<Card>> ListCardByUserId();
         Task<bool> DuplicateCard(Card Card);
         Task<bool> DeleteCard(Card Card);
@@ -220,6 +222,98 @@ namespace CodeBE_LEM.Services.BoardService
             return null;
         }
 
+        public async Task<List<Board>> CreateBoardsForClass(CreateBoardsFunction CreateBoardsFunction)
+        {
+            try
+            {
+                List<Board> Boards = new List<Board>();
+                List<Board> OldBoard = await ListByClassroom(CreateBoardsFunction.ClassroomId);
+                List<long> StudentIdAlreadyHaveGroups = OldBoard.SelectMany(x => x.AppUserBoardMappings.Select(y => y.AppUserId)).Distinct().ToList();
+                List<AppUser> ClassroomAppUsers = await UOW.AppUserRepository.List();
+                ClassroomAppUsers = ClassroomAppUsers.Where(x => x.AppUserClassroomMappings?.Select(y => y.ClassroomId)?.Contains(CreateBoardsFunction.ClassroomId) ?? false).ToList();
+                var Teachers = ClassroomAppUsers.Where(x => x.AppUserClassroomMappings?.Select(y => y.Role.Name)?.Contains("Teacher") ?? false).ToList();
+
+                int newNumberOfGroups = CreateBoardsFunction.NumberOfGroups - OldBoard.Count;
+                List<AppUser> Students = ClassroomAppUsers.Where(x => CreateBoardsFunction.AppUserIds.Contains(x.Id)).Where(x => !StudentIdAlreadyHaveGroups.Contains(x.Id)).ToList();
+
+                if (newNumberOfGroups > 0)
+                {
+                    int numberOfStudentInOneGroup = (int)Math.Round(Students.Count * 1.0M / newNumberOfGroups, 0);
+
+                    for (int i = 0; i < newNumberOfGroups; i++)
+                    {
+                        var appUserForAppUserBoardMappings = Students.Take(numberOfStudentInOneGroup).ToList();
+                        appUserForAppUserBoardMappings.AddRange(Teachers);
+
+                        var newAppUsers = Students.Where(x => !appUserForAppUserBoardMappings.Select(x => x.Id).Contains(x.Id)).ToList();
+                        if (newAppUsers.Count < numberOfStudentInOneGroup)
+                        {
+                            newAppUsers = Students;
+                            appUserForAppUserBoardMappings = Students;
+                            appUserForAppUserBoardMappings.AddRange(Teachers);
+                        }
+
+                        List<AppUserBoardMapping> AppUserBoardMappings = new List<AppUserBoardMapping>();
+                        foreach (var appUser in appUserForAppUserBoardMappings)
+                        {
+                            AppUserBoardMapping AppUserBoardMapping = new AppUserBoardMapping();
+                            AppUserBoardMapping.AppUserId = appUser.Id;
+                            if (Teachers.Select(x => x.Id).Contains(appUser.Id))
+                                AppUserBoardMapping.AppUserTypeId = AppUserTypeEnum.OWN.Id;
+                            else
+                                AppUserBoardMapping.AppUserTypeId = AppUserTypeEnum.COOPERATOR.Id;
+                            AppUserBoardMappings.Add(AppUserBoardMapping);
+                        }
+
+                        Board Board = new Board();
+                        Board.Code = "";
+                        Board.Name = $"Group {i + 1}";
+                        Board.Description = "";
+                        Board.ImageUrl = "";
+                        Board.ClassroomId = CreateBoardsFunction.ClassroomId;
+                        Board.AppUserBoardMappings = AppUserBoardMappings;
+                        Boards.Add(Board);
+
+                        Students = newAppUsers;
+                    }
+                }
+
+                var oldData = Boards;
+                var Ids = await UOW.BoardRepository.BulkMerge(Boards);
+                Boards = (await ListByClassroom(CreateBoardsFunction.ClassroomId)).Where(x => Ids.Contains(x.Id)).ToList();
+                await BuildCodes(Boards);
+                await BulkMergeAppUserBoardMapping(Boards, oldData);
+
+                return Boards;
+            }
+            catch (Exception ex)
+            {
+            }
+            return null;
+        }
+
+        private async Task BulkMergeAppUserBoardMapping(List<Board> Boards, List<Board> oldData)
+        {
+            try
+            {
+                List<AppUserBoardMapping> BulkMergeAppUserBoardMappings = new List<AppUserBoardMapping>();
+                foreach (var board in oldData)
+                {
+                    board.Id = Boards.Where(x => x.Name == board.Name).FirstOrDefault().Id;
+                    foreach (var BulkMergeAppUserBoardMapping in board.AppUserBoardMappings)
+                    {
+                        BulkMergeAppUserBoardMapping.BoardId = board.Id;
+                        BulkMergeAppUserBoardMappings.Add(BulkMergeAppUserBoardMapping);
+                    }
+                }
+                await UOW.BoardRepository.BulkMergeAppUserBoardMapping(BulkMergeAppUserBoardMappings);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
         public async Task<Board> Update(Board Board)
         {
             if (!await BoardValidator.Update(Board))
@@ -242,6 +336,15 @@ namespace CodeBE_LEM.Services.BoardService
         {
             Board.Code = "B" + Board.Id;
             await UOW.BoardRepository.UpdateCode(Board);
+        }
+
+        private async Task BuildCodes(List<Board> Boards)
+        {
+            foreach (var Board in Boards)
+            {
+                Board.Code = "B" + Board.Id;
+            }
+            await UOW.BoardRepository.BulkUpdateCode(Boards);
         }
     }
 }

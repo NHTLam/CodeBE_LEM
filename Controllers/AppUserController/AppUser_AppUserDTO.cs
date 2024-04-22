@@ -25,7 +25,7 @@ public partial class AppUser_AppUserDTO
 
     public long? StatusId { get; set; }
 
-    public List<AppUser_AppUserRoleMappingDTO>? AppUserRoleMappings { get; set; }
+    public List<AppUser_AppUserClassroomMappingDTO>? AppUserClassroomMappings { get; set; }
 
     public AppUser_AppUserDTO() { }
     public AppUser_AppUserDTO(AppUser user)
@@ -38,6 +38,6 @@ public partial class AppUser_AppUserDTO
         this.Gender = user.Gender?.Trim();
         this.Password = user.Password?.Trim();
         this.StatusId = user.StatusId;
-        this.AppUserRoleMappings = user.AppUserRoleMappings == null ? null : user.AppUserRoleMappings.Select(x => new AppUser_AppUserRoleMappingDTO(x)).ToList();
+        this.AppUserClassroomMappings = user.AppUserClassroomMappings == null ? null : user.AppUserClassroomMappings.Select(x => new AppUser_AppUserClassroomMappingDTO(x)).ToList();
     }
 }

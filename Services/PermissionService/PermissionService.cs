@@ -18,7 +18,7 @@ namespace CodeBE_LEM.Services.PermissionService
     public interface IPermissionService
     {
         Task Init();
-        Task<List<string>> ListPath(AppUser AppUser);
+        Task<List<string>> ListPath(AppUserClassroomMapping AppUserClassroomMapping);
         Task<List<string>> ListAllPath();
         Task<List<Role>> ListRole();
         Task<List<Permission>> ListPermission();
@@ -79,22 +79,11 @@ namespace CodeBE_LEM.Services.PermissionService
             }
         }
 
-        public async Task<List<string>> ListPath(AppUser AppUser)
+        public async Task<List<string>> ListPath(AppUserClassroomMapping AppUserClassroomMapping)
         {
             try
             {
-                AppUser = await UOW.AppUserRepository.Get(AppUser.Id);
-                List<long> RoleIds = new List<long>();
-                if (AppUser.AppUserRoleMappings != null && AppUser.AppUserRoleMappings.Count > 0)
-                {
-                    foreach (var AppUserRoleMapping in AppUser.AppUserRoleMappings)
-                    {
-                        RoleIds.Add(AppUserRoleMapping.RoleId);
-                    }
-                }
-
-                List<Role> Roles = await UOW.PermissionRepository.ListRole();
-                Roles = Roles.Where(x => RoleIds.Contains(x.Id)).ToList();
+                List<Role> Roles = await UOW.PermissionRepository.ListRoleByClassRoomAndUserId(GetAppUserId(), AppUserClassroomMapping.ClassroomId);
 
                 List<long> permissionIds = new List<long>();
                 foreach (var Role in Roles)
@@ -142,11 +131,11 @@ namespace CodeBE_LEM.Services.PermissionService
             }
         }
 
-        public async Task<bool> HasPermission(string Path, long AppUserId)
+        public async Task<bool> HasPermission(string Path, long ClassroomId)
         {
-            AppUser AppUser = new AppUser();
-            AppUser.Id = AppUserId;
-            List<string> AllowPath = await ListPath(AppUser);
+            AppUserClassroomMapping appUserClassroomMapping = new AppUserClassroomMapping();
+            appUserClassroomMapping.ClassroomId = ClassroomId;
+            List<string> AllowPath = await ListPath(appUserClassroomMapping);
             if (AllowPath.Contains(Path))
             {
                 return true;

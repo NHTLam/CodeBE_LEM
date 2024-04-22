@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using CodeBE_LEM.Services.BoardService;
 using CodeBE_LEM.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
+using CodeBE_LEM.Controllers.AppUserController;
 
 namespace CodeBE_LEM.Controllers.BoardController
 {
@@ -86,6 +87,20 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(ModelState);
 
             List<Board> Boards = await BoardService.ListByClassroom(Board_BoardDTO.ClassroomId.Value);
+            List<Board_BoardDTO> Board_BoardDTOs = Boards
+                .Select(c => new Board_BoardDTO(c)).ToList();
+
+            return Board_BoardDTOs;
+        }
+
+        [Route(BoardRoute.CreateBoardsForClass), HttpPost]
+        public async Task<ActionResult<List<Board_BoardDTO>>?> CreateBoardsForClass([FromBody] Board_CreateBoardsFunctionDTO Board_CreateBoardsFunctionDTO)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            CreateBoardsFunction CreateBoardsFunction = ConvertDTOToEntity(Board_CreateBoardsFunctionDTO);
+            List<Board> Boards = await BoardService.CreateBoardsForClass(CreateBoardsFunction);
             List<Board_BoardDTO> Board_BoardDTOs = Boards
                 .Select(c => new Board_BoardDTO(c)).ToList();
 
@@ -256,6 +271,16 @@ namespace CodeBE_LEM.Controllers.BoardController
             }).ToList();
 
             return Card;
+        }
+
+        private CreateBoardsFunction ConvertDTOToEntity(Board_CreateBoardsFunctionDTO Board_CreateBoardsFunctionDTO)
+        {
+            CreateBoardsFunction CreateBoardsFunction = new CreateBoardsFunction();
+            CreateBoardsFunction.NumberOfGroups = Board_CreateBoardsFunctionDTO.NumberOfGroups;
+            CreateBoardsFunction.ClassroomId = Board_CreateBoardsFunctionDTO.ClassroomId;
+            CreateBoardsFunction.AppUserIds = Board_CreateBoardsFunctionDTO.AppUserIds;
+
+            return CreateBoardsFunction;
         }
 
     }

@@ -37,14 +37,14 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             try
             {
-                var ClassEventId = await UOW.ClassEventRepository.Get(Comment.ClassEventId);
+                //var ClassEventId = await UOW.ClassEventRepository.Get(Comment.ClassEventId);
 
-                if (ClassEventId != null)
-                {
-                    await UOW.CommentRepository.Create(Comment);
-                    Comment = await UOW.CommentRepository.Get(Comment.Id);
-                    return Comment;
-                }
+                //if (ClassEventId != null)
+                //{
+                //    await UOW.CommentRepository.Create(Comment);
+                //    Comment = await UOW.CommentRepository.Get(Comment.Id);
+                //    return Comment;
+                //}
 
             }
             catch (Exception ex)

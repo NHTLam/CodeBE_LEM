@@ -24,10 +24,10 @@ namespace CodeBE_LEM.Controllers.PermissionController
         }
 
         [HttpPost, Route(PermissionRoute.ListPath), Authorize]
-        public async Task<List<string>> ListPath([FromBody] AppUser_AppUserDTO UserDTO)
+        public async Task<List<string>> ListPath([FromBody] Permission_AppUserClassroomMappingDTO Permission_AppUserClassroomMappingDTO)
         {
-            AppUser User = ConvertUserDTOToUserEntity(UserDTO);
-            List<string> Paths = await PermissionService.ListPath(User);
+            AppUserClassroomMapping AppUserClassroomMapping = ConvertDTOToEntity(Permission_AppUserClassroomMappingDTO);
+            List<string> Paths = await PermissionService.ListPath(AppUserClassroomMapping);
             return Paths;
         }
 
@@ -169,20 +169,6 @@ namespace CodeBE_LEM.Controllers.PermissionController
                 return BadRequest(Permission_RoleDTO);
         }
 
-        private AppUser ConvertUserDTOToUserEntity(AppUser_AppUserDTO AppUser_AppUserDTO)
-        {
-            AppUser AppUser = new AppUser();
-            AppUser.Id = AppUser_AppUserDTO.Id;
-            AppUser.FullName = AppUser_AppUserDTO.FullName;
-            AppUser.UserName = AppUser_AppUserDTO.UserName;
-            AppUser.Email = AppUser_AppUserDTO.Email;
-            AppUser.Gender = AppUser_AppUserDTO.Gender;
-            AppUser.Phone = AppUser_AppUserDTO.Phone;
-            AppUser.StatusId = AppUser_AppUserDTO.StatusId ?? 0;
-
-            return AppUser;
-        }
-
         private Role ConvertPermission_RoleDTOToRoleEntity(Permission_RoleDTO Permission_RoleDTO)
         {
             Role role = new Role();
@@ -196,6 +182,16 @@ namespace CodeBE_LEM.Controllers.PermissionController
                 PermissionId = x.PermissionId
             }).ToList();
             return role;
+        }
+
+        private AppUserClassroomMapping ConvertDTOToEntity(Permission_AppUserClassroomMappingDTO Permission_AppUserClassroomMappingDTO)
+        {
+            AppUserClassroomMapping AppUserClassroomMapping = new AppUserClassroomMapping();
+            AppUserClassroomMapping.Id = Permission_AppUserClassroomMappingDTO.Id;
+            AppUserClassroomMapping.AppUserId = Permission_AppUserClassroomMappingDTO.AppUserId;
+            AppUserClassroomMapping.ClassroomId = Permission_AppUserClassroomMappingDTO.ClassroomId;
+            AppUserClassroomMapping.RoleId = Permission_AppUserClassroomMappingDTO.RoleId;
+            return AppUserClassroomMapping;
         }
     }
 

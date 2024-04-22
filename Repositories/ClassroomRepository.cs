@@ -30,9 +30,8 @@ namespace CodeBE_LEM.Repositories
             ClassroomDAO.Code = Classroom.Code;
             ClassroomDAO.Name = Classroom.Name;
             ClassroomDAO.Description = Classroom.Description;
-            ClassroomDAO.CreatedAt = Classroom.CreatedAt;
-            ClassroomDAO.UpdatedAt = Classroom.UpdatedAt;
-            ClassroomDAO.DeletedAt = Classroom.DeletedAt;
+            ClassroomDAO.CreatedAt = DateTime.Now;
+            ClassroomDAO.UpdatedAt = DateTime.Now;
             ClassroomDAO.HomeImg = Classroom.HomeImg;
             DataContext.Classrooms.Add(ClassroomDAO);
             await DataContext.SaveChangesAsync();
@@ -91,7 +90,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     ClassroomId = x.ClassroomId,
                     AppUserId = x.AppUserId,
-
+                    RoleId = x.RoleId,
                 }).ToListAsync();
 
             return Classroom;
@@ -146,6 +145,7 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     ClassroomId = x.ClassroomId,
                     AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
                 }).ToListAsync();
 
             foreach (Classroom Classroom in Classrooms)
@@ -167,6 +167,7 @@ namespace CodeBE_LEM.Repositories
                 Id = x.Id,
                 AppUserId = x.AppUserId,
                 ClassroomId = x.ClassroomId,
+                RoleId = x.RoleId,
             }).ToListAsync();
 
             return AppUserClassroomMappings.Select(x => x.ClassroomId).ToList();
@@ -261,6 +262,7 @@ namespace CodeBE_LEM.Repositories
                     AppUserClassroomMappingDAO.Id = AppUserClassroomMapping.Id;
                     AppUserClassroomMappingDAO.ClassroomId = Classroom.Id;
                     AppUserClassroomMappingDAO.AppUserId = AppUserClassroomMapping.AppUserId;
+                    AppUserClassroomMappingDAO.RoleId = AppUserClassroomMapping.RoleId;
                     AppUserClassroomMappingDAOs.Add(AppUserClassroomMappingDAO);
                 }
                 await DataContext.AppUserClassroomMappings.AddRangeAsync(AppUserClassroomMappingDAOs);
@@ -276,6 +278,7 @@ namespace CodeBE_LEM.Repositories
                 AppUserClassroomMappingDAO.Id = AppUserClassroomMapping.Id;
                 AppUserClassroomMappingDAO.AppUserId = AppUserClassroomMapping.AppUserId;
                 AppUserClassroomMappingDAO.ClassroomId = AppUserClassroomMapping.ClassroomId;
+                AppUserClassroomMappingDAO.RoleId = AppUserClassroomMapping.RoleId;
                 if (AppUserClassroomMapping.Id == 0)
                 {
                     DataContext.AppUserClassroomMappings.Add(AppUserClassroomMappingDAO);

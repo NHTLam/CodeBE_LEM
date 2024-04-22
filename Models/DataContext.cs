@@ -23,8 +23,6 @@ public partial class DataContext : DbContext
 
     public virtual DbSet<AppUserClassroomMappingDAO> AppUserClassroomMappings { get; set; }
 
-    public virtual DbSet<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; }
-
     public virtual DbSet<AppUserJobMappingDAO> AppUserJobMappings { get; set; }
 
     public virtual DbSet<BoardDAO> Boards { get; set; }
@@ -58,7 +56,7 @@ public partial class DataContext : DbContext
         {
             entity.ToTable("Answer");
 
-            entity.Property(e => e.Code).HasMaxLength(5);
+            entity.Property(e => e.Code).HasMaxLength(10);
             entity.Property(e => e.Name).HasMaxLength(500);
 
             entity.HasOne(d => d.Question).WithMany(p => p.Answers)
@@ -109,21 +107,10 @@ public partial class DataContext : DbContext
                 .HasForeignKey(d => d.ClassroomId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_AppUserClassroomMapping_Classroom");
-        });
 
-        modelBuilder.Entity<AppUserRoleMappingDAO>(entity =>
-        {
-            entity.ToTable("AppUserRoleMapping");
-
-            entity.HasOne(d => d.AppUser).WithMany(p => p.AppUserRoleMappings)
-                .HasForeignKey(d => d.AppUserId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AppUserRoleMapping_AppUser");
-
-            entity.HasOne(d => d.Role).WithMany(p => p.AppUserRoleMappings)
+            entity.HasOne(d => d.Role).WithMany(p => p.AppUserClassroomMappings)
                 .HasForeignKey(d => d.RoleId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_AppUserRoleMapping_Role");
+                .HasConstraintName("FK_AppUserClassroomMapping_Role");
         });
 
         modelBuilder.Entity<AppUserJobMappingDAO>(entity =>
@@ -181,8 +168,8 @@ public partial class DataContext : DbContext
             entity.Property(e => e.DeletedAt).HasColumnType("datetime");
             entity.Property(e => e.Description).HasMaxLength(500);
             entity.Property(e => e.EndAt).HasColumnType("datetime");
-            entity.Property(e => e.StartAt).HasColumnType("datetime");
             entity.Property(e => e.Name).HasMaxLength(500);
+            entity.Property(e => e.StartAt).HasColumnType("datetime");
             entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
 
             entity.HasOne(d => d.Classroom).WithMany(p => p.ClassEvents)
@@ -212,8 +199,11 @@ public partial class DataContext : DbContext
 
             entity.HasOne(d => d.ClassEvent).WithMany(p => p.Comments)
                 .HasForeignKey(d => d.ClassEventId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Comment_ClassEvent");
+
+            entity.HasOne(d => d.Job).WithMany(p => p.Comments)
+                .HasForeignKey(d => d.JobId)
+                .HasConstraintName("FK_Comment_Job");
         });
 
         modelBuilder.Entity<JobDAO>(entity =>
@@ -268,10 +258,10 @@ public partial class DataContext : DbContext
         {
             entity.ToTable("Question");
 
+            entity.Property(e => e.CorrectAnswer).HasMaxLength(1000);
             entity.Property(e => e.Description).HasMaxLength(1000);
             entity.Property(e => e.Instruction).HasMaxLength(1000);
             entity.Property(e => e.Name).HasMaxLength(500);
-            entity.Property(e => e.CorrectAnswer).HasMaxLength(1000);
             entity.Property(e => e.StudentAnswer).HasMaxLength(1000);
 
             entity.HasOne(d => d.ClassEvent).WithMany(p => p.Questions)

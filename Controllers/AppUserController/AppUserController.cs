@@ -146,12 +146,6 @@ namespace CodeBE_LEM.Controllers.AppUserController
             AppUser.Phone = AppUser_AppUserDTO.Phone;
             AppUser.Password = AppUser_AppUserDTO.Password;
             AppUser.StatusId = AppUser_AppUserDTO.StatusId ?? 0;
-            AppUser.AppUserRoleMappings = AppUser_AppUserDTO.AppUserRoleMappings?.Select(x => new AppUserRoleMapping
-            {
-                Id = x.Id,
-                RoleId = x.RoleId,
-                AppUserId = x.AppUserId
-            }).ToList();
 
             return AppUser;
         }

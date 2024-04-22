@@ -11,7 +11,9 @@ public partial class RoleDAO
 
     public string? Description { get; set; }
 
-    public virtual ICollection<AppUserRoleMappingDAO> AppUserRoleMappings { get; set; } = new List<AppUserRoleMappingDAO>();
+    public long? RoleTypeId { get; set; }
+
+    public virtual ICollection<AppUserClassroomMappingDAO> AppUserClassroomMappings { get; set; } = new List<AppUserClassroomMappingDAO>();
 
     public virtual ICollection<PermissionRoleMappingDAO> PermissionRoleMappings { get; set; } = new List<PermissionRoleMappingDAO>();
 }

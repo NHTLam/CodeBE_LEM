@@ -41,6 +41,7 @@ namespace CodeBE_LEM.Services.ClassroomService
                 Classroom.CreatedAt = DateTime.Now;
                 Classroom.UpdatedAt = DateTime.Now;
                 Classroom.DeletedAt = null;
+                await AutoAddCreatorInClassAndSetRole(Classroom);
                 await UOW.ClassroomRepository.Create(Classroom);
                 await BuildCode(Classroom);
                 Classroom = await UOW.ClassroomRepository.Get(Classroom.Id);
@@ -51,6 +52,17 @@ namespace CodeBE_LEM.Services.ClassroomService
 
             }
             return null;
+        }
+
+        private async Task<Classroom> AutoAddCreatorInClassAndSetRole(Classroom Classroom)
+        {
+            List<Role> SystemRoles = await UOW.PermissionRepository.ListSystemRole();
+            AppUserClassroomMapping AppUserClassroomMapping = new AppUserClassroomMapping();
+            AppUserClassroomMapping.AppUserId = PermissionService.GetAppUserId();
+            AppUserClassroomMapping.ClassroomId = Classroom.Id;
+            AppUserClassroomMapping.RoleId = SystemRoles.Where(x => x.Name == "Teacher").Select(x => x.Id).FirstOrDefault();
+            Classroom.AppUserClassroomMappings = new List<AppUserClassroomMapping> { AppUserClassroomMapping };
+            return Classroom;
         }
 
         public async Task<Classroom> Delete(Classroom Classroom)
@@ -145,15 +157,16 @@ namespace CodeBE_LEM.Services.ClassroomService
                 return false;
             try
             {
-                code = code.Substring(0, code.Length - 1).Trim();
                 List<Classroom> Classrooms = await UOW.ClassroomRepository.List();
                 List<string> ClassroomCodes = Classrooms.Select(x => x.Code.Trim()).ToList();
-                if (ClassroomCodes.Contains(code))
+                if (ClassroomCodes.Contains(code.Trim()))
                 {
+                    List<Role> SystemRoles = await UOW.PermissionRepository.ListSystemRole();
                     Classroom CurrentClassrom = Classrooms.FirstOrDefault(x => x.Code == code);
                     AppUserClassroomMapping AppUserClassroomMapping = new AppUserClassroomMapping();
                     AppUserClassroomMapping.AppUserId = PermissionService.GetAppUserId();
                     AppUserClassroomMapping.ClassroomId = CurrentClassrom.Id;
+                    AppUserClassroomMapping.RoleId = SystemRoles.Where(x => x.Name == "Student").Select(x => x.Id).FirstOrDefault();
 
                     var NewAppUserClassroomMappings = CurrentClassrom.AppUserClassroomMappings.ToList();
                     NewAppUserClassroomMappings.Add(AppUserClassroomMapping);
