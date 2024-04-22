@@ -1,4 +1,5 @@
 ﻿using CodeBE_LEM.Entities;
+using CodeBE_LEM.Enums;
 using CodeBE_LEM.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -15,9 +16,12 @@ namespace CodeBE_LEM.Repositories
         Task<List<string>> ListAllPath();
         Task<List<Role>> ListRole();
         Task<Role> GetRole(long Id);
+        Task<List<Role>> ListSystemRole();
         Task<bool> CreateRole(Role Role);
         Task<bool> UpdateRole(Role Role);
         Task<bool> DeleteRole(Role Role);
+        Task<bool> DeleteRoleAuto();
+        Task<List<Role>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId);
     }
 
     public class PermissionRepository : IPermissionRepository
@@ -42,6 +46,30 @@ namespace CodeBE_LEM.Repositories
                 MenuName = x.MenuName,
             }).ToListAsync();
             return Permissions;
+        }
+
+        public async Task<List<Role>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId)
+        {
+            IQueryable<AppUserClassroomMappingDAO> query = DataContext.AppUserClassroomMappings.AsNoTracking()
+                .Where(x => x.AppUserId == UserId && x.ClassroomId == ClassroomId);
+            List<AppUserClassroomMapping> AppUserClassroomMappings = await query.AsNoTracking()
+                .Select(x => new AppUserClassroomMapping
+                {
+                    Id = x.Id,
+                    ClassroomId = x.ClassroomId,
+                    AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Id = x.Role.Id,
+                        RoleTypeId = x.Role.RoleTypeId,
+                        Description = x.Role.Description,
+                        Name = x.Role.Name,
+                    }
+                }).ToListAsync();
+
+            List<Role> Roles = AppUserClassroomMappings.Where(x => x.RoleId != null).DistinctBy(x => x.RoleId).Select(x => x.Role).ToList();
+            return Roles;
         }
 
         public async Task<List<string>> ListAllPath()
@@ -94,6 +122,35 @@ namespace CodeBE_LEM.Repositories
         public async Task<List<Role>> ListRole()
         {
             IQueryable<RoleDAO> query = DataContext.Roles.AsNoTracking();
+            List<Role> Roles = await query.AsNoTracking().Select(x => new Role
+            {
+                Id = x.Id,
+                Name = x.Name,
+                Description = x.Description,
+            }).ToListAsync();
+
+            var PermissionRoleMappingQuery = DataContext.PermissionRoleMappings.AsNoTracking();
+            List<PermissionRoleMapping> PermissionRoleMappings = await PermissionRoleMappingQuery
+                .Select(x => new PermissionRoleMapping
+                {
+                    Id = x.Id,
+                    RoleId = x.RoleId,
+                    PermissionId = x.PermissionId,
+                }).ToListAsync();
+
+            foreach (Role Role in Roles)
+            {
+                Role.PermissionRoleMappings = PermissionRoleMappings
+                    .Where(x => x.Id == Role.Id)
+                    .ToList();
+            }
+
+            return Roles;
+        }
+
+        public async Task<List<Role>> ListSystemRole()
+        {
+            IQueryable<RoleDAO> query = DataContext.Roles.AsNoTracking().Where(x => x.RoleTypeId == RoleTypeEnum.AUTO.Id);
             List<Role> Roles = await query.AsNoTracking().Select(x => new Role
             {
                 Id = x.Id,
@@ -182,6 +239,13 @@ namespace CodeBE_LEM.Repositories
             DataContext.Roles.Remove(RoleDAO);
             await DataContext.SaveChangesAsync();
             await SaveReference(Role);
+            return true;
+        }
+
+        public async Task<bool> DeleteRoleAuto()
+        {
+            await DataContext.Roles.Where(x => x.RoleTypeId == RoleTypeEnum.AUTO.Id)
+                .DeleteFromQueryAsync();
             return true;
         }
 

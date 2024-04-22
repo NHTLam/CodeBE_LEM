@@ -17,6 +17,9 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Delete(Board Board);
         Task<bool> DeleteCard(Card Card);
         Task<bool> UpdateCode(Board Board);
+        Task<List<long>> BulkMerge(List<Board> Boards);
+        Task<bool> BulkUpdateCode(List<Board> Boards);
+        Task<bool> BulkMergeAppUserBoardMapping(List<AppUserBoardMapping> AppUserBoardMappings);
         Task<List<AppUserBoardMapping>> ListAppUserBoardMappingByAppUser(long AppUserId);
     }
 
@@ -362,6 +365,69 @@ namespace CodeBE_LEM.Repositories
             }
 
             await DataContext.SaveChangesAsync();
+        }
+
+        public async Task<List<long>> BulkMerge(List<Board> Boards)
+        {
+            await DataContext.AppUserBoardMappings.Where(x => Boards.Select(x => x.Id).ToList().Contains(x.BoardId)).DeleteFromQueryAsync();
+            List<BoardDAO> BoardDAOs = new List<BoardDAO>();
+            List<Board> oldBoards = Boards;
+            foreach (Board Board in Boards)
+            {
+                BoardDAO BoardDAO = new BoardDAO();
+                BoardDAO.Id = Board.Id;
+                BoardDAO.Name = Board.Name;
+                BoardDAO.Code = Board.Code;
+                BoardDAO.Description = Board.Description;
+                BoardDAO.IsFavourite = Board.IsFavourite;
+                BoardDAO.ImageUrl = Board.ImageUrl;
+                BoardDAO.CreatedAt = DateTime.Now;
+                BoardDAO.UpdatedAt = DateTime.Now;
+                BoardDAO.ClassroomId = Board.ClassroomId;
+                BoardDAOs.Add(BoardDAO);
+                if (BoardDAO.Id == 0)
+                    DataContext.Boards.Add(BoardDAO);
+                else
+                    DataContext.Boards.Update(BoardDAO);
+            }
+            await DataContext.SaveChangesAsync();
+
+            var Ids = BoardDAOs.Select(x => x.Id).ToList();
+            return Ids;
+        }
+
+        public async Task<bool> BulkUpdateCode(List<Board> Boards)
+        {
+            List<BoardDAO>? BoardDAOs = DataContext.Boards
+                .Where(x => Boards.Select(y => y.Id).Contains(x.Id))
+                .ToList();
+            if (BoardDAOs == null)
+                return false;
+            foreach (BoardDAO BoardDAO in BoardDAOs)
+            {
+                string code = Boards.Where(x => x.Id == BoardDAO.Id).FirstOrDefault().Code;
+                BoardDAO.Code = code;
+                DataContext.Boards.Update(BoardDAO);
+            }
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
+
+        public async Task<bool> BulkMergeAppUserBoardMapping(List<AppUserBoardMapping> AppUserBoardMappings)
+        {
+            List<AppUserBoardMappingDAO> AppUserBoardMappingDAOs = new List<AppUserBoardMappingDAO>();
+            foreach (var appUserBoardMapping in AppUserBoardMappings)
+            {
+                AppUserBoardMappingDAO AppUserBoardMappingDAO = new AppUserBoardMappingDAO();
+                AppUserBoardMappingDAO.AppUserId = appUserBoardMapping.AppUserId;
+                AppUserBoardMappingDAO.BoardId = appUserBoardMapping.BoardId;
+                AppUserBoardMappingDAO.AppUserTypeId = appUserBoardMapping.AppUserTypeId;
+                AppUserBoardMappingDAOs.Add(AppUserBoardMappingDAO);
+            }
+            await DataContext.AppUserBoardMappings.AddRangeAsync(AppUserBoardMappingDAOs);
+            await DataContext.SaveChangesAsync();
+
+            return true;
         }
 
     }

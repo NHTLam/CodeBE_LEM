@@ -39,28 +39,6 @@ namespace CodeBE_LEM.Repositories
                 StatusId = x.StatusId,
             }).ToListAsync();
 
-            var AppUserRoleMappingQuery = DataContext.AppUserRoleMappings.AsNoTracking();
-            List<AppUserRoleMapping> AppUserRoleMappings = await AppUserRoleMappingQuery
-                .Select(x => new AppUserRoleMapping
-                {
-                    Id = x.Id,
-                    RoleId = x.RoleId,
-                    AppUserId = x.AppUserId,
-                    Role = x.Role == null ? null : new Role
-                    {
-                        Id = x.Role.Id,
-                        Name = x.Role.Name,
-                        Description = x.Role.Description
-                    }
-                }).ToListAsync();
-
-            foreach (AppUser AppUser in AppUsers)
-            {
-                AppUser.AppUserRoleMappings = AppUserRoleMappings
-                    .Where(x => x.AppUserId == AppUser.Id)
-                    .ToList();
-            }
-
             var AppUserClassroomMappingQuery = DataContext.AppUserClassroomMappings.AsNoTracking();
             List<AppUserClassroomMapping> AppUserClassroomMappings = await AppUserClassroomMappingQuery
                 .Select(x => new AppUserClassroomMapping
@@ -68,6 +46,14 @@ namespace CodeBE_LEM.Repositories
                     Id = x.Id,
                     ClassroomId = x.ClassroomId,
                     AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Id = x.Role.Id,
+                        Name = x.Role.Name,
+                        Description = x.Role.Description,
+                        RoleTypeId = x.Role.RoleTypeId,
+                    }
                 }).ToListAsync();
 
             foreach (AppUser AppUser in AppUsers)
@@ -98,13 +84,22 @@ namespace CodeBE_LEM.Repositories
 
             if (AppUser == null)
                 return null;
-            AppUser.AppUserRoleMappings = await DataContext.AppUserRoleMappings.AsNoTracking()
+
+            AppUser.AppUserClassroomMappings = await DataContext.AppUserClassroomMappings.AsNoTracking()
                 .Where(x => x.AppUserId == AppUser.Id)
-                .Select(x => new AppUserRoleMapping
+                .Select(x => new AppUserClassroomMapping
                 {
                     Id = x.Id,
+                    ClassroomId = x.ClassroomId,
                     AppUserId = x.AppUserId,
                     RoleId = x.RoleId,
+                    Role = x.Role == null ? null : new Role
+                    {
+                        Id = x.Role.Id,
+                        Name = x.Role.Name,
+                        Description = x.Role.Description,
+                        RoleTypeId = x.Role.RoleTypeId,
+                    }
                 }).ToListAsync();
 
             return AppUser;
@@ -163,28 +158,6 @@ namespace CodeBE_LEM.Repositories
 
         private async Task SaveReference(AppUser AppUser)
         {
-            if (AppUser.AppUserRoleMappings == null || AppUser.AppUserRoleMappings.Count == 0)
-                await DataContext.AppUserRoleMappings
-                    .Where(x => x.AppUserId == AppUser.Id)
-                    .DeleteFromQueryAsync();
-            else
-            {
-                var AppUserRoleMappingIds = AppUser.AppUserRoleMappings.Select(x => x.Id).Distinct().ToList();
-                await DataContext.AppUserRoleMappings
-                    .Where(x => x.AppUserId == AppUser.Id)
-                    .Where(x => !AppUserRoleMappingIds.Contains(x.Id))
-                    .DeleteFromQueryAsync();
-
-                List<AppUserRoleMappingDAO> AppUserRoleMappingDAOs = new List<AppUserRoleMappingDAO>();
-                foreach (AppUserRoleMapping PermissonAppUserMapping in AppUser.AppUserRoleMappings)
-                {
-                    AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO();
-                    AppUserRoleMappingDAO.AppUserId = AppUser.Id;
-                    AppUserRoleMappingDAO.RoleId = PermissonAppUserMapping.RoleId;
-                    AppUserRoleMappingDAOs.Add(AppUserRoleMappingDAO);
-                }
-                await DataContext.BulkMergeAsync(AppUserRoleMappingDAOs);
-            }
         }
     }
 }

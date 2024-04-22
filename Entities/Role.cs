@@ -11,7 +11,9 @@ public partial class Role
 
     public string? Description { get; set; }
 
-    public List<AppUserRoleMapping> AppUserRoleMappings { get; set; } = new List<AppUserRoleMapping>();
+    public long? RoleTypeId { get; set; }
+
+    public List<AppUserClassroomMapping> AppUserClassroomMappings { get; set; } = new List<AppUserClassroomMapping>();
 
     public List<PermissionRoleMapping> PermissionRoleMappings { get; set; } = new List<PermissionRoleMapping>();
 }

@@ -6,7 +6,9 @@ namespace CodeBE_LEM.Controllers.ClassroomController
     {
         public long Id { get; set; }
 
-        public long ClassEventId { get; set; }
+        public long? ClassEventId { get; set; }
+
+        public long? JobId { get; set; }
 
         public string Description { get; set; } = null!;
 
@@ -16,6 +18,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Id = Comment.Id;
             ClassEventId = Comment.ClassEventId;
             Description = Comment.Description;
+            JobId = Comment.JobId;
         }
 
     }

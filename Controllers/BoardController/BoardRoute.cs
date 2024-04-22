@@ -15,6 +15,7 @@ namespace CodeBE_LEM.Controllers.BoardController
         public const string Update = Module + "/update";
         public const string Delete = Module + "/delete";
         public const string ListCardByUserId = Module + "/list-card-by-userId";
+        public const string CreateBoardsForClass = Module + "/create-boards-for-class";
 
         public const string DuplicateCard = Module + "/duplicate-card";
         public const string DeleteCard = Module + "/delete-card";

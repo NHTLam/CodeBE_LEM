@@ -1,8 +1,8 @@
 ﻿using CodeBE_LEM.Entities;
 
-namespace CodeBE_LEM.Controllers.AppUserController
+namespace CodeBE_LEM.Controllers.PermissionController
 {
-    public class AppUser_AppUserClassroomMappingDTO
+    public class Permission_AppUserClassroomMappingDTO
     {
         public long Id { get; set; }
 
@@ -12,16 +12,13 @@ namespace CodeBE_LEM.Controllers.AppUserController
 
         public long? RoleId { get; set; }
 
-        public AppUser_RoleDTO? Role { get; set; }
-
-        public AppUser_AppUserClassroomMappingDTO() { }
-        public AppUser_AppUserClassroomMappingDTO(AppUserClassroomMapping AppUserClassroomMapping)
+        public Permission_AppUserClassroomMappingDTO() { }
+        public Permission_AppUserClassroomMappingDTO(AppUserClassroomMapping AppUserClassroomMapping)
         {
             Id = AppUserClassroomMapping.Id;
             ClassroomId = AppUserClassroomMapping.ClassroomId;
             AppUserId = AppUserClassroomMapping.AppUserId;
             RoleId = AppUserClassroomMapping.RoleId;
-            Role = AppUserClassroomMapping.Role == null ? null : new AppUser_RoleDTO(AppUserClassroomMapping.Role);
         }
     }
 }

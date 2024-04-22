@@ -1,4 +1,5 @@
 ﻿using CodeBE_LEM.Entities;
+using CodeBE_LEM.Enums;
 using CodeBE_LEM.Models;
 using CodeBE_LEM.Repositories;
 using CodeBE_LEM.Services.PermissionService;
@@ -19,42 +20,28 @@ namespace CodeBE_LEM.Controllers
         }
 
         [HttpGet, Route("lem/setup/init")]
-        public async Task<ActionResult> InitEnum()
+        public async Task<ActionResult> Init()
         {
             await InitPermission();
-            await InitPermissionForAdmin();
             return Ok();
         }
 
         private async Task InitPermission()
         {
             await PermissionService.Init();
-        }
+            
+            await UOW.PermissionRepository.DeleteRoleAuto();
+            Role RoleTeacher = new Role();
+            RoleTeacher.Name = "Teacher";
+            RoleTeacher.Description = "Vai trò giáo viên sẽ có toàn quyền trong lớp học";
+            RoleTeacher.RoleTypeId = RoleTypeEnum.AUTO.Id;
+            await PermissionService.CreateRole(RoleTeacher);
 
-        private async Task InitPermissionForAdmin()
-        {
-            await DataContext.PermissionRoleMappings.Where(x => x.RoleId == 1).DeleteFromQueryAsync();
-            List<Permission> AllPermissions = await PermissionService.ListPermission();
-            List<PermissionRoleMappingDAO> PermissonRoleMappingDAOs = new List<PermissionRoleMappingDAO>();
-            foreach (Permission permission in AllPermissions)
-            {
-                PermissionRoleMappingDAO PermissionRoleMappingDAO = new PermissionRoleMappingDAO();
-                PermissionRoleMappingDAO.RoleId = 1; //Fix cứng id của admin là 1
-                PermissionRoleMappingDAO.PermissionId = permission.Id;
-                PermissonRoleMappingDAOs.Add(PermissionRoleMappingDAO);
-            }
-            await DataContext.AddRangeAsync(PermissonRoleMappingDAOs);
-            await DataContext.SaveChangesAsync();
-
-            var User = await UOW.AppUserRepository.Get(2);
-            if (User.AppUserRoleMappings == null || User.AppUserRoleMappings.Count == 0)
-            {
-                AppUserRoleMappingDAO AppUserRoleMappingDAO = new AppUserRoleMappingDAO();
-                AppUserRoleMappingDAO.RoleId = 1;
-                AppUserRoleMappingDAO.AppUserId = 2;
-                DataContext.AppUserRoleMappings.Add(AppUserRoleMappingDAO);
-                await DataContext.SaveChangesAsync();
-            }
+            Role RoleStudent = new Role();
+            RoleStudent.Name = "Student";
+            RoleStudent.Description = "Vai trò học sinh trong lớp học";
+            RoleStudent.RoleTypeId = RoleTypeEnum.AUTO.Id;
+            await PermissionService.CreateRole(RoleStudent);
         }
     }
 }
