@@ -12,6 +12,7 @@ namespace CodeBE_LEM.Repositories
         IClassEventRepository ClassEventRepository { get; }
         ICommentRepository CommentRepository { get; }
         IQuestionRepository QuestionRepository { get; }
+        IAttachmentRepository AttachmentRepository { get; }
     }
     public class UOW : IUOW
     {
@@ -24,6 +25,7 @@ namespace CodeBE_LEM.Repositories
         public IClassEventRepository ClassEventRepository { get; private set; }
         public ICommentRepository CommentRepository { get; private set; }
         public IQuestionRepository QuestionRepository { get; private set; }
+        public IAttachmentRepository AttachmentRepository { get; private set; }
 
         public UOW(DataContext DataContext)
         {
@@ -36,6 +38,7 @@ namespace CodeBE_LEM.Repositories
             this.ClassEventRepository = new ClassEventRepository(DataContext);
             this.CommentRepository = new CommentRepository(DataContext);
             this.QuestionRepository = new QuestionRepository(DataContext);
+            this.AttachmentRepository = new AttachmentRepository(DataContext);
         }
     }
 }

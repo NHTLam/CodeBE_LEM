@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeBE_LEM.Models;
@@ -24,6 +25,8 @@ public partial class DataContext : DbContext
     public virtual DbSet<AppUserClassroomMappingDAO> AppUserClassroomMappings { get; set; }
 
     public virtual DbSet<AppUserJobMappingDAO> AppUserJobMappings { get; set; }
+
+    public virtual DbSet<AttachmentDAO> Attachments { get; set; }
 
     public virtual DbSet<BoardDAO> Boards { get; set; }
 
@@ -142,6 +145,24 @@ public partial class DataContext : DbContext
             entity.HasOne(d => d.Classroom).WithMany(p => p.Boards)
                 .HasForeignKey(d => d.ClassroomId)
                 .HasConstraintName("FK_Board_Classroom");
+        });
+
+        modelBuilder.Entity<AttachmentDAO>(entity =>
+        {
+            entity.ToTable("Attachment");
+
+            entity.Property(e => e.Capacity).HasMaxLength(500);
+            entity.Property(e => e.Description).HasMaxLength(500);
+            entity.Property(e => e.Name).HasMaxLength(500);
+            entity.Property(e => e.Path).HasMaxLength(500);
+
+            entity.HasOne(d => d.Question).WithMany(p => p.Attachments)
+                .HasForeignKey(d => d.QuestionId)
+                .HasConstraintName("FK_Attachment_Question");
+
+            entity.HasOne(d => d.Owner).WithMany(p => p.Attachments)
+                .HasForeignKey(d => d.OwnerId)
+                .HasConstraintName("FK_Attachment_AppUser");
         });
 
         modelBuilder.Entity<CardDAO>(entity =>
