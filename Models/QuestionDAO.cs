@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Net.Mail;
 
 namespace CodeBE_LEM.Models;
 
@@ -20,6 +21,8 @@ public partial class QuestionDAO
     public string? Instruction { get; set; }
 
     public virtual ICollection<AnswerDAO> Answers { get; set; } = new List<AnswerDAO>();
+
+    public virtual ICollection<AttachmentDAO> Attachments { get; set; } = new List<AttachmentDAO>();
 
     public virtual ClassEventDAO ClassEvent { get; set; } = null!;
 }

@@ -11,6 +11,7 @@ using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using System.Text;
 using CodeBE_LEM.Services.JobService;
+using CodeBE_LEM.Services.AttachmentService;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +67,7 @@ builder.Services.AddScoped<IClassEventService, ClassEventService>();
 builder.Services.AddScoped<IClassEventValidator, ClassEventValidator>();
 builder.Services.AddScoped<IJobService, JobService>();
 builder.Services.AddScoped<IJobValidator, JobValidator>();
+builder.Services.AddScoped<IAttachmentService, AttachmentService>();
 builder.Services.AddScoped<IUOW, UOW>();
 
 var app = builder.Build();
