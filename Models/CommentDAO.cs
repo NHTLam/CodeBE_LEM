@@ -1,4 +1,3 @@
-using CodeBE_LEM.Entities;
 using System;
 using System.Collections.Generic;
 
@@ -14,7 +13,17 @@ public partial class CommentDAO
 
     public long? JobId { get; set; }
 
+    public long? AppUserId { get; set; }
+
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
     public virtual ClassEventDAO? ClassEvent { get; set; }
 
     public virtual JobDAO? Job { get; set; }
+
+    public virtual AppUserDAO? AppUser { get; set; }
 }

@@ -1,4 +1,5 @@
 ﻿using CodeBE_LEM.Models;
+using CodeBE_LEM.Repositories;
 
 namespace CodeBE_LEM.Repositories
 {
@@ -13,6 +14,7 @@ namespace CodeBE_LEM.Repositories
         ICommentRepository CommentRepository { get; }
         IQuestionRepository QuestionRepository { get; }
         IAttachmentRepository AttachmentRepository { get; }
+        IStudentAnswerRepository StudentAnswerRepository { get; }
     }
     public class UOW : IUOW
     {
@@ -26,6 +28,7 @@ namespace CodeBE_LEM.Repositories
         public ICommentRepository CommentRepository { get; private set; }
         public IQuestionRepository QuestionRepository { get; private set; }
         public IAttachmentRepository AttachmentRepository { get; private set; }
+        public IStudentAnswerRepository StudentAnswerRepository { get; private set; }
 
         public UOW(DataContext DataContext)
         {
@@ -39,6 +42,7 @@ namespace CodeBE_LEM.Repositories
             this.CommentRepository = new CommentRepository(DataContext);
             this.QuestionRepository = new QuestionRepository(DataContext);
             this.AttachmentRepository = new AttachmentRepository(DataContext);
+            this.StudentAnswerRepository = new StudentAnswerRepository(DataContext);
         }
     }
 }

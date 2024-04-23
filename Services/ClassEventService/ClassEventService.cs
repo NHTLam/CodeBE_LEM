@@ -2,7 +2,12 @@
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Repositories;
 using CodeBE_LEM.Services.ClassEventService;
+using CodeBE_LEM.Services;
+using CodeBE_LEM.Common;
 using CodeBE_LEM.Entities;
+using CodeBE_LEM.Repositories;
+using CodeBE_LEM.Services.ClassEventService;
+using System.Linq;
 
 namespace CodeBE_LEM.Services.ClassroomService
 {
@@ -19,6 +24,10 @@ namespace CodeBE_LEM.Services.ClassroomService
         Task<Question> CreateQuestion(Question Question);
         Task<Question> UpdateQuestion(Question Question);
         Task<Question> DeleteQuestion(Question Question);
+        Task<StudentAnswer> CreateStudentAnswer(StudentAnswer StudentAnswer);
+        Task<List<StudentAnswer>> DetailStudentAnswer(StudentAnswer StudentAnswer);
+        Task<List<AppUser>> ListStudentAnswer(StudentAnswer StudentAnswer);
+        Task<StudentAnswer> UpdateStudentAnswer(StudentAnswer StudentAnswer);
     }
     public class ClassEventService : BaseService<ClassEvent>, IClassEventService
     {
@@ -37,14 +46,9 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             try
             {
-                //var ClassEventId = await UOW.ClassEventRepository.Get(Comment.ClassEventId);
-
-                //if (ClassEventId != null)
-                //{
-                //    await UOW.CommentRepository.Create(Comment);
-                //    Comment = await UOW.CommentRepository.Get(Comment.Id);
-                //    return Comment;
-                //}
+                await UOW.CommentRepository.Create(Comment);
+                Comment = await UOW.CommentRepository.Get(Comment.Id);
+                return Comment;
 
             }
             catch (Exception ex)
@@ -143,6 +147,89 @@ namespace CodeBE_LEM.Services.ClassroomService
             }
             return null;
         }
+
+        public async Task<List<StudentAnswer>> DetailStudentAnswer(StudentAnswer StudentAnswer)
+        {
+            try
+            {
+                List<StudentAnswer> StudentAnswers = await UOW.StudentAnswerRepository.Detail(StudentAnswer.AppUserId);
+
+                StudentAnswers = StudentAnswers.Where(x => x.Question?.ClassEventId == StudentAnswer.ClassEventId).ToList();
+
+                return StudentAnswers;
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+
+        public async Task<List<AppUser>> ListStudentAnswer(StudentAnswer StudentAnswer)
+        {
+            try
+            {
+                ClassEvent ClassEvent = await UOW.ClassEventRepository.Get(StudentAnswer.ClassEventId.Value);
+
+                var QuestionIds = ClassEvent?.Questions?.Select(x => x.Id).ToList();
+
+                if (QuestionIds != null && QuestionIds.Count != 0)
+                {
+                    List<StudentAnswer> StudentAnswers = await UOW.StudentAnswerRepository.List(QuestionIds);
+                    var AppUsers = StudentAnswers.Select(x => x.AppUser).GroupBy(p => p.Id).Select(g => g.First()).ToList();
+
+
+                    return AppUsers;
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+        public async Task<StudentAnswer> CreateStudentAnswer(StudentAnswer StudentAnswer)
+        {
+            try
+            {
+                var QuestionId = await UOW.QuestionRepository.Get(StudentAnswer.QuestionId);
+
+                if (QuestionId != null)
+                {
+                    StudentAnswer.SubmitAt = DateTime.Now;
+                    await UOW.StudentAnswerRepository.Create(StudentAnswer);
+                    StudentAnswer = await UOW.StudentAnswerRepository.Get(StudentAnswer.Id);
+                    return StudentAnswer;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+        public async Task<StudentAnswer> UpdateStudentAnswer(StudentAnswer StudentAnswer)
+        {
+            try
+            {
+                var oldData = await UOW.StudentAnswerRepository.Get(StudentAnswer.Id);
+
+                await UOW.StudentAnswerRepository.Update(StudentAnswer);
+
+                StudentAnswer = await UOW.StudentAnswerRepository.Get(StudentAnswer.Id);
+                return StudentAnswer;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception();
+            }
+            return null;
+        }
+
         public async Task<ClassEvent> Create(ClassEvent ClassEvent)
         {
             if (!await ClassEventValidator.Create(ClassEvent))
@@ -193,6 +280,25 @@ namespace CodeBE_LEM.Services.ClassroomService
         public async Task<ClassEvent> Get(long Id)
         {
             ClassEvent ClassEvent = await UOW.ClassEventRepository.Get(Id);
+
+            if (ClassEvent.Questions != null && ClassEvent.Questions.Count > 0)
+            {
+                Question QuestionInDb = ClassEvent.Questions.FirstOrDefault();
+
+                if (QuestionInDb != null)
+                {
+                    var QuestionIds = new List<long>();
+                    QuestionIds.Add(QuestionInDb.Id);
+                    List<StudentAnswer> StudentAnswers = await UOW.StudentAnswerRepository.List(QuestionIds);
+
+                    foreach (Question Question in ClassEvent.Questions)
+                    {
+                        Question.StudentAnswers = StudentAnswers;
+
+                    }
+                }
+            }
+
             if (ClassEvent == null)
                 return null;
             await ClassEventValidator.Get(ClassEvent);
@@ -203,7 +309,7 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             try
             {
-                List<ClassEvent> ClassEvents = await UOW.ClassEventRepository.List(FilterDTO.ClassroomId!.Value);
+                List<ClassEvent> ClassEvents = await UOW.ClassEventRepository.List(1);
 
                 ClassEvents = FilterData(ClassEvents, FilterDTO);
                 if (FilterDTO.Pinned != null)
@@ -214,12 +320,27 @@ namespace CodeBE_LEM.Services.ClassroomService
                 {
                     ClassEvents = ClassEvents.Where(x => x.IsClassWork == FilterDTO.IsClassWork).ToList();
                 }
+                if (FilterDTO.AppUserId != null)
+                {
+                    List<StudentAnswer> StudentAnswers = await UOW.StudentAnswerRepository.Detail(FilterDTO.AppUserId.Value);
+                    List<Question> Questions = StudentAnswers.Select(x => x.Question).ToList();
+                    var ClassEventIds = Questions.Select(x => x.ClassEventId).Distinct().ToList();
+
+                    foreach (ClassEvent ClassEvent in ClassEvents)
+                    {
+                        if (ClassEventIds.Contains(ClassEvent.Id))
+                        {
+                            ClassEvent.IsSubmit = true;
+                        }
+                    }
+
+                }
 
                 return ClassEvents;
             }
             catch (Exception ex)
             {
-
+                throw new Exception();
             }
             return null;
         }

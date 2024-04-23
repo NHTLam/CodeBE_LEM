@@ -1,4 +1,4 @@
-using CodeBE_LEM.Entities;
+using CodeBE_LEM.Models;
 using System;
 using System.Collections.Generic;
 
@@ -30,5 +30,13 @@ public partial class AppUserDAO
 
     public virtual ICollection<AttachmentDAO> Attachments { get; set; } = new List<AttachmentDAO>();
 
+    public virtual ICollection<ClassEventDAO> ClassEvents { get; set; } = new List<ClassEventDAO>();
+
     public virtual ICollection<JobDAO> Jobs { get; set; } = new List<JobDAO>();
+
+    public virtual ICollection<CommentDAO> Comments { get; set; } = new List<CommentDAO>();
+
+    public virtual ICollection<StudentAnswerDAO> StudentAnswers { get; set; } = new List<StudentAnswerDAO>();
+
+    public virtual ICollection<StudentAnswerDAO> StudentAnswerFeedbacks { get; set; } = new List<StudentAnswerDAO>();
 }

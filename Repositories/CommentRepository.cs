@@ -24,7 +24,11 @@ namespace CodeBE_LEM.Repositories
         {
             CommentDAO CommentDAO = new CommentDAO();
             CommentDAO.ClassEventId = Comment.ClassEventId;
+            CommentDAO.AppUserId = Comment.AppUserId;
+            CommentDAO.JobId = Comment.JobId;
             CommentDAO.Description = Comment.Description;
+            CommentDAO.CreatedAt = DateTime.Now;
+            CommentDAO.UpdatedAt = DateTime.Now;
             DataContext.Comments.Add(CommentDAO);
             await DataContext.SaveChangesAsync();
             return true;
@@ -50,22 +54,24 @@ namespace CodeBE_LEM.Repositories
                 {
                     Id = x.Id,
                     ClassEventId = x.ClassEventId,
+                    AppUserId = x.AppUserId,
+                    JobId = x.JobId,
                     Description = x.Description,
-                    ClassEvent = new ClassEvent
+                    ClassEvent = x.ClassEvent == null ? null : new ClassEvent
                     {
                         Id = x.ClassEvent.Id,
                         Name = x.ClassEvent.Name,
                         Code = x.ClassEvent.Code,
                         ClassroomId = x.ClassEvent.ClassroomId,
+                        AppUserId = x.ClassEvent.AppUserId ?? 0,
                         Description = x.ClassEvent.Description,
-                        StartAt = x.ClassEvent.StartAt,
                         IsClassWork = x.ClassEvent.IsClassWork,
                         Pinned = x.ClassEvent.Pinned,
                         CreatedAt = x.ClassEvent.CreatedAt,
                         EndAt = x.ClassEvent.EndAt,
                         UpdatedAt = x.ClassEvent.UpdatedAt,
                         DeletedAt = x.ClassEvent.DeletedAt,
-                        Classroom = new Classroom
+                        Classroom = x.ClassEvent.Classroom == null ? null : new Classroom
                         {
                             Id = x.ClassEvent.Classroom.Id,
                             Name = x.ClassEvent.Classroom.Name,
@@ -76,6 +82,16 @@ namespace CodeBE_LEM.Repositories
                             DeletedAt = x.ClassEvent.Classroom.DeletedAt,
                         },
                     },
+                    AppUser = x.AppUser == null ? null : new AppUser
+                    {
+                        Id = x.AppUser.Id,
+                        UserName = x.AppUser.UserName
+                    },
+                    Job = x.Job == null ? null : new Job
+                    {
+                        Id = x.Job.Id,
+
+                    }
                 }).FirstOrDefaultAsync();
 
             return Comment;
@@ -89,6 +105,8 @@ namespace CodeBE_LEM.Repositories
                 Id = x.Id,
                 ClassEventId = x.ClassEventId,
                 Description = x.Description,
+                JobId = x.JobId,
+                AppUserId = x.AppUserId,
                 ClassEvent = new ClassEvent
                 {
                     Id = x.ClassEvent.Id,
@@ -96,14 +114,13 @@ namespace CodeBE_LEM.Repositories
                     Code = x.ClassEvent.Code,
                     ClassroomId = x.ClassEvent.ClassroomId,
                     Description = x.ClassEvent.Description,
-                    StartAt = x.ClassEvent.StartAt,
                     IsClassWork = x.ClassEvent.IsClassWork,
                     Pinned = x.ClassEvent.Pinned,
                     CreatedAt = x.ClassEvent.CreatedAt,
                     EndAt = x.ClassEvent.EndAt,
                     UpdatedAt = x.ClassEvent.UpdatedAt,
                     DeletedAt = x.ClassEvent.DeletedAt,
-                    Classroom = new Classroom
+                    Classroom = x.ClassEvent.Classroom == null ? null : new Classroom
                     {
                         Id = x.ClassEvent.Classroom.Id,
                         Name = x.ClassEvent.Classroom.Name,
@@ -114,6 +131,16 @@ namespace CodeBE_LEM.Repositories
                         DeletedAt = x.ClassEvent.Classroom.DeletedAt,
                     },
                 },
+                AppUser = x.AppUser == null ? null : new AppUser
+                {
+                    Id = x.AppUser.Id,
+                    UserName = x.AppUser.UserName
+                },
+                Job = x.Job == null ? null : new Job
+                {
+                    Id = x.Job.Id,
+
+                }
             }).ToListAsync();
 
             return Comments;
@@ -127,6 +154,9 @@ namespace CodeBE_LEM.Repositories
             if (CommentDAO == null)
                 return false;
             CommentDAO.ClassEventId = Comment.ClassEventId;
+            CommentDAO.JobId = Comment.JobId;
+            CommentDAO.AppUserId = Comment.AppUserId;
+            CommentDAO.UpdatedAt = DateTime.Now;
             CommentDAO.Description = Comment.Description;
             await DataContext.SaveChangesAsync();
             return true;

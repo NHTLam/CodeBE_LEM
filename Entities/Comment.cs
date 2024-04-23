@@ -13,6 +13,16 @@ public partial class Comment
 
     public long? JobId { get; set; }
 
+    public DateTime? CreatedAt { get; set; }
+
+    public DateTime? UpdatedAt { get; set; }
+
+    public DateTime? DeletedAt { get; set; }
+
+    public long? AppUserId { get; set; }
+
+    public AppUser AppUser { get; set; } = null!;
+
     public Job? Job { get; set; }
 
     public ClassEvent? ClassEvent { get; set; } = null!;

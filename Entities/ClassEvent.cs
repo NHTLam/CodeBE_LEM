@@ -13,9 +13,13 @@ public class ClassEvent : IFilterable
 
     public string Code { get; set; } = null!;
 
+    public bool IsSubmit { get; set; }
+
     public string Name { get; set; } = null!;
 
     public bool IsClassWork { get; set; }
+
+    public long AppUserId { get; set; }
 
     public bool Pinned { get; set; }
 
@@ -24,6 +28,7 @@ public class ClassEvent : IFilterable
     public DateTime CreatedAt { get; set; }
 
     public DateTime? StartAt { get; set; }
+
     public DateTime? EndAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }
@@ -31,6 +36,8 @@ public class ClassEvent : IFilterable
     public DateTime? DeletedAt { get; set; }
 
     public Classroom Classroom { get; set; } = null!;
+
+    public AppUser? AppUser { get; set; } = null!;
 
     public List<Comment>? Comments { get; set; }
 

@@ -28,5 +28,10 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public const string UpdateQuestion = Module + "/update-question";
         public const string DeleteQuestion = Module + "/delete-question";
 
+        public const string ListStudentAnswer = Module + "/list-student-answer";
+        public const string DetailStudentAnswer = Module + "/detail-student-answer";
+        public const string CreateStudentAnswer = Module + "/create-student-answer";
+        public const string UpdateStudentAnswer = Module + "/update-student-answer";
+
     }
 }

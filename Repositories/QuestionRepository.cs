@@ -1,5 +1,6 @@
 ﻿using CodeBE_LEM.Entities;
 using CodeBE_LEM.Models;
+using CodeBE_LEM.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace CodeBE_LEM.Repositories
@@ -29,7 +30,6 @@ namespace CodeBE_LEM.Repositories
             QuestionDAO.Instruction = Question.Instruction;
             QuestionDAO.Name = Question.Name;
             QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
-            QuestionDAO.StudentAnswer = Question.StudentAnswer;
             DataContext.Questions.Add(QuestionDAO);
             await DataContext.SaveChangesAsync();
             Question.Id = QuestionDAO.Id;
@@ -60,8 +60,7 @@ namespace CodeBE_LEM.Repositories
                     Description = x.Description,
                     Name = x.Name,
                     CorrectAnswer = x.CorrectAnswer,
-                    StudentAnswer = x.StudentAnswer,
-                    ClassEvent = new ClassEvent
+                    ClassEvent = x.ClassEvent == null ? null : new ClassEvent
                     {
                         Id = x.ClassEvent.Id,
                         Name = x.ClassEvent.Name,
@@ -74,7 +73,7 @@ namespace CodeBE_LEM.Repositories
                         EndAt = x.ClassEvent.EndAt,
                         UpdatedAt = x.ClassEvent.UpdatedAt,
                         DeletedAt = x.ClassEvent.DeletedAt,
-                        Classroom = new Classroom
+                        Classroom = x.ClassEvent.Classroom == null ? null : new Classroom
                         {
                             Id = x.ClassEvent.Classroom.Id,
                             Name = x.ClassEvent.Classroom.Name,
@@ -100,8 +99,7 @@ namespace CodeBE_LEM.Repositories
                 Description = x.Description,
                 Name = x.Name,
                 CorrectAnswer = x.CorrectAnswer,
-                StudentAnswer = x.StudentAnswer,
-                ClassEvent = new ClassEvent
+                ClassEvent = x.ClassEvent == null ? null :new ClassEvent
                 {
                     Id = x.ClassEvent.Id,
                     Name = x.ClassEvent.Name,
@@ -114,7 +112,7 @@ namespace CodeBE_LEM.Repositories
                     EndAt = x.ClassEvent.EndAt,
                     UpdatedAt = x.ClassEvent.UpdatedAt,
                     DeletedAt = x.ClassEvent.DeletedAt,
-                    Classroom = new Classroom
+                    Classroom = x.ClassEvent.Classroom == null ? null : new Classroom
                     {
                         Id = x.ClassEvent.Classroom.Id,
                         Name = x.ClassEvent.Classroom.Name,
@@ -142,7 +140,6 @@ namespace CodeBE_LEM.Repositories
             QuestionDAO.Description = Question.Description;
             QuestionDAO.Name = Question.Name;
             QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
-            QuestionDAO.StudentAnswer = Question.StudentAnswer;
             await DataContext.SaveChangesAsync();
             await SaveReference(Question);
             return true;
@@ -177,6 +174,39 @@ namespace CodeBE_LEM.Repositories
                     AnswerDAOs.Add(AnswerDAO);
                 }
                 await DataContext.BulkMergeAsync(AnswerDAOs);
+            }
+
+            if (Question.StudentAnswers == null || Question.StudentAnswers.Count == 0)
+            {
+                await DataContext.StudentAnswers
+                    .Where(x => x.QuestionId == Question.Id)
+                    .DeleteFromQueryAsync();
+            }
+            else
+            {
+                var StudentAnswersIds = Question.StudentAnswers.Select(x => x.Id).Distinct().ToList();
+                await DataContext.StudentAnswers
+                    .Where(x => x.QuestionId == Question.Id)
+                    .Where(x => !StudentAnswersIds.Contains(x.Id))
+                    .DeleteFromQueryAsync();
+
+                List<StudentAnswerDAO> StudentAnswerDAOs = new List<StudentAnswerDAO>();
+                foreach (StudentAnswer StudentAnswer in Question.StudentAnswers)
+                {
+                    StudentAnswerDAO StudentAnswerDAO = new StudentAnswerDAO();
+                    StudentAnswerDAO.Id = StudentAnswer.Id;
+                    StudentAnswerDAO.AppUserId = StudentAnswer.AppUserId;
+                    StudentAnswerDAO.Name = StudentAnswer.Name;
+                    StudentAnswerDAO.AppUserFeedbackId = StudentAnswer.AppUserFeedbackId;
+                    StudentAnswerDAO.Grade = StudentAnswer.Grade;
+                    StudentAnswerDAO.GradeAt = StudentAnswer.GradeAt;
+                    StudentAnswerDAO.Feedback = StudentAnswer.Feedback;
+                    StudentAnswerDAO.SubmitAt = StudentAnswer.SubmitAt;
+                    StudentAnswerDAO.QuestionId = Question.Id;
+
+                    StudentAnswerDAOs.Add(StudentAnswerDAO);
+                }
+                await DataContext.BulkMergeAsync(StudentAnswerDAOs);
             }
         }
     }
