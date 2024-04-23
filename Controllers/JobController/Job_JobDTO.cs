@@ -28,7 +28,7 @@ public class Job_JobDTO
 
     public long? CreatorId { get; set; }
 
-    public long ClassroomId { get; set; }
+    public long? ClassroomId { get; set; }
 
     public Job_AppUserDTO? Creator { get; set; }
 

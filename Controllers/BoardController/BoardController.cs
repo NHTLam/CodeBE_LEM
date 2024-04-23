@@ -61,10 +61,18 @@ namespace CodeBE_LEM.Controllers.BoardController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(BoardRoute.DuplicateCard, Board_CardDTO.ClassroomId ?? 0))
+            if (Board_CardDTO.ClassroomId != null && Board_CardDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(BoardRoute.DuplicateCard, Board_CardDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
             }
+            else
+            {
+                Board_CardDTO.ClassroomId = null; // Gán lại để tránh lỗi FK
+            }
+
 
             Card Card = ConvertCardDTOToEntity(Board_CardDTO);
             bool isSuccess = await BoardService.DuplicateCard(Card);
@@ -96,7 +104,10 @@ namespace CodeBE_LEM.Controllers.BoardController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            List<Board> Boards = await BoardService.ListByClassroom(Board_BoardDTO.ClassroomId);
+            if (Board_BoardDTO.ClassroomId == null)
+                return BadRequest(ModelState);
+
+            List<Board> Boards = await BoardService.ListByClassroom(Board_BoardDTO.ClassroomId.Value);
             List<Board_BoardDTO> Board_BoardDTOs = Boards
                 .Select(c => new Board_BoardDTO(c)).ToList();
 
@@ -109,9 +120,12 @@ namespace CodeBE_LEM.Controllers.BoardController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(BoardRoute.CreateBoardsForClass, Board_CreateBoardsFunctionDTO.ClassroomId))
+            if (Board_CreateBoardsFunctionDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(BoardRoute.CreateBoardsForClass, Board_CreateBoardsFunctionDTO.ClassroomId))
+                {
+                    return Forbid();
+                }
             }
 
             CreateBoardsFunction CreateBoardsFunction = ConvertDTOToEntity(Board_CreateBoardsFunctionDTO);
@@ -154,9 +168,16 @@ namespace CodeBE_LEM.Controllers.BoardController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(BoardRoute.Create, Board_BoardDTO.ClassroomId))
+            if (Board_BoardDTO.ClassroomId != null && Board_BoardDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(BoardRoute.Create, Board_BoardDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                Board_BoardDTO.ClassroomId = null; // Gán lại để tránh lỗi FK
             }
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
@@ -175,9 +196,16 @@ namespace CodeBE_LEM.Controllers.BoardController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(BoardRoute.Update, Board_BoardDTO.ClassroomId))
+            if (Board_BoardDTO.ClassroomId != null && Board_BoardDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(BoardRoute.Update, Board_BoardDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                Board_BoardDTO.ClassroomId = null;
             }
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
@@ -195,10 +223,17 @@ namespace CodeBE_LEM.Controllers.BoardController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(BoardRoute.Delete, Board_BoardDTO.ClassroomId))
+            if (Board_BoardDTO.ClassroomId != null && Board_BoardDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(BoardRoute.Delete, Board_BoardDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
             }
+            else
+            {
+                Board_BoardDTO.ClassroomId = null;
+            }              
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
             Board = await BoardService.Delete(Board);

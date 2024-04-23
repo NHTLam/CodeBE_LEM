@@ -73,9 +73,16 @@ namespace CodeBE_LEM.Controllers.JobController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(JobRoute.Create, Job_JobDTO.ClassroomId))
+            if (Job_JobDTO.ClassroomId != null && Job_JobDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(JobRoute.Create, Job_JobDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                Job_JobDTO.ClassroomId = null; // Gán lại để tránh lỗi FK
             }
 
             Job Job = ConvertDTOToEntity(Job_JobDTO);
@@ -94,9 +101,16 @@ namespace CodeBE_LEM.Controllers.JobController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(JobRoute.Update, Job_JobDTO.ClassroomId))
+            if (Job_JobDTO.ClassroomId != null && Job_JobDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(JobRoute.Update, Job_JobDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                Job_JobDTO.ClassroomId = null; // Gán lại để tránh lỗi FK
             }
 
             Job Job = ConvertDTOToEntity(Job_JobDTO);
@@ -114,9 +128,16 @@ namespace CodeBE_LEM.Controllers.JobController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(JobRoute.Delete, Job_JobDTO.ClassroomId))
+            if (Job_JobDTO.ClassroomId != null && Job_JobDTO.ClassroomId != 0)
             {
-                return Forbid();
+                if (!await PermissionService.HasPermission(JobRoute.Delete, Job_JobDTO.ClassroomId.Value))
+                {
+                    return Forbid();
+                }
+            }
+            else
+            {
+                Job_JobDTO.ClassroomId = null;
             }
 
             Job Job = ConvertDTOToEntity(Job_JobDTO);
