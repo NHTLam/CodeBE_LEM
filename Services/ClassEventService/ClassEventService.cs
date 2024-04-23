@@ -47,7 +47,6 @@ namespace CodeBE_LEM.Services.ClassroomService
             try
             {
                 await UOW.CommentRepository.Create(Comment);
-                Comment = await UOW.CommentRepository.Get(Comment.Id);
                 return Comment;
 
             }
@@ -61,10 +60,9 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             try
             {
-                Comment = await UOW.CommentRepository.Get(Comment.Id);
 
                 await UOW.CommentRepository.Delete(Comment);
-                Comment = await UOW.CommentRepository.Get(Comment.Id);
+                
                 return Comment;
 
             }
@@ -309,7 +307,7 @@ namespace CodeBE_LEM.Services.ClassroomService
         {
             try
             {
-                List<ClassEvent> ClassEvents = await UOW.ClassEventRepository.List(1);
+                List<ClassEvent> ClassEvents = await UOW.ClassEventRepository.List(FilterDTO.ClassroomId.Value);
 
                 ClassEvents = FilterData(ClassEvents, FilterDTO);
                 if (FilterDTO.Pinned != null)

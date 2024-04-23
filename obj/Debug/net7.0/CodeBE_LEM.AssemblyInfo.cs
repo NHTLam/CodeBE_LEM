@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("CodeBE_LEM")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+20569f80b8b79154585db7e819a31749be2f1c19")]
 [assembly: System.Reflection.AssemblyProductAttribute("CodeBE_LEM")]
 [assembly: System.Reflection.AssemblyTitleAttribute("CodeBE_LEM")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

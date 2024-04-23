@@ -19,7 +19,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
             Comment = await ClassEventService.CreateComment(Comment);
 
-            return new Classroom_CommentDTO(Comment);
+            return Ok();
         }
 
         [Route(ClassroomRoute.UpdateComment), HttpPost, Authorize]
@@ -32,7 +32,8 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
             Comment = await ClassEventService.UpdateComment(Comment);
 
-            return new Classroom_CommentDTO(Comment);
+            return Ok();
+
         }
 
         [Route(ClassroomRoute.DeleteComment), HttpPost, Authorize]
@@ -45,7 +46,8 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
             Comment = await ClassEventService.DeleteComment(Comment);
 
-            return new Classroom_CommentDTO(Comment);
+            return Ok();
+
         }
 
         private Comment ConvertCommentDTOToEntity(Classroom_CommentDTO Classroom_CommentDTO)
@@ -54,6 +56,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Comment.Id = Classroom_CommentDTO.Id;
             Comment.ClassEventId = Classroom_CommentDTO.ClassEventId;
             Comment.Description = Classroom_CommentDTO.Description;
+            Comment.AppUserId = Classroom_CommentDTO.AppUserId;
 
             return Comment;
         }

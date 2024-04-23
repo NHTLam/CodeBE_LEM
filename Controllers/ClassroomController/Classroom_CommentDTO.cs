@@ -27,11 +27,12 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public Classroom_CommentDTO() { }
         public Classroom_CommentDTO(Comment Comment)
         {
-            Id = Comment.Id;
+            Id = Comment.Id == null ? 0 : Comment.Id;
             ClassEventId = Comment.ClassEventId;
             Description = Comment.Description;
             CreatedAt = Comment.CreatedAt;
             UpdatedAt = Comment.UpdatedAt;
+            AppUserId = Comment.AppUserId;
             AppUser = Comment.AppUser == null ? null : new Classroom_AppUserDTO(Comment.AppUser);
         }
 
