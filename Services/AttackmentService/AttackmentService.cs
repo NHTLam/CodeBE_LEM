@@ -47,30 +47,46 @@ namespace CodeBE_LEM.Services.AttachmentService
 
         public async Task<List<Attachment>> MultiUploadFile(List<IFormFile> files, long QuestionId)
         {
-            List<Attachment> Attachments = new List<Attachment>();
-            foreach (var file in files)
+            try
             {
-                Attachment Attachment = new Attachment();
-                Attachment.QuestionId = QuestionId;
-                Attachment.Capacity = file.Length.ToString();
-                Attachment.Name = file.FileName;
-                Attachment.OwnerId = PermissionService.GetAppUserId();
-                Attachment = await CloudinaryStorage(Attachment, file);
-                Attachments.Add(Attachment);
-                if (Attachment == null)
-                    return new List<Attachment>();
-            }
+                List<Attachment> Attachments = new List<Attachment>();
+                foreach (var file in files)
+                {
+                    Attachment Attachment = new Attachment();
+                    Attachment.QuestionId = QuestionId;
+                    Attachment.Capacity = file.Length.ToString();
+                    Attachment.Name = file.FileName;
+                    Attachment.OwnerId = PermissionService.GetAppUserId();
+                    Attachment = await CloudinaryStorage(Attachment, file);
+                    Attachments.Add(Attachment);
+                    if (Attachment == null)
+                        return new List<Attachment>();
+                }
 
-            await UOW.AttachmentRepository.BulkMerge(Attachments);
-            return Attachments;
+                await UOW.AttachmentRepository.BulkMerge(Attachments);
+                return Attachments;
+            }
+            catch (Exception ex)
+            {
+            
+            }
+            return new List<Attachment>();
         }
 
         public async Task<Attachment> GetAttachment(long AttachmentId)
         {
-            Attachment Attachment = await UOW.AttachmentRepository.Get(AttachmentId);
-            if (Attachment == null)
-                return null;
-            return Attachment;
+            try
+            {
+                Attachment Attachment = await UOW.AttachmentRepository.Get(AttachmentId);
+                if (Attachment == null)
+                    return null;
+                return Attachment;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
         }
 
         public Account GetAccount()

@@ -136,15 +136,24 @@ namespace CodeBE_LEM.Services.BoardService
 
         public async Task<Board> GetOwn(long UserId)
         {
-            List<long> BoardIds = (await UOW.BoardRepository.ListAppUserBoardMappingByAppUser(UserId)).
-                Where(x => x.AppUserTypeId == AppUserTypeEnum.OWN.Id).
-                Select(x => x.BoardId).ToList();
-            Board Board = await UOW.BoardRepository.Get(BoardIds.FirstOrDefault());
-            await AddJobDataForCardsForBoard(Board);
-            if (Board == null)
-                return null;
-            await BoardValidator.Get(Board);
-            return Board;
+            try
+            {
+
+                List<long> BoardIds = (await UOW.BoardRepository.ListAppUserBoardMappingByAppUser(UserId)).
+                    Where(x => x.AppUserTypeId == AppUserTypeEnum.OWN.Id).
+                    Select(x => x.BoardId).ToList();
+                Board Board = await UOW.BoardRepository.Get(BoardIds.FirstOrDefault());
+                await AddJobDataForCardsForBoard(Board);
+                if (Board == null)
+                    return null;
+                await BoardValidator.Get(Board);
+                return Board;
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
         }
 
         private async Task AddJobDataForCardsForBoard(Board Board)
