@@ -15,8 +15,6 @@ public partial class ClassEventDAO
 
     public bool Pinned { get; set; }
 
-    public DateTime? StartAt { get; set; }
-
     public DateTime? EndAt { get; set; }
 
     public bool IsClassWork { get; set; }
@@ -28,6 +26,12 @@ public partial class ClassEventDAO
     public DateTime? DeletedAt { get; set; }
 
     public string? Description { get; set; }
+
+    public DateTime? StartAt { get; set; }
+
+    public long? AppUserId { get; set; }
+
+    public virtual AppUserDAO? AppUser { get; set; }
 
     public virtual ClassroomDAO Classroom { get; set; } = null!;
 

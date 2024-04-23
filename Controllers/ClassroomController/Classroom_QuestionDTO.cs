@@ -20,6 +20,8 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
         public List<Classroom_AnswerDTO>? Answers { get; set; }
 
+        public List<Classroom_StudentAnswerDTO>? StudentAnswers { get; set; }
+
         public Classroom_QuestionDTO() { }
         public Classroom_QuestionDTO(Question Question)
         {
@@ -31,6 +33,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Description = Question.Description;
             Instruction = Question.Instruction;
             Answers = Question.Answers?.Select(x => new Classroom_AnswerDTO(x)).ToList();
+            StudentAnswers = Question.StudentAnswers?.Select(x => new Classroom_StudentAnswerDTO(x)).ToList();
         }
     }
 }

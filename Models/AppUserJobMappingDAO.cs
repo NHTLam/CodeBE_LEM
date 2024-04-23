@@ -14,5 +14,4 @@ public partial class AppUserJobMappingDAO
     public virtual AppUserDAO AppUser { get; set; } = null!;
 
     public virtual JobDAO Job { get; set; } = null!;
-
 }

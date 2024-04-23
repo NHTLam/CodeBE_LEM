@@ -76,7 +76,7 @@ namespace CodeBE_LEM.Repositories
                     EndAt = x.EndAt,
                     UpdatedAt = x.UpdatedAt,
                     DeletedAt = x.DeletedAt,
-                    Classroom = new Classroom
+                    Classroom = x.Classroom == null ? null : new Classroom
                     {
                         Id = x.Classroom.Id,
                         Name = x.Classroom.Name,
@@ -137,7 +137,7 @@ namespace CodeBE_LEM.Repositories
                 EndAt = x.EndAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
-                Classroom = new Classroom
+                Classroom = x.Classroom == null ? null : new Classroom
                 {
                     Id = x.Classroom.Id,
                     Name = x.Classroom.Name,

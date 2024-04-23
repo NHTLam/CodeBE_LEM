@@ -13,6 +13,7 @@
         public bool? Pinned { get; set; }
         public bool? IsClassWork { get; set; }
         public long? ClassroomId { get; set; }
+        public long? AppUserId { get; set; }
     }
 
     public enum FilterOrderBy

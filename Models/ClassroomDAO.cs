@@ -23,6 +23,7 @@ public partial class ClassroomDAO
 
     public virtual ICollection<AppUserClassroomMappingDAO> AppUserClassroomMappings { get; set; } = new List<AppUserClassroomMappingDAO>();
 
-    public virtual ICollection<ClassEventDAO> ClassEvents { get; set; } = new List<ClassEventDAO>();
     public virtual ICollection<BoardDAO> Boards { get; set; } = new List<BoardDAO>();
+
+    public virtual ICollection<ClassEventDAO> ClassEvents { get; set; } = new List<ClassEventDAO>();
 }
