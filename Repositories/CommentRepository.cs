@@ -31,6 +31,7 @@ namespace CodeBE_LEM.Repositories
             CommentDAO.UpdatedAt = DateTime.Now;
             DataContext.Comments.Add(CommentDAO);
             await DataContext.SaveChangesAsync();
+            Comment.Id = CommentDAO.Id;
             return true;
         }
 
@@ -41,7 +42,8 @@ namespace CodeBE_LEM.Repositories
                 .FirstOrDefault();
             if (CommentDAO == null)
                 return false;
-            DataContext.Comments.Remove(CommentDAO);
+            CommentDAO.UpdatedAt = DateTime.Now;
+            CommentDAO.DeletedAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
             return true;
         }

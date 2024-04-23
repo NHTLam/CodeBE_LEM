@@ -30,6 +30,7 @@ namespace CodeBE_LEM.Repositories
             ClassEventDAO.Code = ClassEvent.Code;
             ClassEventDAO.Name = ClassEvent.Name;
             ClassEventDAO.IsClassWork = ClassEvent.IsClassWork;
+            ClassEventDAO.AppUserId = ClassEvent.AppUserId;
             ClassEventDAO.Description = ClassEvent.Description;
             ClassEventDAO.Pinned = ClassEvent.Pinned;
             ClassEventDAO.StartAt = ClassEvent.StartAt;
@@ -53,7 +54,7 @@ namespace CodeBE_LEM.Repositories
                 return false;
             ClassEventDAO.DeletedAt = DateTime.Now;
             await DataContext.SaveChangesAsync();
-            await SaveReference(ClassEvent);
+            //await SaveReference(ClassEvent);
             return true;
         }
 
@@ -134,6 +135,7 @@ namespace CodeBE_LEM.Repositories
                 StartAt = x.StartAt,
                 Pinned = x.Pinned,
                 CreatedAt = x.CreatedAt,
+                AppUserId = x.AppUserId.Value == null ? 0 : x.AppUserId.Value,
                 EndAt = x.EndAt,
                 UpdatedAt = x.UpdatedAt,
                 DeletedAt = x.DeletedAt,
@@ -147,15 +149,28 @@ namespace CodeBE_LEM.Repositories
                     UpdatedAt = x.Classroom.UpdatedAt,
                     DeletedAt = x.Classroom.DeletedAt,
                 },
+                AppUser = x.AppUser == null ? null : new AppUser
+                {
+                    Id = x.AppUser.Id,
+                    UserName = x.AppUser.UserName,
+                }
             }).ToListAsync();
 
             List<Comment> Comments = await DataContext.Comments.AsNoTracking()
+                .Where(x => x.DeletedAt == null)
                 .Select(x => new Comment
                 {
                     Id = x.Id,
                     ClassEventId = x.ClassEventId,
                     Description = x.Description,
-
+                    CreatedAt = x.CreatedAt,
+                    UpdatedAt = x.UpdatedAt,
+                    AppUserId = x.AppUserId,
+                    AppUser = new AppUser
+                    {
+                        Id = x.AppUser.Id,
+                        UserName = x.AppUser.UserName,
+                    }
                 }).ToListAsync();
 
             List<Question> Questions = await DataContext.Questions.AsNoTracking()
@@ -204,7 +219,7 @@ namespace CodeBE_LEM.Repositories
             ClassEventDAO.UpdatedAt = ClassEvent.UpdatedAt;
             ClassEventDAO.DeletedAt = ClassEvent.DeletedAt;
             await DataContext.SaveChangesAsync();
-            await SaveReference(ClassEvent);
+            //await SaveReference(ClassEvent);
             return true;
         }
 
@@ -223,31 +238,6 @@ namespace CodeBE_LEM.Repositories
 
         private async Task SaveReference(ClassEvent ClassEvent)
         {
-            if (ClassEvent.Comments == null || ClassEvent.Comments.Count == 0)
-            {
-                await DataContext.Comments
-                    .Where(x => x.ClassEventId == ClassEvent.Id)
-                    .DeleteFromQueryAsync();
-            }
-            else
-            {
-                var CommentIds = ClassEvent.Comments.Select(x => x.Id).Distinct().ToList();
-                await DataContext.Comments
-                    .Where(x => x.ClassEventId == ClassEvent.Id)
-                    .Where(x => !CommentIds.Contains(x.Id))
-                    .DeleteFromQueryAsync();
-
-                List<CommentDAO> CommentDAOs = new List<CommentDAO>();
-                foreach (Comment Comment in ClassEvent.Comments)
-                {
-                    CommentDAO CommentDAO = new CommentDAO();
-                    CommentDAO.Id = Comment.Id;
-                    CommentDAO.ClassEventId = ClassEvent.Id;
-                    CommentDAO.Description = Comment.Description;
-                    CommentDAOs.Add(CommentDAO);
-                }
-                await DataContext.BulkMergeAsync(CommentDAOs);
-            }
 
             if (ClassEvent.Questions == null || ClassEvent.Questions.Count == 0)
             {
@@ -270,13 +260,14 @@ namespace CodeBE_LEM.Repositories
                     QuestionDAO.Id = Question.Id;
                     QuestionDAO.ClassEventId = ClassEvent.Id;
                     QuestionDAO.Name = Question.Name;
-                    QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
-                    QuestionDAO.StudentAnswer = Question.StudentAnswer;
+                    QuestionDAO.Instruction = Question.Instruction;
                     QuestionDAO.Description = Question.Description;
+                    QuestionDAO.CorrectAnswer = Question.CorrectAnswer;
                     QuestionDAOs.Add(QuestionDAO);
                 }
-                await DataContext.BulkMergeAsync(QuestionDAOs);
+                await DataContext.Questions.AddRangeAsync(QuestionDAOs);
             }
+            await DataContext.SaveChangesAsync();
         }
     }
 }

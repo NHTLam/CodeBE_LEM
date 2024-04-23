@@ -76,6 +76,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             ClassEvent ClassEvent = new ClassEvent();
             ClassEvent.Id = Classroom_ClassEventDTO.Id;
             ClassEvent.ClassroomId = Classroom_ClassEventDTO.ClassroomId;
+            ClassEvent.AppUserId = Classroom_ClassEventDTO.AppUserId.Value == null ? 0 : Classroom_ClassEventDTO.AppUserId.Value;
             ClassEvent.Code = Classroom_ClassEventDTO.Code;
             ClassEvent.Name = Classroom_ClassEventDTO.Name;
             ClassEvent.IsClassWork = Classroom_ClassEventDTO.IsClassWork;
