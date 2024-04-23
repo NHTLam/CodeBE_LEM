@@ -18,7 +18,7 @@ public class Board_BoardDTO
 
     public bool IsFavourite { get; set; }
 
-    public long ClassroomId { get; set; }
+    public long? ClassroomId { get; set; }
 
     public DateTime CreatedAt { get; set; }
 

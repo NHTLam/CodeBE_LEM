@@ -127,6 +127,7 @@ namespace CodeBE_LEM.Repositories
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
+                RoleTypeId = x.RoleTypeId,
             }).ToListAsync();
 
             var PermissionRoleMappingQuery = DataContext.PermissionRoleMappings.AsNoTracking();
@@ -156,6 +157,7 @@ namespace CodeBE_LEM.Repositories
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
+                RoleTypeId = x.RoleTypeId,
             }).ToListAsync();
 
             var PermissionRoleMappingQuery = DataContext.PermissionRoleMappings.AsNoTracking();
@@ -186,6 +188,7 @@ namespace CodeBE_LEM.Repositories
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
+                RoleTypeId = x.RoleTypeId,
             }).FirstOrDefaultAsync();
 
             if (Role == null)
@@ -207,6 +210,7 @@ namespace CodeBE_LEM.Repositories
             RoleDAO RoleDAO = new RoleDAO();
             RoleDAO.Name = Role.Name;
             RoleDAO.Description = Role.Description;
+            RoleDAO.RoleTypeId = Role.RoleTypeId;
             DataContext.Roles.Add(RoleDAO);
             await DataContext.SaveChangesAsync();
             Role.Id = RoleDAO.Id;
@@ -223,6 +227,7 @@ namespace CodeBE_LEM.Repositories
                 return false;
             NewRole.Id = Role.Id;
             NewRole.Name = Role.Name;
+            NewRole.RoleTypeId = Role.RoleTypeId;
             NewRole.Description = Role.Description;
             await DataContext.SaveChangesAsync();
             await SaveReference(Role);
