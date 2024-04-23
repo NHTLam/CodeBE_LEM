@@ -153,22 +153,30 @@ namespace CodeBE_LEM.Services.AppUserService
 
         public async Task<string> CreateToken(AppUser? AppUser)
         {
-            AppUser = (await UOW.AppUserRepository.List()).Where(x => x.UserName == AppUser.UserName)?.FirstOrDefault();
-            if (AppUser != null)
+            try
             {
-                List<Claim> claims = new List<Claim> { new Claim(ClaimTypes.Name, AppUser.UserName), new Claim(ClaimTypes.NameIdentifier, AppUser.Id.ToString()) };
-                var configToken = Configuration.GetValue<string>("AppSettings:Token");
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configToken));
-                var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-                var token = new JwtSecurityToken(
-                    claims: claims,
-                    expires: DateTime.Now.AddDays(1), signingCredentials: creds
-                );
+                AppUser = (await UOW.AppUserRepository.List()).Where(x => x.UserName == AppUser.UserName)?.FirstOrDefault();
+                if (AppUser != null)
+                {
+                    List<Claim> claims = new List<Claim> { new Claim(ClaimTypes.Name, AppUser.UserName), new Claim(ClaimTypes.NameIdentifier, AppUser.Id.ToString()) };
+                    var configToken = Configuration.GetValue<string>("AppSettings:Token");
+                    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configToken));
+                    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+                    var token = new JwtSecurityToken(
+                        claims: claims,
+                        expires: DateTime.Now.AddDays(1), signingCredentials: creds
+                    );
 
-                var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-                return jwt;
+                    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+                    return jwt;
+                }
+                return string.Empty;
             }
-            return string.Empty;
+            catch (Exception ex)
+            {
+
+            }
+            return "";
         }
 
         private async Task CreateDefaultUserBoard(AppUser AppUser)
