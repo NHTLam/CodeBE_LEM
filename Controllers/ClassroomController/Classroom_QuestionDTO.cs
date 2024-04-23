@@ -18,6 +18,8 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
         public string? Instruction { get; set; }
 
+        public long ClassroomId { get; set; }
+
         public List<Classroom_AnswerDTO>? Answers { get; set; }
 
         public List<Classroom_StudentAnswerDTO>? StudentAnswers { get; set; }

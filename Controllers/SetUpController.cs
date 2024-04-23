@@ -23,6 +23,7 @@ namespace CodeBE_LEM.Controllers
         public async Task<ActionResult> Init()
         {
             await InitPermission();
+            await SetPermissionForSystemRole();
             return Ok();
         }
 
@@ -42,6 +43,38 @@ namespace CodeBE_LEM.Controllers
             RoleStudent.Description = "Vai trò học sinh trong lớp học";
             RoleStudent.RoleTypeId = RoleTypeEnum.AUTO.Id;
             await PermissionService.CreateRole(RoleStudent);
+        }
+
+        private async Task SetPermissionForSystemRole()
+        {
+            List<Permission> Permissions = await UOW.PermissionRepository.ListPermission();
+            List<Permission> PermissionForStudent = Permissions.Where(x => ActionEnum.ActionEnumListForStudent.Select(y => y.Name).Contains(x.Name)).ToList();
+            List<Role> Roles = await UOW.PermissionRepository.ListSystemRole();
+
+            #region Assign Permissions for role Teacher
+            var TeacherRole = Roles.Where(x => x.Name == "Teacher").FirstOrDefault();
+            TeacherRole = InitRolePermission(Permissions, TeacherRole);
+            #endregion
+
+            #region Assign Permissions for role Student
+            var StudentRole = Roles.Where(x => x.Name == "Student").FirstOrDefault();
+            StudentRole = InitRolePermission(PermissionForStudent, StudentRole);
+            #endregion
+        }
+
+        private Role InitRolePermission(List<Permission> Permissions, Role? Role)
+        {
+            List<PermissionRoleMapping> PermissionRoleMappings = new List<PermissionRoleMapping>();
+            foreach (var permission in Permissions)
+            {
+                PermissionRoleMapping PermissionRoleMapping = new PermissionRoleMapping();
+                PermissionRoleMapping.RoleId = Role.Id;
+                PermissionRoleMapping.PermissionId = permission.Id;
+                PermissionRoleMappings.Add(PermissionRoleMapping);
+            }
+
+            Role.PermissionRoleMappings = PermissionRoleMappings;
+            return Role;
         }
     }
 }

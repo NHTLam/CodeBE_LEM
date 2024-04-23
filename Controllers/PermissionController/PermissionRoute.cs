@@ -26,24 +26,34 @@ namespace CodeBE_LEM.Controllers.PermissionController
 
         public static Dictionary<string, List<string>> DictionaryPath = new Dictionary<string, List<string>>
         {
-            { ActionEnum.CREATE.Name, new List<string>()
+            { 
+                ActionEnum.LIST_PERMISSON.Name, new List<string>()
+                {
+                    ListPermission, ListPermissionByRole
+                }
+            },
+            { 
+                ActionEnum.LIST_ROLE.Name, new List<string>()
+                {
+                    ListRole, GetRole
+                }
+            },
+            { 
+                ActionEnum.CREATE_ROLE.Name, new List<string>()
                 {
                     CreateRole
                 }
             },
-            { ActionEnum.UPDATE.Name, new List<string>()
+            { 
+                ActionEnum.UPDATE_ROLE.Name, new List<string>()
                 {
                     UpdateRole
                 }
             },
-            { ActionEnum.DELETE.Name, new List<string>()
+            { 
+                ActionEnum.DELETE_ROLE.Name, new List<string>()
                 {
                     DeleteRole
-                }
-            },
-            { ActionEnum.READ.Name, new List<string>()
-                {
-                    ListRole, GetRole, ListPermission, ListPermissionByRole
                 }
             }
         };

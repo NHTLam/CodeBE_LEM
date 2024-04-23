@@ -24,6 +24,8 @@ namespace CodeBE_LEM.Controllers.AttachmentController
 
         public string? PublicId { get; set; }
 
+        public long ClassroomId { get; set; }
+
         public Attachment_AttachmentDTO() { }
 
         public Attachment_AttachmentDTO(Attachment Attachment)

@@ -38,19 +38,13 @@ namespace CodeBE_LEM.Controllers.PermissionController
             return Paths;
         }
 
-        [HttpGet, Route(PermissionRoute.Init)]
-        public async Task Init()
-        {
-            await PermissionService.Init();
-        }
-
         [Route(PermissionRoute.ListPermission), HttpPost, Authorize]
-        public async Task<ActionResult<List<Permission_PermissionDTO>>> ListPermission()
+        public async Task<ActionResult<List<Permission_PermissionDTO>>> ListPermission([FromBody] Permission_RoleDTO Permission_RoleDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.ListPermission, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.ListPermission, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }
@@ -66,7 +60,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.ListPermissionByRole, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.ListPermissionByRole, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }
@@ -78,12 +72,12 @@ namespace CodeBE_LEM.Controllers.PermissionController
 
 
         [Route(PermissionRoute.ListRole), HttpPost, Authorize]
-        public async Task<ActionResult<List<Permission_RoleDTO>>> ListRole()
+        public async Task<ActionResult<List<Permission_RoleDTO>>> ListRole([FromBody] Permission_RoleDTO Permission_RoleDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.ListRole, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.ListRole, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }
@@ -99,7 +93,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.GetRole, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.GetRole, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }
@@ -116,7 +110,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.CreateRole, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.CreateRole, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }
@@ -135,7 +129,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.UpdateRole, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.UpdateRole, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }
@@ -155,7 +149,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            if (!await PermissionService.HasPermission(PermissionRoute.DeleteRole, PermissionService.GetAppUserId()))
+            if (!await PermissionService.HasPermission(PermissionRoute.DeleteRole, Permission_RoleDTO.ClassroomId))
             {
                 return Forbid();
             }

@@ -17,28 +17,6 @@ namespace CodeBE_LEM.Controllers.AppUserController
         public const string Login = Module + "/login";
         public const string GetUserId = Module + "/get-user-id";
 
-        public static Dictionary<string, List<string>> DictionaryPath = new Dictionary<string, List<string>> 
-        {
-            { ActionEnum.CREATE.Name, new List<string>() 
-                {
-                    Register, Login
-                } 
-            },
-            { ActionEnum.UPDATE.Name, new List<string>()
-                {
-                    Update, Login
-                }
-            },
-            { ActionEnum.DELETE.Name, new List<string>()
-                {
-                    Delete, Login
-                }
-            },
-            { ActionEnum.READ.Name, new List<string>()
-                {
-                    List, Get, Login
-                }
-            }
-        };
+        //Không có dictionary path do các api đều là api cần thiết cho hệ thống hoạt động chứ không phụ vụ cho riêng 1 chức năng
     }
 }

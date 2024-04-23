@@ -13,6 +13,8 @@ public partial class Permission_RoleDTO
 
     public string? Description { get; set; }
 
+    public long ClassroomId { get; set; }
+
     public List<Permisson_PermissonRoleMappingDTO>? PermissionRoleMappings { get; set; }
 
     public Permission_RoleDTO() { }
