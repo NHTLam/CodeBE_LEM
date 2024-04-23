@@ -36,7 +36,7 @@ namespace CodeBE_LEM.Controllers.AppUserController
             return AppUser_AppUserDTOs;
         }
 
-        [Route(AppUserRoute.ListByClassroom), HttpPost]
+        [Route(AppUserRoute.ListByClassroom), HttpPost, Authorize]
         public async Task<ActionResult<List<AppUser_AppUserDTO>>> ListByClassroom([FromBody] AppUser_AppUserClassroomMappingDTO AppUser_AppUserClassroomMappingDTO)
         {
             if (!ModelState.IsValid)

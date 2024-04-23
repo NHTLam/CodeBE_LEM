@@ -1,5 +1,6 @@
 ﻿using CodeBE_LEM.Common;
 using CodeBE_LEM.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 {
     public partial class ClassroomController
     {
-        [Route(ClassroomRoute.ListClassEvent), HttpPost]
+        [Route(ClassroomRoute.ListClassEvent), HttpPost, Authorize]
         public async Task<ActionResult<List<Classroom_ClassEventDTO>>> ListClassEvent([FromBody] FilterDTO FilterDTO)
         {
             if (!ModelState.IsValid)
@@ -20,7 +21,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return Classroom_ClassEventDTOs;
         }
 
-        [Route(ClassroomRoute.GetClassEvent), HttpPost]
+        [Route(ClassroomRoute.GetClassEvent), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassEventDTO>?> GetClassEvent([FromBody] Classroom_ClassEventDTO Classroom_ClassEventDTO)
         {
             if (!ModelState.IsValid)
@@ -31,7 +32,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassEventDTO(ClassEvent);
         }
 
-        [Route(ClassroomRoute.CreateClassEvent), HttpPost]
+        [Route(ClassroomRoute.CreateClassEvent), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassEventDTO>?> CreateClassEvent([FromBody] Classroom_ClassEventDTO Classroom_ClassEventDTO)
         {
             if (!ModelState.IsValid)
@@ -44,7 +45,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassEventDTO(ClassEvent);
         }
 
-        [Route(ClassroomRoute.UpdateClassEvent), HttpPost]
+        [Route(ClassroomRoute.UpdateClassEvent), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassEventDTO>?> UpdateClassEvent([FromBody] Classroom_ClassEventDTO Classroom_ClassEventDTO)
         {
             if (!ModelState.IsValid)
@@ -57,7 +58,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassEventDTO(ClassEvent);
         }
 
-        [Route(ClassroomRoute.DeleteClassEvent), HttpPost]
+        [Route(ClassroomRoute.DeleteClassEvent), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassEventDTO>?> DeleteClassEvent([FromBody] Classroom_ClassEventDTO Classroom_ClassEventDTO)
         {
             if (!ModelState.IsValid)

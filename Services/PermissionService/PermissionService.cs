@@ -12,6 +12,10 @@ using System.Linq;
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Controllers.AppUserController;
 using CodeBE_LEM.Controllers.PermissionController;
+using CodeBE_LEM.Controllers.AttachmentController;
+using CodeBE_LEM.Controllers.BoardController;
+using CodeBE_LEM.Controllers.ClassroomController;
+using CodeBE_LEM.Controllers.JobController;
 
 namespace CodeBE_LEM.Services.PermissionService
 {
@@ -53,7 +57,10 @@ namespace CodeBE_LEM.Services.PermissionService
             {
                 var PermissionDbs = await UOW.PermissionRepository.ListPermission();
                 Dictionary<string, List<string>> DictionaryPaths = new Dictionary<string, List<string>>();
-                DictionaryPaths = ConcatMyDictionaryRoute(DictionaryPaths, AppUserRoute.DictionaryPath);
+                DictionaryPaths = ConcatMyDictionaryRoute(DictionaryPaths, AttachmentRoute.DictionaryPath);
+                DictionaryPaths = ConcatMyDictionaryRoute(DictionaryPaths, BoardRoute.DictionaryPath);
+                DictionaryPaths = ConcatMyDictionaryRoute(DictionaryPaths, ClassroomRoute.DictionaryPath);
+                DictionaryPaths = ConcatMyDictionaryRoute(DictionaryPaths, JobRoute.DictionaryPath);
                 DictionaryPaths = ConcatMyDictionaryRoute(DictionaryPaths, PermissionRoute.DictionaryPath);
                 List<Permission> Permissions = new List<Permission>();
                 foreach (var DictionaryPath in DictionaryPaths)
@@ -66,7 +73,7 @@ namespace CodeBE_LEM.Services.PermissionService
                         permission.Id = PermissionId ?? 0;
                         permission.Name = DictionaryPath.Key;
                         permission.Path = path;
-                        permission.Description = $"Cho phép thực hiện hành động {DictionaryPath.Key} ở màn quản lý {modelName}";
+                        permission.Description = $"Cho phép thực hiện hành động {DictionaryPath.Key} ở màn {modelName}";
                         permission.MenuName = modelName;
                         Permissions.Add(permission);
                     }

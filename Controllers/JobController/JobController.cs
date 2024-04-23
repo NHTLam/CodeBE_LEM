@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using CodeBE_LEM.Services.JobService;
 using CodeBE_LEM.Entities;
+using CodeBE_LEM.Controllers.BoardController;
+using CodeBE_LEM.Controllers.ClassroomController;
+using CodeBE_LEM.Services.PermissionService;
 
 namespace CodeBE_LEM.Controllers.JobController
 {
@@ -14,15 +17,18 @@ namespace CodeBE_LEM.Controllers.JobController
     public class JobController : ControllerBase
     {
         private IJobService JobService;
+        private IPermissionService PermissionService;
 
         public JobController(
-            IJobService JobService
+            IJobService JobService,
+            IPermissionService PermissionService
         )
         {
             this.JobService = JobService;
+            this.PermissionService = PermissionService;
         }
 
-        [Route(JobRoute.List), HttpPost]
+        [Route(JobRoute.List), HttpPost, Authorize]
         public async Task<ActionResult<List<Job_JobDTO>>> List()
         {
             if (!ModelState.IsValid)
@@ -35,7 +41,7 @@ namespace CodeBE_LEM.Controllers.JobController
             return Job_JobDTOs;
         }
 
-        [Route(JobRoute.ListOwn), HttpPost]
+        [Route(JobRoute.ListOwn), HttpPost, Authorize]
         public async Task<ActionResult<List<Job_JobDTO>>> ListOwn()
         {
             if (!ModelState.IsValid)
@@ -48,7 +54,7 @@ namespace CodeBE_LEM.Controllers.JobController
             return Job_JobDTOs;
         }
 
-        [Route(JobRoute.Get), HttpPost]
+        [Route(JobRoute.Get), HttpPost, Authorize]
         public async Task<ActionResult<Job_JobDTO>?> Get([FromBody] Job_JobDTO Job_JobDTO)
         {
             if (!ModelState.IsValid)
@@ -67,6 +73,11 @@ namespace CodeBE_LEM.Controllers.JobController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (!await PermissionService.HasPermission(JobRoute.Create, Job_JobDTO.ClassroomId))
+            {
+                return Forbid();
+            }
+
             Job Job = ConvertDTOToEntity(Job_JobDTO);
 
             Job = await JobService.Create(Job);
@@ -83,6 +94,11 @@ namespace CodeBE_LEM.Controllers.JobController
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
+            if (!await PermissionService.HasPermission(JobRoute.Update, Job_JobDTO.ClassroomId))
+            {
+                return Forbid();
+            }
+
             Job Job = ConvertDTOToEntity(Job_JobDTO);
             Job = await JobService.Update(Job);
             Job_JobDTO = new Job_JobDTO(Job);
@@ -97,6 +113,11 @@ namespace CodeBE_LEM.Controllers.JobController
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(JobRoute.Delete, Job_JobDTO.ClassroomId))
+            {
+                return Forbid();
+            }
 
             Job Job = ConvertDTOToEntity(Job_JobDTO);
             Job = await JobService.Delete(Job);

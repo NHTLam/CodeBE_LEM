@@ -2,6 +2,7 @@
 using CodeBE_LEM.Common;
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Services.ClassroomService;
+using CodeBE_LEM.Services.PermissionService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,17 +13,20 @@ namespace CodeBE_LEM.Controllers.ClassroomController
     {
         private IClassroomService ClassroomService;
         private IClassEventService ClassEventService;
+        private IPermissionService PermissionService;
 
         public ClassroomController(
             IClassroomService ClassroomService,
-            IClassEventService ClassEventService
+            IClassEventService ClassEventService,
+            IPermissionService PermissionService
         )
         {
             this.ClassroomService = ClassroomService;
             this.ClassEventService = ClassEventService;
+            this.PermissionService = PermissionService;
         }
 
-        [Route(ClassroomRoute.List), HttpPost]
+        [Route(ClassroomRoute.List), HttpPost, Authorize]
         public async Task<ActionResult<List<Classroom_ClassroomDTO>>> List([FromBody] FilterDTO FilterDTO)
         {
             if (!ModelState.IsValid)
@@ -35,7 +39,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return Classroom_ClassroomDTOs;
         }
 
-        [Route(ClassroomRoute.ListOwn), HttpPost]
+        [Route(ClassroomRoute.ListOwn), HttpPost, Authorize]
         public async Task<ActionResult<List<Classroom_ClassroomDTO>>> ListOwn([FromBody] Classroom_AppUserClassroomMappingDTO Classroom_AppUserClassroomMappingDTO)
         {
             if (!ModelState.IsValid)
@@ -48,7 +52,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return Classroom_ClassroomDTOs;
         }
 
-        [Route(ClassroomRoute.Get), HttpPost]
+        [Route(ClassroomRoute.Get), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassroomDTO>?> Get([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
         {
             if (!ModelState.IsValid)
@@ -73,7 +77,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
                 return BadRequest("You have join class");
         }
 
-        [Route(ClassroomRoute.Create), HttpPost]
+        [Route(ClassroomRoute.Create), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassroomDTO>?> Create([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
         {
             if (!ModelState.IsValid)
@@ -86,7 +90,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassroomDTO(Classroom);
         }
 
-        [Route(ClassroomRoute.Update), HttpPost]
+        [Route(ClassroomRoute.Update), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassroomDTO>?> Update([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
         {
             if (!ModelState.IsValid)
@@ -99,7 +103,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_ClassroomDTO(Classroom);
         }
 
-        [Route(ClassroomRoute.Delete), HttpPost]
+        [Route(ClassroomRoute.Delete), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_ClassroomDTO>?> Delete([FromBody] Classroom_ClassroomDTO Classroom_ClassroomDTO)
         {
             if (!ModelState.IsValid)

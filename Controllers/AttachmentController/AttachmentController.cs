@@ -16,6 +16,8 @@ using System.Net;
 using System.IO;
 using CodeBE_LEM.Services.AppUserService;
 using CloudinaryDotNet.Core;
+using CodeBE_LEM.Controllers.PermissionController;
+using CodeBE_LEM.Services.PermissionService;
 
 namespace CodeBE_LEM.Controllers.AttachmentController
 {
@@ -23,22 +25,32 @@ namespace CodeBE_LEM.Controllers.AttachmentController
     public class AttachmentController : ControllerBase
     {
         private IAttachmentService AttachmentService;
+        private IPermissionService PermissionService;
 
         public AttachmentController(
-            IAttachmentService AttachmentService
+            IAttachmentService AttachmentService,
+            IPermissionService PermissionService
         )
         {
             this.AttachmentService = AttachmentService;
+            this.PermissionService = PermissionService;
         }
 
         [Route(AttachmentRoute.UploadFile), HttpPost, Authorize]
-        public async Task<ActionResult<List<Attachment_AttachmentDTO>>> MultiUploadFile([FromForm] string questionId, List<IFormFile> files)
+        public async Task<ActionResult<List<Attachment_AttachmentDTO>>> MultiUploadFile([FromForm] string classroomId, string questionId, List<IFormFile> files)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
             bool validQuestionId = long.TryParse(questionId, out var questionIdValid);
+            bool validClassroomId = long.TryParse(classroomId, out var classroomIdValid);
             if (!validQuestionId) return BadRequest();
+            if (!validClassroomId) return BadRequest();
+
+            if (!await PermissionService.HasPermission(AttachmentRoute.UploadFile, classroomIdValid))
+            {
+                return Forbid();
+            }
 
             List<Attachment> Attachments = await AttachmentService.MultiUploadFile(files, questionIdValid);
             List<Attachment_AttachmentDTO> Attachment_FileDTOs = Attachments.Select(x => new Attachment_AttachmentDTO(x)).ToList();
@@ -50,6 +62,11 @@ namespace CodeBE_LEM.Controllers.AttachmentController
         {
             if (!ModelState.IsValid)
                 return BadRequest();
+
+            if (!await PermissionService.HasPermission(AttachmentRoute.DowloadFile, Attachment_AttachmentDTO.ClassroomId))
+            {
+                return Forbid();
+            }
 
             Account account = AttachmentService.GetAccount();
             Cloudinary cloudinary = new Cloudinary(account);

@@ -1,5 +1,6 @@
 ﻿using CodeBE_LEM.Common;
 using CodeBE_LEM.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -7,7 +8,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 {
     public partial class ClassroomController
     {
-        [Route(ClassroomRoute.DetailStudentAnswer), HttpPost]
+        [Route(ClassroomRoute.DetailStudentAnswer), HttpPost, Authorize]
         public async Task<ActionResult<List<Classroom_StudentAnswerDTO>>?> DetailStudentAnswer([FromBody] Classroom_StudentAnswerDTO Classroom_StudentAnswerDTO)
         {
             if (!ModelState.IsValid)
@@ -22,7 +23,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return Classroom_StudentAnswerDTOs;
         }
 
-        [Route(ClassroomRoute.ListStudentAnswer), HttpPost]
+        [Route(ClassroomRoute.ListStudentAnswer), HttpPost, Authorize]
         public async Task<ActionResult<List<Classroom_AppUserDTO>>?> ListStudentAnswer([FromBody] Classroom_StudentAnswerDTO Classroom_StudentAnswerDTO)
         {
             if (!ModelState.IsValid)
@@ -37,7 +38,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return Classroom_AppUserDTOs;
         }
 
-        [Route(ClassroomRoute.CreateStudentAnswer), HttpPost]
+        [Route(ClassroomRoute.CreateStudentAnswer), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_StudentAnswerDTO>?> CreateStudentAnswer([FromBody] Classroom_StudentAnswerDTO Classroom_StudentAnswerDTO)
         {
             if (!ModelState.IsValid)
@@ -50,7 +51,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             return new Classroom_StudentAnswerDTO(StudentAnswer);
         }
 
-        [Route(ClassroomRoute.UpdateStudentAnswer), HttpPost]
+        [Route(ClassroomRoute.UpdateStudentAnswer), HttpPost, Authorize]
         public async Task<ActionResult<Classroom_StudentAnswerDTO>?> UpdateStudentAnswer([FromBody] Classroom_StudentAnswerDTO Classroom_StudentAnswerDTO)
         {
             if (!ModelState.IsValid)

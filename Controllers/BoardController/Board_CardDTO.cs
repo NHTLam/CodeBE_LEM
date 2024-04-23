@@ -14,6 +14,8 @@ public class Board_CardDTO
 
     public int? Order { get; set; }
 
+    public long? ClassroomId { get; set; }
+
     public DateTime CreatedAt { get; set; }
 
     public DateTime UpdatedAt { get; set; }

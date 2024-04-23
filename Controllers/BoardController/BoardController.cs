@@ -9,6 +9,8 @@ using CodeBE_LEM.Services.BoardService;
 using CodeBE_LEM.Entities;
 using Microsoft.AspNetCore.Http.HttpResults;
 using CodeBE_LEM.Controllers.AppUserController;
+using CodeBE_LEM.Controllers.AttachmentController;
+using CodeBE_LEM.Services.PermissionService;
 
 namespace CodeBE_LEM.Controllers.BoardController
 {
@@ -16,15 +18,18 @@ namespace CodeBE_LEM.Controllers.BoardController
     public class BoardController : ControllerBase
     {
         private IBoardService BoardService;
+        private IPermissionService PermissionService;
 
         public BoardController(
-            IBoardService BoardService
+            IBoardService BoardService,
+            IPermissionService PermissionService
         )
         {
             this.BoardService = BoardService;
+            this.PermissionService = PermissionService;
         }
 
-        [Route(BoardRoute.List), HttpPost]
+        [Route(BoardRoute.List), HttpPost, Authorize]
         public async Task<ActionResult<List<Board_BoardDTO>>> List()
         {
             if (!ModelState.IsValid)
@@ -37,7 +42,7 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTOs;
         }
 
-        [Route(BoardRoute.ListCardByUserId), HttpPost]
+        [Route(BoardRoute.ListCardByUserId), HttpPost, Authorize]
         public async Task<ActionResult<List<Board_CardDTO>>> ListCardByUserId()
         {
             if (!ModelState.IsValid)
@@ -50,11 +55,16 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_CardDTOs;
         }
 
-        [Route(BoardRoute.DuplicateCard), HttpPost]
+        [Route(BoardRoute.DuplicateCard), HttpPost, Authorize]
         public async Task<ActionResult<bool>> DuplicateCard([FromBody] Board_CardDTO Board_CardDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(BoardRoute.DuplicateCard, Board_CardDTO.ClassroomId ?? 0))
+            {
+                return Forbid();
+            }
 
             Card Card = ConvertCardDTOToEntity(Board_CardDTO);
             bool isSuccess = await BoardService.DuplicateCard(Card);
@@ -65,7 +75,7 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(isSuccess);
         }
 
-        [Route(BoardRoute.DeleteCard), HttpPost]
+        [Route(BoardRoute.DeleteCard), HttpPost, Authorize]
         public async Task<ActionResult<bool>> DeleteCard([FromBody] Board_CardDTO Board_CardDTO)
         {
             if (!ModelState.IsValid)
@@ -80,24 +90,29 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(isSuccess);
         }
 
-        [Route(BoardRoute.ListByClassroom), HttpPost]
+        [Route(BoardRoute.ListByClassroom), HttpPost, Authorize]
         public async Task<ActionResult<List<Board_BoardDTO>>> ListByClassroom([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            List<Board> Boards = await BoardService.ListByClassroom(Board_BoardDTO.ClassroomId.Value);
+            List<Board> Boards = await BoardService.ListByClassroom(Board_BoardDTO.ClassroomId);
             List<Board_BoardDTO> Board_BoardDTOs = Boards
                 .Select(c => new Board_BoardDTO(c)).ToList();
 
             return Board_BoardDTOs;
         }
 
-        [Route(BoardRoute.CreateBoardsForClass), HttpPost]
+        [Route(BoardRoute.CreateBoardsForClass), HttpPost, Authorize]
         public async Task<ActionResult<List<Board_BoardDTO>>?> CreateBoardsForClass([FromBody] Board_CreateBoardsFunctionDTO Board_CreateBoardsFunctionDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(BoardRoute.CreateBoardsForClass, Board_CreateBoardsFunctionDTO.ClassroomId))
+            {
+                return Forbid();
+            }
 
             CreateBoardsFunction CreateBoardsFunction = ConvertDTOToEntity(Board_CreateBoardsFunctionDTO);
             List<Board> Boards = await BoardService.CreateBoardsForClass(CreateBoardsFunction);
@@ -107,7 +122,7 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTOs;
         }
 
-        [Route(BoardRoute.Get), HttpPost]
+        [Route(BoardRoute.Get), HttpPost, Authorize]
         public async Task<ActionResult<Board_BoardDTO>?> Get([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
@@ -120,7 +135,7 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTO;
         }
 
-        [Route(BoardRoute.GetOwn), HttpPost]
+        [Route(BoardRoute.GetOwn), HttpPost, Authorize]
         public async Task<ActionResult<Board_BoardDTO>?> GetOwn([FromBody] Board_AppUserBoardMappingDTO Board_AppUserBoardMappingDTO)
         {
             if (!ModelState.IsValid)
@@ -133,11 +148,16 @@ namespace CodeBE_LEM.Controllers.BoardController
             return Board_BoardDTO;
         }
 
-        [Route(BoardRoute.Create), HttpPost]
+        [Route(BoardRoute.Create), HttpPost, Authorize]
         public async Task<ActionResult<Board_BoardDTO>> Create([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(BoardRoute.Create, Board_BoardDTO.ClassroomId))
+            {
+                return Forbid();
+            }
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
 
@@ -149,11 +169,16 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(Board_BoardDTO);
         }
 
-        [Route(BoardRoute.Update), HttpPost]
+        [Route(BoardRoute.Update), HttpPost, Authorize]
         public async Task<ActionResult<Board_BoardDTO>> Update([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(BoardRoute.Update, Board_BoardDTO.ClassroomId))
+            {
+                return Forbid();
+            }
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
             Board = await BoardService.Update(Board);
@@ -164,11 +189,16 @@ namespace CodeBE_LEM.Controllers.BoardController
                 return BadRequest(Board_BoardDTO);
         }
 
-        [Route(BoardRoute.Delete), HttpPost]
+        [Route(BoardRoute.Delete), HttpPost, Authorize]
         public async Task<ActionResult<Board_BoardDTO>> Delete([FromBody] Board_BoardDTO Board_BoardDTO)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+
+            if (!await PermissionService.HasPermission(BoardRoute.Delete, Board_BoardDTO.ClassroomId))
+            {
+                return Forbid();
+            }
 
             Board Board = ConvertDTOToEntity(Board_BoardDTO);
             Board = await BoardService.Delete(Board);

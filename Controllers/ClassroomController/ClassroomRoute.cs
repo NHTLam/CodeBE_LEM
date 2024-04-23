@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using CodeBE_LEM.Enums;
+using System.ComponentModel;
 
 namespace CodeBE_LEM.Controllers.ClassroomController
 {
@@ -13,6 +14,8 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public const string Update = Module + "/update";
         public const string Delete = Module + "/delete";
         public const string Join = Module + "/join";
+        public const string Kick = Module + "/kick";
+        public const string Leave = Module + "/leave";
 
         public const string CreateClassEvent = Module + "/create-class-event";
         public const string GetClassEvent = Module + "/get-class-event";
@@ -33,5 +36,32 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public const string CreateStudentAnswer = Module + "/create-student-answer";
         public const string UpdateStudentAnswer = Module + "/update-student-answer";
 
+        public static Dictionary<string, List<string>> DictionaryPath = new Dictionary<string, List<string>>
+        {
+            {
+                ActionEnum.KICK_MEMBER.Name, new List<string>()
+                {
+                    Kick
+                }
+            },
+            {
+                ActionEnum.CREATE_QUESTION.Name, new List<string>()
+                {
+                    CreateQuestion
+                }
+            },
+            {
+                ActionEnum.UPDATE_QUESTION.Name, new List<string>()
+                {
+                    UpdateQuestion
+                }
+            },
+            {
+                ActionEnum.DELETE_QUESTION.Name, new List<string>()
+                {
+                    DeleteQuestion
+                }
+            }
+        };
     }
 }
