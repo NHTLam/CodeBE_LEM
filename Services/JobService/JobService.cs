@@ -38,6 +38,10 @@ namespace CodeBE_LEM.Services.JobService
             {
                 Job = CalcPercentTodoDone(Job);
                 Job.CreatorId = PermissionService.GetAppUserId();
+                if (Job.StartAt != null)
+                {
+                    Job.IsAllDay = Job.StartAt.Value.Day == Job.EndAt.Value.Day ? false : true;
+                }
                 await UOW.JobRepository.Create(Job);
                 Job = await UOW.JobRepository.Get(Job.Id);
                 return Job;
@@ -119,6 +123,10 @@ namespace CodeBE_LEM.Services.JobService
             {
                 var oldData = await UOW.JobRepository.Get(Job.Id);
                 Job = CalcPercentTodoDone(Job);
+                if (Job.StartAt != null)
+                {
+                    Job.IsAllDay = Job.StartAt.Value.Day == Job.EndAt.Value.Day ? false : true;
+                }
                 Job.CreatorId = PermissionService.GetAppUserId();
                 await UOW.JobRepository.Update(Job);
                 Job = await UOW.JobRepository.Get(Job.Id);

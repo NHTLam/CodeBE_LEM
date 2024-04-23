@@ -32,7 +32,9 @@ public class Job_JobDTO
 
     public Job_AppUserDTO? Creator { get; set; }
 
-    public List<Job_TodoDTO> Todos { get; set; } = new List<Job_TodoDTO>();
+    public List<Job_TodoDTO>? Todos { get; set; } = new List<Job_TodoDTO>();
+
+    public List<Job_AppUserJobMappingDTO>? AppUserJobMappings { get; set; } = new List<Job_AppUserJobMappingDTO>();
 
     public Job_JobDTO() { }
 
@@ -50,6 +52,7 @@ public class Job_JobDTO
         IsAllDay = Job.IsAllDay;
         CreatorId = Job.CreatorId;
         Creator = Job.Creator == null ? null : new Job_AppUserDTO(Job.Creator);
-        Todos = Job.Todos?.Select(x => new Job_TodoDTO(x)).ToList();
+        Todos = Job.Todos == null ? null : Job.Todos.Select(x => new Job_TodoDTO(x)).ToList();
+        AppUserJobMappings = Job.AppUserJobMappings == null ? null : Job.AppUserJobMappings.Select(x => new Job_AppUserJobMappingDTO(x)).ToList();
     }
 }

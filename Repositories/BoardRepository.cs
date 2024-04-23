@@ -203,6 +203,12 @@ namespace CodeBE_LEM.Repositories
                     AppUserId = x.AppUserId,
                     BoardId = x.BoardId,
                     AppUserTypeId = x.AppUserTypeId,
+                    AppUser = x.AppUser == null ? null : new AppUser
+                    {
+                        Id = x.AppUser.Id,
+                        UserName = x.AppUser.UserName,
+                        FullName = x.AppUser.FullName,
+                    }
                 }).ToListAsync();
 
             return Board;
