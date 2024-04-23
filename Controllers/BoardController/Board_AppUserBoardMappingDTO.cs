@@ -15,6 +15,8 @@ public partial class Board_AppUserBoardMappingDTO
 
     public long AppUserTypeId { get; set; }
 
+    public Board_AppUserDTO? AppUser { get; set; }
+
     public Board_AppUserBoardMappingDTO() { }
 
     public Board_AppUserBoardMappingDTO(AppUserBoardMapping AppUserBoardMapping)
@@ -23,5 +25,6 @@ public partial class Board_AppUserBoardMappingDTO
         AppUserId = AppUserBoardMapping.AppUserId;
         BoardId = AppUserBoardMapping.BoardId;
         AppUserTypeId = AppUserBoardMapping.AppUserTypeId;
+        AppUser = AppUserBoardMapping.AppUser == null ? null : new Board_AppUserDTO(AppUserBoardMapping.AppUser);
     }
 }

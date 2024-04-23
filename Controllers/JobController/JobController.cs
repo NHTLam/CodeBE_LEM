@@ -176,6 +176,12 @@ namespace CodeBE_LEM.Controllers.JobController
                 Description = x.Description,
                 IsDone = x.IsDone,
             }).ToList();
+            Job.AppUserJobMappings = Job_JobDTO.AppUserJobMappings?.Select(x => new AppUserJobMapping
+            {
+                Id = x.Id,
+                JobId = x.JobId,
+                AppUserId = x.AppUserId,
+            }).ToList();
 
             return Job;
         }

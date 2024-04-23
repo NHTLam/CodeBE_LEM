@@ -170,7 +170,6 @@ namespace CodeBE_LEM.Repositories
 
         public async Task<List<long>> ListJobIdByUserId(long CurrentUserId)
         {
-
             IQueryable<AppUserJobMappingDAO> query = DataContext.AppUserJobMappings.AsNoTracking();
             List<AppUserJobMapping> AppUserJobMappings = await query.AsNoTracking()
             .Where(x => x.AppUserId == CurrentUserId)
