@@ -309,7 +309,6 @@ namespace CodeBE_LEM.Services.ClassroomService
             {
                 List<ClassEvent> ClassEvents = await UOW.ClassEventRepository.List(FilterDTO.ClassroomId.Value);
 
-                ClassEvents = FilterData(ClassEvents, FilterDTO);
                 if (FilterDTO.Pinned != null)
                 {
                     ClassEvents = ClassEvents.Where(x => x.Pinned == FilterDTO.Pinned).ToList();
@@ -331,6 +330,7 @@ namespace CodeBE_LEM.Services.ClassroomService
                             ClassEvent.IsSubmit = true;
                         }
                     }
+                    ClassEvents = FilterData(ClassEvents, FilterDTO);
 
                 }
 
@@ -350,6 +350,7 @@ namespace CodeBE_LEM.Services.ClassroomService
             try
             {
                 var oldData = await UOW.ClassEventRepository.Get(ClassEvent.Id);
+                ClassEvent.AppUserId = oldData.AppUserId;
                 ClassEvent.CreatedAt = oldData.CreatedAt;
                 ClassEvent.UpdatedAt = DateTime.Now;
                 ClassEvent.DeletedAt = null;

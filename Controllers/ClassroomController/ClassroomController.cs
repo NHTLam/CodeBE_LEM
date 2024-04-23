@@ -113,7 +113,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
             Classroom = await ClassroomService.Delete(Classroom);
 
-            return new Classroom_ClassroomDTO(Classroom);
+            return Ok();
         }
 
         private Classroom ConvertDTOToEntity(Classroom_ClassroomDTO Classroom_ClassroomDTO)
