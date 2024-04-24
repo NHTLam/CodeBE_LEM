@@ -15,6 +15,8 @@ public partial class Permission_RoleDTO
 
     public long ClassroomId { get; set; }
 
+    public bool IsFull { get; set; }
+
     public List<Permisson_PermissonRoleMappingDTO>? PermissionRoleMappings { get; set; }
 
     public Permission_RoleDTO() { }

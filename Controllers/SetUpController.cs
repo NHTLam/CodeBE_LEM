@@ -30,7 +30,7 @@ namespace CodeBE_LEM.Controllers
         private async Task InitPermission()
         {
             await PermissionService.Init();
-            
+
             await UOW.PermissionRepository.DeleteRoleAuto();
             Role RoleTeacher = new Role();
             RoleTeacher.Name = "Teacher";
@@ -53,16 +53,17 @@ namespace CodeBE_LEM.Controllers
 
             #region Assign Permissions for role Teacher
             var TeacherRole = Roles.Where(x => x.Name == "Teacher").FirstOrDefault();
-            TeacherRole = InitRolePermission(Permissions, TeacherRole);
+            List<PermissionRoleMapping> NewPermissionRoleMappings = InitRolePermission(Permissions, TeacherRole);
             #endregion
 
             #region Assign Permissions for role Student
             var StudentRole = Roles.Where(x => x.Name == "Student").FirstOrDefault();
-            StudentRole = InitRolePermission(PermissionForStudent, StudentRole);
+            NewPermissionRoleMappings.AddRange(InitRolePermission(PermissionForStudent, StudentRole));
             #endregion
+            await UOW.PermissionRepository.BulkMergePermissionRoleMappings(NewPermissionRoleMappings);
         }
 
-        private Role InitRolePermission(List<Permission> Permissions, Role? Role)
+        private List<PermissionRoleMapping> InitRolePermission(List<Permission> Permissions, Role? Role)
         {
             List<PermissionRoleMapping> PermissionRoleMappings = new List<PermissionRoleMapping>();
             foreach (var permission in Permissions)
@@ -72,9 +73,7 @@ namespace CodeBE_LEM.Controllers
                 PermissionRoleMapping.PermissionId = permission.Id;
                 PermissionRoleMappings.Add(PermissionRoleMapping);
             }
-
-            Role.PermissionRoleMappings = PermissionRoleMappings;
-            return Role;
+            return PermissionRoleMappings;
         }
     }
 }

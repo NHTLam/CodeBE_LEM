@@ -82,7 +82,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
                 return Forbid();
             }
 
-            List<Role> Roles = await PermissionService.ListRole();
+            List<Role> Roles = Permission_RoleDTO.IsFull == true ? (await PermissionService.ListRole()) : (await PermissionService.ListRoleByClassId(Permission_RoleDTO.ClassroomId));
             List<Permission_RoleDTO> Permission_RoleDTOs = Roles.Select(x => new Permission_RoleDTO(x)).ToList();
             return Permission_RoleDTOs;
         }
