@@ -218,6 +218,9 @@ namespace CodeBE_LEM.Services.PermissionService
             try
             {
                 List<Role> Roles = await UOW.PermissionRepository.ListRoleByClassId(classroomId);
+                List<Role> SystemRoles = await UOW.PermissionRepository.ListSystemRole();
+                Roles.AddRange(SystemRoles);
+                Roles = Roles.DistinctBy(x => x.Id).ToList();
                 return Roles;
             }
             catch (Exception)

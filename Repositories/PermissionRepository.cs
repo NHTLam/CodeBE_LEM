@@ -144,7 +144,7 @@ namespace CodeBE_LEM.Repositories
             foreach (Role Role in Roles)
             {
                 Role.PermissionRoleMappings = PermissionRoleMappings
-                    .Where(x => x.Id == Role.Id)
+                    .Where(x => x.RoleId == Role.Id)
                     .ToList();
             }
 

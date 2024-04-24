@@ -15,6 +15,8 @@ public partial class Permission_RoleDTO
 
     public long ClassroomId { get; set; }
 
+    public long? RoleTypeId { get; set; }
+
     public bool IsFull { get; set; }
 
     public List<Permisson_PermissonRoleMappingDTO>? PermissionRoleMappings { get; set; }
@@ -26,6 +28,7 @@ public partial class Permission_RoleDTO
         this.Id = Role.Id;
         this.Name = Role.Name;
         this.Description = Role.Description;
+        this.RoleTypeId = Role.RoleTypeId;
         this.PermissionRoleMappings = Role.PermissionRoleMappings == null ? null : Role.PermissionRoleMappings.Select(x => new Permisson_PermissonRoleMappingDTO(x)).ToList();
     }
 }

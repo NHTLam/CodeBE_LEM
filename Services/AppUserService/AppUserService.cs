@@ -80,7 +80,7 @@ namespace CodeBE_LEM.Services.AppUserService
                 }
                 return null;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception();
             }
