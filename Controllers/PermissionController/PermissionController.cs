@@ -116,7 +116,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             }
 
             Role Role = ConvertPermission_RoleDTOToRoleEntity(Permission_RoleDTO);
-            bool isRegisterSuccess = await PermissionService.CreateRole(Role);
+            bool isRegisterSuccess = await PermissionService.CreateRole(Role, Permission_RoleDTO.ClassroomId);
             if (isRegisterSuccess)
                 return true;
             else
@@ -135,7 +135,7 @@ namespace CodeBE_LEM.Controllers.PermissionController
             }
 
             Role Role = ConvertPermission_RoleDTOToRoleEntity(Permission_RoleDTO);
-            Role = await PermissionService.UpdateRole(Role);
+            Role = await PermissionService.UpdateRole(Role, Permission_RoleDTO.ClassroomId);
             Permission_RoleDTO = new Permission_RoleDTO(Role);
             if (Permission_RoleDTO != null)
                 return Permission_RoleDTO;

@@ -24,6 +24,7 @@ namespace CodeBE_LEM.Repositories
         Task<List<long>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId);
         Task<List<Role>> ListRoleByClassId(long classroomId);
         Task<bool> BulkMergePermissionRoleMappings(List<PermissionRoleMapping> PermissionRoleMappings);
+        Task<bool> AssignRoleInClass(long RoleId, long ClassroomId, long UserId);
     }
 
     public class PermissionRepository : IPermissionRepository
@@ -229,6 +230,17 @@ namespace CodeBE_LEM.Repositories
             return Role;
         }
 
+        public async Task<bool> AssignRoleInClass(long RoleId, long ClassroomId, long UserId)
+        {
+            AppUserClassroomMappingDAO AppUserClassroomMappingDAO = new AppUserClassroomMappingDAO();
+            AppUserClassroomMappingDAO.RoleId = RoleId;
+            AppUserClassroomMappingDAO.ClassroomId = ClassroomId;
+            AppUserClassroomMappingDAO.AppUserId = UserId;
+            DataContext.AppUserClassroomMappings.Add(AppUserClassroomMappingDAO);
+            await DataContext.SaveChangesAsync();
+            return true;
+        }
+
         public async Task<bool> CreateRole(Role Role)
         {
             RoleDAO RoleDAO = new RoleDAO();
@@ -300,8 +312,10 @@ namespace CodeBE_LEM.Repositories
                     PermissionRoleMappingDAO.PermissionId = PermissionRoleMapping.PermissionId;
                     PermissionRoleMappingDAOs.Add(PermissionRoleMappingDAO);
                 }
-                await DataContext.BulkMergeAsync(PermissionRoleMappingDAOs);
+                await DataContext.AddRangeAsync(PermissionRoleMappingDAOs);
             }
+
+            await DataContext.SaveChangesAsync();
         }
 
         public async Task<bool> BulkMergePermissionRoleMappings(List<PermissionRoleMapping> PermissionRoleMappings)

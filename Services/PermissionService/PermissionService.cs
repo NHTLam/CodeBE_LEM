@@ -16,6 +16,7 @@ using CodeBE_LEM.Controllers.AttachmentController;
 using CodeBE_LEM.Controllers.BoardController;
 using CodeBE_LEM.Controllers.ClassroomController;
 using CodeBE_LEM.Controllers.JobController;
+using CodeBE_LEM.Enums;
 
 namespace CodeBE_LEM.Services.PermissionService
 {
@@ -29,8 +30,8 @@ namespace CodeBE_LEM.Services.PermissionService
         Task<List<Permission>> ListPermission();
         Task<List<Permission>> ListPermissionByRole(long RoleId);
         Task<Role> GetRole(long Id);
-        Task<bool> CreateRole (Role Role);
-        Task<Role> UpdateRole(Role Role);
+        Task<bool> CreateRole (Role Role, long? ClassroomId);
+        Task<Role> UpdateRole(Role Role, long? ClassroomId);
         Task<Role> DeleteRole(Role Role);
         Task<bool> HasPermission(string Path, long AppUserId);
         long GetAppUserId();
@@ -165,12 +166,17 @@ namespace CodeBE_LEM.Services.PermissionService
             }
         }
 
-        public async Task<bool> CreateRole(Role Role)
+        public async Task<bool> CreateRole(Role Role, long? classroomId)
         {
             try
             {
+                Role.RoleTypeId = RoleTypeEnum.USER_CREATED.Id;
                 await UOW.PermissionRepository.CreateRole(Role);
                 Role = await UOW.PermissionRepository.GetRole(Role.Id);
+                if (classroomId != null)
+                {
+                    await UOW.PermissionRepository.AssignRoleInClass(Role.Id, classroomId.Value, GetAppUserId());
+                }
                 return true;
             }
             catch (Exception)
@@ -229,15 +235,20 @@ namespace CodeBE_LEM.Services.PermissionService
             }
         }
 
-        public async Task<Role> UpdateRole(Role Role)
+        public async Task<Role> UpdateRole(Role Role, long? classroomId)
         {
             try
             {
                 var oldData = await UOW.PermissionRepository.GetRole(Role.Id);
 
+                Role.RoleTypeId = RoleTypeEnum.USER_CREATED.Id;
                 await UOW.PermissionRepository.UpdateRole(Role);
 
                 Role = await UOW.PermissionRepository.GetRole(Role.Id);
+                if (classroomId != null)
+                {
+                    await UOW.PermissionRepository.AssignRoleInClass(Role.Id, classroomId.Value, GetAppUserId());
+                }
                 return Role;
             }
             catch (Exception)
