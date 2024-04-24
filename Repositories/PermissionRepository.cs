@@ -21,7 +21,9 @@ namespace CodeBE_LEM.Repositories
         Task<bool> UpdateRole(Role Role);
         Task<bool> DeleteRole(Role Role);
         Task<bool> DeleteRoleAuto();
-        Task<List<Role>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId);
+        Task<List<long>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId);
+        Task<List<Role>> ListRoleByClassId(long classroomId);
+        Task<bool> BulkMergePermissionRoleMappings(List<PermissionRoleMapping> PermissionRoleMappings);
     }
 
     public class PermissionRepository : IPermissionRepository
@@ -48,7 +50,7 @@ namespace CodeBE_LEM.Repositories
             return Permissions;
         }
 
-        public async Task<List<Role>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId)
+        public async Task<List<long>> ListRoleByClassRoomAndUserId(long UserId, long ClassroomId)
         {
             IQueryable<AppUserClassroomMappingDAO> query = DataContext.AppUserClassroomMappings.AsNoTracking()
                 .Where(x => x.AppUserId == UserId && x.ClassroomId == ClassroomId);
@@ -68,8 +70,8 @@ namespace CodeBE_LEM.Repositories
                     }
                 }).ToListAsync();
 
-            List<Role> Roles = AppUserClassroomMappings.Where(x => x.RoleId != null).DistinctBy(x => x.RoleId).Select(x => x.Role).ToList();
-            return Roles;
+            List<long> RoleIds = AppUserClassroomMappings.Where(x => x.RoleId != null).Where(x => x.RoleId != null).DistinctBy(x => x.RoleId).Select(x => x.RoleId.Value).ToList();
+            return RoleIds;
         }
 
         public async Task<List<string>> ListAllPath()
@@ -131,7 +133,7 @@ namespace CodeBE_LEM.Repositories
             }).ToListAsync();
 
             var PermissionRoleMappingQuery = DataContext.PermissionRoleMappings.AsNoTracking();
-            List<PermissionRoleMapping> PermissionRoleMappings = await PermissionRoleMappingQuery
+            List<PermissionRoleMapping> PermissionRoleMappings = await PermissionRoleMappingQuery.AsNoTracking()
                 .Select(x => new PermissionRoleMapping
                 {
                     Id = x.Id,
@@ -147,6 +149,28 @@ namespace CodeBE_LEM.Repositories
             }
 
             return Roles;
+        }
+
+        public async Task<List<Role>> ListRoleByClassId(long classroomId)
+        {
+            IQueryable<AppUserClassroomMappingDAO> query = DataContext.AppUserClassroomMappings.AsNoTracking()
+                .Where(x => x.ClassroomId == classroomId);
+            List<AppUserClassroomMapping> AppUserClassroomMappings = await query.AsNoTracking().Select(x => new AppUserClassroomMapping
+            {
+                Id = x.Id,
+                AppUserId = x.AppUserId,
+                ClassroomId = x.ClassroomId,
+                RoleId = x.RoleId,
+                Role = x.Role == null ? null :new Role
+                {
+                    Id = x.Role.Id,
+                    Name = x.Role.Name,
+                    Description = x.Role.Description,
+                    RoleTypeId = x.Role.RoleTypeId
+                }
+            }).ToListAsync();
+
+            return AppUserClassroomMappings.Select(x => x.Role).ToList();
         }
 
         public async Task<List<Role>> ListSystemRole()
@@ -278,6 +302,23 @@ namespace CodeBE_LEM.Repositories
                 }
                 await DataContext.BulkMergeAsync(PermissionRoleMappingDAOs);
             }
+        }
+
+        public async Task<bool> BulkMergePermissionRoleMappings(List<PermissionRoleMapping> PermissionRoleMappings)
+        {
+            foreach (PermissionRoleMapping PermissionRoleMapping in PermissionRoleMappings)
+            {
+                PermissionRoleMappingDAO PermissionRoleMappingDAO = new PermissionRoleMappingDAO();
+                PermissionRoleMappingDAO.Id = PermissionRoleMapping.Id;
+                PermissionRoleMappingDAO.RoleId = PermissionRoleMapping.RoleId;
+                PermissionRoleMappingDAO.PermissionId = PermissionRoleMapping.PermissionId;
+                if (PermissionRoleMappingDAO.Id == 0)
+                    DataContext.PermissionRoleMappings.Add(PermissionRoleMappingDAO);
+                else
+                    DataContext.PermissionRoleMappings.Update(PermissionRoleMappingDAO);
+            }
+            await DataContext.SaveChangesAsync();
+            return true;
         }
 
         private PermissionDAO ConvertEntityToDAO(Permission Permission)

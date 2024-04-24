@@ -25,6 +25,7 @@ namespace CodeBE_LEM.Services.PermissionService
         Task<List<string>> ListPath(AppUserClassroomMapping AppUserClassroomMapping);
         Task<List<string>> ListAllPath();
         Task<List<Role>> ListRole();
+        Task<List<Role>> ListRoleByClassId(long ClassroomId);
         Task<List<Permission>> ListPermission();
         Task<List<Permission>> ListPermissionByRole(long RoleId);
         Task<Role> GetRole(long Id);
@@ -90,7 +91,9 @@ namespace CodeBE_LEM.Services.PermissionService
         {
             try
             {
-                List<Role> Roles = await UOW.PermissionRepository.ListRoleByClassRoomAndUserId(GetAppUserId(), AppUserClassroomMapping.ClassroomId);
+                List<long> RoleIds = await UOW.PermissionRepository.ListRoleByClassRoomAndUserId(GetAppUserId(), AppUserClassroomMapping.ClassroomId);
+                List<Role> Roles = await UOW.PermissionRepository.ListRole();
+                Roles = Roles.Where(x => RoleIds.Contains(x.Id)).ToList();
 
                 List<long> permissionIds = new List<long>();
                 foreach (var Role in Roles)
@@ -202,6 +205,19 @@ namespace CodeBE_LEM.Services.PermissionService
             try
             {
                 List<Role> Roles = await UOW.PermissionRepository.ListRole();
+                return Roles;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
+        public async Task<List<Role>> ListRoleByClassId(long classroomId)
+        {
+            try
+            {
+                List<Role> Roles = await UOW.PermissionRepository.ListRoleByClassId(classroomId);
                 return Roles;
             }
             catch (Exception)
