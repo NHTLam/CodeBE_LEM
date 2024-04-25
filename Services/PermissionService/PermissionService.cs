@@ -34,6 +34,7 @@ namespace CodeBE_LEM.Services.PermissionService
         Task<Role> UpdateRole(Role Role, long? ClassroomId);
         Task<Role> DeleteRole(Role Role);
         Task<bool> HasPermission(string Path, long AppUserId);
+        Task<bool> CreateRoleSystem(Role Role, long? classroomId);
         long GetAppUserId();
     }
     public class PermissionService : IPermissionService
@@ -185,6 +186,24 @@ namespace CodeBE_LEM.Services.PermissionService
             }
         }
 
+        public async Task<bool> CreateRoleSystem(Role Role, long? classroomId)
+        {
+            try
+            {
+                await UOW.PermissionRepository.CreateRole(Role);
+                Role = await UOW.PermissionRepository.GetRole(Role.Id);
+                if (classroomId != null)
+                {
+                    await UOW.PermissionRepository.AssignRoleInClass(Role.Id, classroomId.Value, GetAppUserId());
+                }
+                return true;
+            }
+            catch (Exception)
+            {
+                throw new Exception();
+            }
+        }
+
         public async Task<Role> DeleteRole(Role Role)
         {
             try
@@ -229,7 +248,7 @@ namespace CodeBE_LEM.Services.PermissionService
                 Roles.AddRange(SystemRoles);
                 Roles = Roles.DistinctBy(x => x.Id).ToList();
 
-                Roles = FullRoles.Where(x => FullRoles.Select(x => x.Id).Contains(x.Id)).ToList();
+                Roles = FullRoles.Where(x => Roles.Select(x => x.Id).Contains(x.Id)).ToList();
                 return Roles;
             }
             catch (Exception)

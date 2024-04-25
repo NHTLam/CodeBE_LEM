@@ -36,13 +36,13 @@ namespace CodeBE_LEM.Controllers
             RoleTeacher.Name = "Teacher";
             RoleTeacher.Description = "Vai trò giáo viên sẽ có toàn quyền trong lớp học";
             RoleTeacher.RoleTypeId = RoleTypeEnum.AUTO.Id;
-            await PermissionService.CreateRole(RoleTeacher, null);
+            await PermissionService.CreateRoleSystem(RoleTeacher, null);
 
             Role RoleStudent = new Role();
             RoleStudent.Name = "Student";
             RoleStudent.Description = "Vai trò học sinh trong lớp học";
             RoleStudent.RoleTypeId = RoleTypeEnum.AUTO.Id;
-            await PermissionService.CreateRole(RoleStudent, null);
+            await PermissionService.CreateRoleSystem(RoleStudent, null);
         }
 
         private async Task SetPermissionForSystemRole()
