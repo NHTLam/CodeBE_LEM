@@ -192,7 +192,7 @@ namespace CodeBE_LEM.Services.PermissionService
                 await UOW.PermissionRepository.DeleteRole(Role);
                 return Role;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 throw new Exception();
             }
@@ -223,10 +223,13 @@ namespace CodeBE_LEM.Services.PermissionService
         {
             try
             {
+                List<Role> FullRoles = await UOW.PermissionRepository.ListRole();
                 List<Role> Roles = await UOW.PermissionRepository.ListRoleByClassId(classroomId);
                 List<Role> SystemRoles = await UOW.PermissionRepository.ListSystemRole();
                 Roles.AddRange(SystemRoles);
                 Roles = Roles.DistinctBy(x => x.Id).ToList();
+
+                Roles = FullRoles.Where(x => FullRoles.Select(x => x.Id).Contains(x.Id)).ToList();
                 return Roles;
             }
             catch (Exception)

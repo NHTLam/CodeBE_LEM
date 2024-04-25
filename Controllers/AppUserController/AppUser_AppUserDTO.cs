@@ -21,7 +21,7 @@ public partial class AppUser_AppUserDTO
 
     public string? Gender { get; set; }
 
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; }
 
     public long? StatusId { get; set; }
 
