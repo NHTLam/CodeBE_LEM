@@ -13,7 +13,7 @@ public partial class Board_AppUserDTO
 
     public string? FullName { get; set; }
 
-    public string? UserName { get; set; } = null!;
+    public string? UserName { get; set; }
 
     public string? Email { get; set; }
 
@@ -21,7 +21,7 @@ public partial class Board_AppUserDTO
 
     public string? Gender { get; set; }
 
-    public string Password { get; set; } = null!;
+    public string? Password { get; set; }
 
     public long? StatusId { get; set; }
 
