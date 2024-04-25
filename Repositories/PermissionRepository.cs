@@ -272,6 +272,12 @@ namespace CodeBE_LEM.Repositories
 
         public async Task<bool> DeleteRole(Role Role)
         {
+            await DataContext.AppUserClassroomMappings
+                    .Where(x => x.RoleId == Role.Id)
+                    .DeleteFromQueryAsync();
+            await DataContext.PermissionRoleMappings
+                    .Where(x => x.RoleId == Role.Id)
+                    .DeleteFromQueryAsync();
             RoleDAO? RoleDAO = DataContext.Roles
                 .Where(x => x.Id == Role.Id)
                 .FirstOrDefault();
@@ -279,14 +285,16 @@ namespace CodeBE_LEM.Repositories
                 return false;
             DataContext.Roles.Remove(RoleDAO);
             await DataContext.SaveChangesAsync();
-            await SaveReference(Role);
             return true;
         }
 
         public async Task<bool> DeleteRoleAuto()
         {
-            await DataContext.Roles.Where(x => x.RoleTypeId == RoleTypeEnum.AUTO.Id)
+            List<RoleDAO>? RoleDAOs = await DataContext.Roles.AsNoTracking().Where(x => x.RoleTypeId == RoleTypeEnum.AUTO.Id).ToListAsync();
+            await DataContext.PermissionRoleMappings
+                .Where(x => RoleDAOs.Select(x => x.Id).Contains(x.RoleId))
                 .DeleteFromQueryAsync();
+            await DataContext.Roles.Where(x => x.RoleTypeId == RoleTypeEnum.AUTO.Id).DeleteFromQueryAsync();
             return true;
         }
 
