@@ -10,12 +10,15 @@ namespace CodeBE_LEM.Controllers.ClassroomController
 
         public long AppUserId { get; set; }
 
+        public long? RoleId { get; set; }
+
         public Classroom_AppUserClassroomMappingDTO() { }
         public Classroom_AppUserClassroomMappingDTO(AppUserClassroomMapping AppUserClassroomMapping)
         {
             Id = AppUserClassroomMapping.Id;
             ClassroomId = AppUserClassroomMapping.ClassroomId;
             AppUserId = AppUserClassroomMapping.AppUserId;
+            RoleId = AppUserClassroomMapping.RoleId;
         }
     }
 }

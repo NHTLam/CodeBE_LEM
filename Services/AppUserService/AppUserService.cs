@@ -126,6 +126,12 @@ namespace CodeBE_LEM.Services.AppUserService
             {
                 List<AppUser> AppUsers = await UOW.AppUserRepository.List();
                 AppUsers = AppUsers.Where(x => x.AppUserClassroomMappings?.Select(y => y.ClassroomId)?.Contains(ClassroomId) ?? false).ToList();
+                foreach(var AppUser in AppUsers)
+                {
+                    if (AppUser.AppUserClassroomMappings != null && AppUser.AppUserClassroomMappings.Count > 0)
+                        AppUser.AppUserClassroomMappings = AppUser.AppUserClassroomMappings.Where(x => x.ClassroomId == ClassroomId).ToList();
+                }
+
                 return AppUsers;
             }
             catch (Exception)

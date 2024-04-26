@@ -119,7 +119,7 @@ namespace CodeBE_LEM.Repositories
             DataContext.AppUsers.Add(AppUserDAO);
             await DataContext.SaveChangesAsync();
             AppUser.Id = AppUserDAO.Id;
-            await SaveReference(AppUser);
+            //await SaveReference(AppUser);
             return true;
         }
 
@@ -158,6 +158,33 @@ namespace CodeBE_LEM.Repositories
 
         private async Task SaveReference(AppUser AppUser)
         {
+            if (AppUser.AppUserClassroomMappings == null || AppUser.AppUserClassroomMappings.Count == 0)
+            {
+                await DataContext.AppUserClassroomMappings
+                    .Where(x => x.AppUserId == AppUser.Id)
+                    .DeleteFromQueryAsync();
+            }
+            else
+            {
+                var AppUserClassroomMappingIds = AppUser.AppUserClassroomMappings.Select(x => x.Id).Distinct().ToList();
+                await DataContext.AppUserClassroomMappings
+                    .Where(x => x.AppUserId == AppUser.Id)
+                    .Where(x => !AppUserClassroomMappingIds.Contains(x.Id))
+                    .DeleteFromQueryAsync();
+
+                List<AppUserClassroomMappingDAO> AppUserClassroomMappingDAOs = new List<AppUserClassroomMappingDAO>();
+                foreach (AppUserClassroomMapping AppUserClassroomMapping in AppUser.AppUserClassroomMappings)
+                {
+                    AppUserClassroomMappingDAO AppUserClassroomMappingDAO = new AppUserClassroomMappingDAO();
+                    AppUserClassroomMappingDAO.Id = AppUserClassroomMapping.Id;
+                    AppUserClassroomMappingDAO.ClassroomId = AppUserClassroomMapping.ClassroomId;
+                    AppUserClassroomMappingDAO.AppUserId = AppUser.Id;
+                    AppUserClassroomMappingDAO.RoleId = AppUserClassroomMapping.RoleId;
+                    AppUserClassroomMappingDAOs.Add(AppUserClassroomMappingDAO);
+                }
+                await DataContext.AppUserClassroomMappings.AddRangeAsync(AppUserClassroomMappingDAOs);
+            }
+            await DataContext.SaveChangesAsync();
         }
     }
 }

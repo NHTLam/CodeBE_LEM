@@ -162,6 +162,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
                     Id = x.Id,
                     ClassroomId = x.ClassroomId,
                     AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
                 }).ToList();
 
             return Classroom;
