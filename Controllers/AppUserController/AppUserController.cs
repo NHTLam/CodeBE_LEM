@@ -1,4 +1,5 @@
-﻿using CodeBE_LEM.Controllers.PermissionController;
+﻿using CodeBE_LEM.Controllers.ClassroomController;
+using CodeBE_LEM.Controllers.PermissionController;
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Models;
 using CodeBE_LEM.Services.AppUserService;
@@ -146,6 +147,14 @@ namespace CodeBE_LEM.Controllers.AppUserController
             AppUser.Phone = AppUser_AppUserDTO.Phone;
             AppUser.Password = AppUser_AppUserDTO.Password;
             AppUser.StatusId = AppUser_AppUserDTO.StatusId ?? 0;
+            AppUser.AppUserClassroomMappings = AppUser_AppUserDTO.AppUserClassroomMappings?
+                .Select(x => new AppUserClassroomMapping
+                {
+                    Id = x.Id,
+                    ClassroomId = x.ClassroomId,
+                    AppUserId = x.AppUserId,
+                    RoleId = x.RoleId,
+                }).ToList();
 
             return AppUser;
         }
