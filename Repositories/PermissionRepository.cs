@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using System.IO;
+using System.Linq;
 using System.Security;
 
 namespace CodeBE_LEM.Repositories
@@ -291,6 +292,9 @@ namespace CodeBE_LEM.Repositories
         public async Task<bool> DeleteRoleAuto()
         {
             List<RoleDAO>? RoleDAOs = await DataContext.Roles.AsNoTracking().Where(x => x.RoleTypeId == RoleTypeEnum.AUTO.Id).ToListAsync();
+            await DataContext.AppUserClassroomMappings
+                .Where(x => RoleDAOs.Select(x => x.Id).Contains(x.RoleId ?? 0))
+                .DeleteFromQueryAsync();
             await DataContext.PermissionRoleMappings
                 .Where(x => RoleDAOs.Select(x => x.Id).Contains(x.RoleId))
                 .DeleteFromQueryAsync();

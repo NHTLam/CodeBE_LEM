@@ -24,6 +24,9 @@ public partial class ActionEnum
     public static Action CREATE_ROLE = new Action(16, "Create role in class");
     public static Action UPDATE_ROLE = new Action(17, "Update role in class");
     public static Action DELETE_ROLE = new Action(18, "Delete role in class");
+    public static Action MARK_OR_FEEDBACK = new Action(19, "Create feedback");
+    public static Action CREATE_CLASSWORK = new Action(20, "Create classwork");
+    public static Action DELETE_CLASS = new Action(21, "Delete class");
 
     public static List<Action> ActionEnumList = new List<Action>
     {
@@ -32,7 +35,7 @@ public partial class ActionEnum
         KICK_MEMBER, 
         CREATE_QUESTION, UPDATE_QUESTION, DELETE_QUESTION,
         CREATE_JOB, UPDATE_JOB, DELETE_JOB,
-        LIST_PERMISSON, LIST_ROLE, CREATE_ROLE, UPDATE_ROLE, DELETE_ROLE
+        LIST_PERMISSON, LIST_ROLE, CREATE_ROLE, UPDATE_ROLE, DELETE_ROLE, MARK_OR_FEEDBACK, CREATE_CLASSWORK, DELETE_CLASS
     };
 
     public static List<Action> ActionEnumListForStudent = new List<Action>

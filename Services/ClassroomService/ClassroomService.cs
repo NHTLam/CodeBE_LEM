@@ -73,6 +73,8 @@ namespace CodeBE_LEM.Services.ClassroomService
             try
             {
                 Classroom = await Get(Classroom.Id);
+                Classroom.AppUserClassroomMappings = new List<AppUserClassroomMapping>();
+                Classroom.ClassEvents = new List<ClassEvent>();
                 await UOW.ClassroomRepository.Delete(Classroom);
                 return Classroom;
             }

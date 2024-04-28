@@ -129,7 +129,6 @@ namespace CodeBE_LEM.Services.AttachmentService
                 }
                 else
                 {
-                    // Xử lý lỗi ở đây, tùy thuộc vào yêu cầu của ứng dụng
                     return null;
                 }
             }
@@ -141,7 +140,6 @@ namespace CodeBE_LEM.Services.AttachmentService
             {
                 return "application/octet-stream";
             }
-            // Bạn có thể mở rộng danh sách các loại tệp và MIME type tương ứng ở đây
             switch (fileFormat.ToLower())
             {
                 case "pdf":
@@ -153,9 +151,8 @@ namespace CodeBE_LEM.Services.AttachmentService
                     return "image/jpeg";
                 case "docx":
                     return "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
-                // Thêm các loại tệp và MIME type tương ứng ở đây
                 default:
-                    return "application/octet-stream"; // Loại mặc định
+                    return "application/octet-stream";
             }
         }
     }

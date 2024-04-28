@@ -34,13 +34,13 @@ namespace CodeBE_LEM.Controllers
             await UOW.PermissionRepository.DeleteRoleAuto();
             Role RoleTeacher = new Role();
             RoleTeacher.Name = "Teacher";
-            RoleTeacher.Description = "Vai trò giáo viên sẽ có toàn quyền trong lớp học";
+            RoleTeacher.Description = "The teacher role has full authority in the classroom";
             RoleTeacher.RoleTypeId = RoleTypeEnum.AUTO.Id;
             await PermissionService.CreateRoleSystem(RoleTeacher, null);
 
             Role RoleStudent = new Role();
             RoleStudent.Name = "Student";
-            RoleStudent.Description = "Vai trò học sinh trong lớp học";
+            RoleStudent.Description = "Student role in the classroom";
             RoleStudent.RoleTypeId = RoleTypeEnum.AUTO.Id;
             await PermissionService.CreateRoleSystem(RoleStudent, null);
         }

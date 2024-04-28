@@ -36,6 +36,9 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public const string CreateStudentAnswer = Module + "/create-student-answer";
         public const string UpdateStudentAnswer = Module + "/update-student-answer";
 
+        public const string MarkOrFeedBack = Module + "/mark-or-feedback";
+        public const string CreateClassWork = Module + "/create-classwork";
+
         public static Dictionary<string, List<string>> DictionaryPath = new Dictionary<string, List<string>>
         {
             {
@@ -60,6 +63,25 @@ namespace CodeBE_LEM.Controllers.ClassroomController
                 ActionEnum.DELETE_QUESTION.Name, new List<string>()
                 {
                     DeleteQuestion
+                }
+            },
+            {
+                ActionEnum.MARK_OR_FEEDBACK.Name, new List<string>()
+                {
+                    MarkOrFeedBack
+                }
+            },
+            {
+                ActionEnum.CREATE_CLASSWORK.Name, new List<string>()
+                {
+                    CreateClassWork
+                }
+            }
+            ,
+            {
+                ActionEnum.DELETE_CLASS.Name, new List<string>()
+                {
+                    Delete
                 }
             }
         };
