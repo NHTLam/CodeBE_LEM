@@ -68,8 +68,6 @@ namespace CodeBE_LEM.Controllers.AttachmentController
                 return Forbid();
             }
 
-            Account account = AttachmentService.GetAccount();
-            Cloudinary cloudinary = new Cloudinary(account);
             Attachment Attachment = await AttachmentService.GetAttachment(Attachment_AttachmentDTO.Id);
 
             using (var client = new WebClient())

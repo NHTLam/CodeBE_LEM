@@ -10,8 +10,8 @@ namespace CodeBE_LEM.Controllers.PermissionController
     [DisplayName("Permission")]
     public class PermissionRoute
     {
-        public const string Module = "lem/permission";
-        public const string RoleModule = "lem/role";
+        public const string Module = "/lem/permission";
+        public const string RoleModule = "/lem/role";
         public const string Init = Module + "/init";
         public const string ListAllPath = Module + "/list-all-path";
         public const string ListPath = Module + "/list-path";
