@@ -184,6 +184,7 @@ namespace CodeBE_LEM.Repositories
                 return null;
             Board.Cards = await DataContext.Cards.AsNoTracking()
                 .Where(x => x.BoardId == Board.Id)
+                .Where(x => x.DeletedAt == null)
                 .Select(x => new Card
                 {
                     Id = x.Id,
@@ -267,6 +268,7 @@ namespace CodeBE_LEM.Repositories
 
         public async Task<bool> DeleteCard(Card Card)
         {
+            await BulkDeleteAllRealCard(new List<long> { Card.Id });
             CardDAO? CardDAO = DataContext.Cards
                 .Where(x => x.Id == Card.Id)
                 .FirstOrDefault();
@@ -400,6 +402,24 @@ namespace CodeBE_LEM.Repositories
 
             var Ids = BoardDAOs.Select(x => x.Id).ToList();
             return Ids;
+        }
+
+        private async Task BulkDeleteAllRealCard(List<long> CardIds)
+        {
+            List<JobDAO>? JobDAOs = DataContext.Jobs
+                 .Where(x => CardIds.Contains(x.CardId))
+                 .ToList();
+            List<long> DeleteJobIds = JobDAOs.Select(x => x.Id).ToList();
+
+            await DataContext.AppUserJobMappings
+                .Where(x => DeleteJobIds.Contains(x.JobId))
+                .DeleteFromQueryAsync();
+            await DataContext.Todos
+                .Where(x => DeleteJobIds.Contains(x.JobId ?? 0))
+                .DeleteFromQueryAsync();
+            await DataContext.Jobs
+                .Where(x => DeleteJobIds.Contains(x.Id))
+                .DeleteFromQueryAsync();
         }
 
         public async Task<bool> BulkUpdateCode(List<Board> Boards)

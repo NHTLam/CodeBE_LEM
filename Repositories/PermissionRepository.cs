@@ -105,21 +105,6 @@ namespace CodeBE_LEM.Repositories
                     DataContext.Permissions.Update(permission);
                 }
             }
-
-            var PermissonIds = (await ListPermission()).Select(x => x.Id).ToList();
-            PermissonRoleMappings = PermissonRoleMappings.Where(x => PermissonIds.Contains(x.PermissionId)).ToList();
-            PermissonRoleMappings = PermissonRoleMappings.DistinctBy(x => x.Id).ToList();
-            foreach (var PermissonRoleMapping in PermissonRoleMappings)
-            {
-                if (PermissonRoleMapping.Id == 0)
-                {
-                    DataContext.PermissionRoleMappings.Add(PermissonRoleMapping);
-                }
-                else
-                {
-                    DataContext.PermissionRoleMappings.Update(PermissonRoleMapping);
-                }
-            }
             await DataContext.SaveChangesAsync();
         }
 
