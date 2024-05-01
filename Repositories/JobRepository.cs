@@ -386,8 +386,10 @@ namespace CodeBE_LEM.Repositories
             List<long> TodoIds = Jobs.SelectMany(x => x.Todos.Select(y => y.Id)).ToList();
             List<long> AppUserJobMappingIds = Jobs.SelectMany(x => x.AppUserJobMappings.Select(y => y.Id)).ToList();
 
-            await DataContext.Todos.Where(x => TodoIds.Contains(x.Id)).DeleteFromQueryAsync();
-            await DataContext.AppUserJobMappings.Where(x => AppUserJobMappingIds.Contains(x.Id)).DeleteFromQueryAsync();
+            if (TodoIds.Count > 0 && TodoIds != null)
+                await DataContext.Todos.Where(x => TodoIds.Contains(x.Id)).DeleteFromQueryAsync();
+            if (AppUserJobMappingIds.Count > 0 && AppUserJobMappingIds != null)
+                await DataContext.AppUserJobMappings.Where(x => AppUserJobMappingIds.Contains(x.Id)).DeleteFromQueryAsync();
             await DataContext.Jobs.Where(x => Ids.Contains(x.Id)).DeleteFromQueryAsync();
             return true;
         }
