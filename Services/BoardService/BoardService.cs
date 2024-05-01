@@ -88,7 +88,8 @@ namespace CodeBE_LEM.Services.BoardService
             try
             {
                 Board Board = await UOW.BoardRepository.Get(Card.BoardId);
-                await UOW.JobRepository.BulkDelete(Card.Jobs);
+                List<Job> Jobs = await UOW.JobRepository.List(Card.Jobs.Select(x => x.Id).ToList());
+                await UOW.JobRepository.BulkDelete(Jobs);
                 await UOW.BoardRepository.DeleteCard(Card);
                 return true;
             }
