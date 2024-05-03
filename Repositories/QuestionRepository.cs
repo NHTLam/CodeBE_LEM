@@ -173,7 +173,7 @@ namespace CodeBE_LEM.Repositories
 
                     AnswerDAOs.Add(AnswerDAO);
                 }
-                await DataContext.BulkMergeAsync(AnswerDAOs);
+                await DataContext.Answers.AddRangeAsync(AnswerDAOs);
             }
 
             if (Question.StudentAnswers == null || Question.StudentAnswers.Count == 0)
@@ -206,8 +206,48 @@ namespace CodeBE_LEM.Repositories
 
                     StudentAnswerDAOs.Add(StudentAnswerDAO);
                 }
-                await DataContext.BulkMergeAsync(StudentAnswerDAOs);
+                await DataContext.StudentAnswers.AddRangeAsync(StudentAnswerDAOs);
             }
+
+            if (Question.Attachments == null || Question.Attachments.Count == 0)
+            {
+                await DataContext.Attachments
+                    .Where(x => x.QuestionId == Question.Id)
+                    .DeleteFromQueryAsync();
+            }
+            else
+            {
+                var AttachmentsIds = Question.Attachments.Select(x => x.Id).Distinct().ToList();
+                await DataContext.Attachments
+                    .Where(x => x.QuestionId == Question.Id)
+                    .Where(x => !AttachmentsIds.Contains(x.Id))
+                    .DeleteFromQueryAsync();
+
+                List<AttachmentDAO> AttachmentDAOs = new List<AttachmentDAO>();
+                foreach (Attachment Attachment in Question.Attachments)
+                {
+                    AttachmentDAO AttachmentDAO = new AttachmentDAO();
+                    AttachmentDAO.Id = Attachment.Id;
+                    AttachmentDAO.Description = Attachment.Description;
+                    AttachmentDAO.Name = Attachment.Name;
+                    AttachmentDAO.Path = Attachment.Path;
+                    AttachmentDAO.Capacity = Attachment.Capacity;
+                    AttachmentDAO.Link = Attachment.Link;
+                    AttachmentDAO.OwnerId = Attachment.OwnerId;
+                    AttachmentDAO.PublicId = Attachment.PublicId;
+                    AttachmentDAO.QuestionId = Question.Id;
+                    if(Attachment.Id != 0)
+                    {
+                        DataContext.Attachments.Update(AttachmentDAO);
+                    }
+                    else
+                    {
+                        DataContext.Attachments.Add(AttachmentDAO);
+                    }
+                }
+            }
+
+            await DataContext.SaveChangesAsync();
         }
     }
 }

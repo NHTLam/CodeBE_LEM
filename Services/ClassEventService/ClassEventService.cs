@@ -3,10 +3,6 @@ using CodeBE_LEM.Entities;
 using CodeBE_LEM.Repositories;
 using CodeBE_LEM.Services.ClassEventService;
 using CodeBE_LEM.Services;
-using CodeBE_LEM.Common;
-using CodeBE_LEM.Entities;
-using CodeBE_LEM.Repositories;
-using CodeBE_LEM.Services.ClassEventService;
 using System.Linq;
 
 namespace CodeBE_LEM.Services.ClassroomService
