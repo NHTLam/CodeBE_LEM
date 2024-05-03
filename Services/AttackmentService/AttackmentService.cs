@@ -22,7 +22,7 @@ namespace CodeBE_LEM.Services.AttachmentService
 {
     public interface IAttachmentService
     {
-        Task<List<Attachment>> MultiUploadFile(List<IFormFile> files, long QuestionId);
+        Task<List<Attachment>> MultiUploadFile(List<IFormFile> files);
         Account GetAccount();
         string GetMyType(string fileFormat);
         Task<Attachment> GetAttachment(long AttachmentId);
@@ -45,7 +45,7 @@ namespace CodeBE_LEM.Services.AttachmentService
             this.PermissionService = PermissionService;
         }
 
-        public async Task<List<Attachment>> MultiUploadFile(List<IFormFile> files, long QuestionId)
+        public async Task<List<Attachment>> MultiUploadFile(List<IFormFile> files)
         {
             try
             {
@@ -53,7 +53,6 @@ namespace CodeBE_LEM.Services.AttachmentService
                 foreach (var file in files)
                 {
                     Attachment Attachment = new Attachment();
-                    Attachment.QuestionId = QuestionId;
                     Attachment.Capacity = file.Length.ToString();
                     Attachment.Name = file.FileName;
                     Attachment.OwnerId = PermissionService.GetAppUserId();
@@ -63,8 +62,10 @@ namespace CodeBE_LEM.Services.AttachmentService
                         return new List<Attachment>();
                 }
 
-                await UOW.AttachmentRepository.BulkMerge(Attachments);
-                return Attachments;
+                List<long> Ids = await UOW.AttachmentRepository.BulkMerge(Attachments);
+                var NewAttachments = await UOW.AttachmentRepository.List();
+                NewAttachments = NewAttachments.Where(x => Ids.Contains(x.Id)).ToList();
+                return NewAttachments;
             }
             catch (Exception ex)
             {

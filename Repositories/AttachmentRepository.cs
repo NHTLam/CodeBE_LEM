@@ -13,7 +13,7 @@ namespace CodeBE_LEM.Repositories
         Task<bool> Create(Attachment Attachment);
         Task<bool> Update(Attachment Attachment);
         Task<bool> Delete(Attachment Attachment);
-        Task<bool> BulkMerge(List<Attachment> Attachments);
+        Task<List<long>> BulkMerge(List<Attachment> Attachments);
     }
 
     public class AttachmentRepository : IAttachmentRepository
@@ -111,8 +111,9 @@ namespace CodeBE_LEM.Repositories
         {
         }
 
-        public async Task<bool> BulkMerge(List<Attachment> Attachments)
+        public async Task<List<long>> BulkMerge(List<Attachment> Attachments)
         {
+            List<AttachmentDAO> AttachmentDAOs = new List<AttachmentDAO>();
             foreach (Attachment Attachment in Attachments)
             {
                 AttachmentDAO AttachmentDAO = new AttachmentDAO();
@@ -125,13 +126,16 @@ namespace CodeBE_LEM.Repositories
                 AttachmentDAO.OwnerId = Attachment.OwnerId;
                 AttachmentDAO.PublicId = Attachment.PublicId;
                 AttachmentDAO.Link = Attachment.Link;
+                AttachmentDAOs.Add(AttachmentDAO);
                 if (AttachmentDAO.Id == 0)
                     DataContext.Attachments.Add(AttachmentDAO);
                 else
                     DataContext.Attachments.Update(AttachmentDAO);
             }
             await DataContext.SaveChangesAsync();
-            return true;
+
+            List<long> Ids = AttachmentDAOs.Select(x => x.Id).ToList();
+            return Ids;
         }
     }
 }

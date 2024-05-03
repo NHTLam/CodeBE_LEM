@@ -124,9 +124,6 @@ namespace CodeBE_LEM.Repositories
 
         public async Task<List<StudentAnswer>> Detail(long Id)
         {
-            List<StudentAnswer> test = await DataContext.StudentAnswers.AsNoTracking()
-            .Where(x => x.AppUserId == Id).Select(x => new StudentAnswer()).ToListAsync();
-
             List<StudentAnswer> StudentAnswers = await DataContext.StudentAnswers.AsNoTracking()
             .Where(x => x.AppUserId == Id)
             .Select(x => new StudentAnswer

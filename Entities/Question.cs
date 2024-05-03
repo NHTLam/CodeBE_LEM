@@ -23,5 +23,7 @@ public partial class Question
 
     public List<StudentAnswer>? StudentAnswers { get; set; } = null!;
 
+    public List<Attachment>? Attachments { get; set; } = null!;
+
     public ClassEvent ClassEvent { get; set; } = null!;
 }
