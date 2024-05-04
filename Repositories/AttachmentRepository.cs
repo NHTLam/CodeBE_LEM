@@ -36,6 +36,9 @@ namespace CodeBE_LEM.Repositories
                 Path = x.Path,
                 Capacity = x.Capacity,
                 QuestionId = x.QuestionId,
+                Link = x.Link,
+                OwnerId = x.OwnerId,
+                PublicId = x.PublicId,
             }).ToListAsync();
 
             return Attachments;
