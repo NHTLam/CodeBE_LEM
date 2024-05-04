@@ -21,6 +21,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
         public long ClassroomId { get; set; }
 
         public List<Classroom_AnswerDTO>? Answers { get; set; }
+        public List<Classroom_AttachmentDTO>? Attachments { get; set; }
 
         public List<Classroom_StudentAnswerDTO>? StudentAnswers { get; set; }
 
@@ -36,6 +37,7 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Instruction = Question.Instruction;
             Answers = Question.Answers?.Select(x => new Classroom_AnswerDTO(x)).ToList();
             StudentAnswers = Question.StudentAnswers?.Select(x => new Classroom_StudentAnswerDTO(x)).ToList();
+            Attachments = Question.Attachments?.Select(x => new Classroom_AttachmentDTO(x)).ToList();
         }
     }
 }

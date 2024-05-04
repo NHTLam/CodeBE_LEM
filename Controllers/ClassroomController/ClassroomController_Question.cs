@@ -1,10 +1,13 @@
 ﻿using CodeBE_LEM.Common;
+using CodeBE_LEM.Controllers.AttachmentController;
 using CodeBE_LEM.Controllers.BoardController;
 using CodeBE_LEM.Entities;
 using CodeBE_LEM.Services.PermissionService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Net.Mail;
+using Attachment = CodeBE_LEM.Entities.Attachment;
 
 namespace CodeBE_LEM.Controllers.ClassroomController
 {
@@ -75,6 +78,19 @@ namespace CodeBE_LEM.Controllers.ClassroomController
             Question.CorrectAnswer = Classroom_QuestionDTO.CorrectAnswer;
             Question.StudentAnswer = Classroom_QuestionDTO.StudentAnswer;
             Question.Name = Classroom_QuestionDTO.Name;
+            Question.Attachments = Classroom_QuestionDTO.Attachments?
+                .Select(x => new Attachment
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    Path = x.Path,
+                    Capacity = x.Capacity,
+                    QuestionId = x.QuestionId,
+                    OwnerId = x.OwnerId,
+                    PublicId = x.PublicId,
+                    Link = x.Link,
+                }).ToList();
 
             return Question;
         }
