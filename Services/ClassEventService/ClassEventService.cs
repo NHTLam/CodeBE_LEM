@@ -278,17 +278,17 @@ namespace CodeBE_LEM.Services.ClassroomService
             if (ClassEvent.Questions != null && ClassEvent.Questions.Count > 0)
             {
                 Question QuestionInDb = ClassEvent.Questions.FirstOrDefault();
+                QuestionInDb = await UOW.QuestionRepository.Get(QuestionInDb.Id);
 
                 if (QuestionInDb != null)
                 {
-                    var QuestionIds = new List<long>();
-                    QuestionIds.Add(QuestionInDb.Id);
+                    var QuestionIds = new List<long>() { QuestionInDb.Id };
                     List<StudentAnswer> StudentAnswers = await UOW.StudentAnswerRepository.List(QuestionIds);
 
                     foreach (Question Question in ClassEvent.Questions)
                     {
                         Question.StudentAnswers = StudentAnswers;
-
+                        Question.Attachments = QuestionInDb.Attachments;
                     }
                 }
             }
