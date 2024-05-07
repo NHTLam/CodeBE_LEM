@@ -153,6 +153,10 @@ namespace CodeBE_LEM.Repositories
                 Classroom.ClassEvents = ClassEvents
                     .Where(x => x.ClassroomId == Classroom.Id)
                     .ToList();
+
+                Classroom.AppUserClassroomMappings = AppUserClassroomMappings
+                    .Where(x => x.ClassroomId == Classroom.Id)
+                    .ToList();
             }
 
             return Classrooms;

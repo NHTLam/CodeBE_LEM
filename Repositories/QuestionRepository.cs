@@ -86,6 +86,20 @@ namespace CodeBE_LEM.Repositories
                     },
                 }).FirstOrDefaultAsync();
 
+            Question.Attachments = await DataContext.Attachments.AsNoTracking()
+                .Where(x => x.QuestionId == Question.Id)
+                .Select(x => new Attachment
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    Path = x.Path,
+                    Capacity = x.Capacity,
+                    QuestionId = x.QuestionId,
+                    Link = x.Link,
+                    OwnerId = x.OwnerId,
+                    PublicId = x.PublicId,
+                }).ToListAsync();
             return Question;
         }
 
@@ -125,6 +139,27 @@ namespace CodeBE_LEM.Repositories
                 },
             }).ToListAsync();
 
+            List<Attachment> Attachments = await DataContext.Attachments.AsNoTracking()
+                .Select(x => new Attachment
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Description = x.Description,
+                    Path = x.Path,
+                    Capacity = x.Capacity,
+                    QuestionId = x.QuestionId,
+                    Link = x.Link,
+                    OwnerId = x.OwnerId,
+                    PublicId = x.PublicId,
+                }).ToListAsync();
+
+
+            foreach (Question Question in Questions)
+            {
+                Question.Attachments = Attachments
+                    .Where(x => x.QuestionId == Question.Id)
+                    .ToList();
+            }
             return Questions;
         }
 
